@@ -1,0 +1,746 @@
+{
+    "info": {
+        "name": "TEFA Backend API",
+        "_postman_id": "tefa-backend-crud",
+        "description": "CRUD template for TEFA backend (Projects, Carts, Orders, Ratings, dll).",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:3000"
+        },
+        {
+            "key": "authToken",
+            "value": ""
+        }
+    ],
+    "item": [
+        {
+            "name": "AUTH",
+            "item": [
+                {
+                    "name": "LOGIN",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "USERS",
+            "item": [
+                {
+                    "name": "CREATE",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"admin@tefa.com\",\n  \"password\": \"123456\",\n  \"name\": \"Admin TEFA\",\n  \"role\": \"ADMIN\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/users",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "users"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "SHOW ALL",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/users",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "users"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "SHOW BY ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/users/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "users",
+                                ":id"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "UPDATE",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Updated User\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/users/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "users",
+                                ":id"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "DELETE",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/users/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "users",
+                                ":id"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "CATEGORIES",
+            "item": [
+                {
+                    "name": "CREATE",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Kategori UI/UX\",\n  \"slug\": \"kategori-ui-ux\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/categories",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "categories"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "SHOW ALL",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/categories",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "categories"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "SHOW BY ID",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/categories/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "categories",
+                                ":id"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "UPDATE",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Updated Category\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/categories/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "categories",
+                                ":id"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "DELETE",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "{{baseUrl}}/categories/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "categories",
+                                ":id"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "PROJECTS",
+            "item": [
+                {
+                    "name": "CREATE",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "title",
+                                    "value": "Aplikasi E-Commerce Keren",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "slug",
+                                    "value": "ecommerce-keren",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "description",
+                                    "value": "Project E-Commerce super canggih menggunakan Next.js dan NestJS",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "price",
+                                    "value": "1500000",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "categoryId",
+                                    "value": "<UUID-KATEGORI>",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "mediaUrls",
+                                    "value": "[]",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "thumbnail",
+                                    "type": "file"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/projects",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "projects"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "SHOW ALL",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/projects",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "projects"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "SHOW BY ID",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/projects/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "projects",
+                                ":id"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "UPDATE",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "title",
+                                    "value": "Updated E-Commerce",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "price",
+                                    "value": "1750000",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "thumbnail",
+                                    "type": "file"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/projects/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "projects",
+                                ":id"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "DELETE",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/projects/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "projects",
+                                ":id"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "CARTS",
+            "item": [
+                {
+                    "name": "CREATE",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"userId\": \"<UUID-USER>\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/carts",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "carts"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "SHOW ALL",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/carts",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "carts"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "SHOW BY ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/carts/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "carts",
+                                ":id"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "UPDATE",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"userId\": \"<UUID-USER>\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/carts/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "carts",
+                                ":id"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "DELETE",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/carts/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "carts",
+                                ":id"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "ORDERS",
+            "item": [
+                {
+                    "name": "CREATE",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"orderCode\": \"ORD-20260430-001\",\n  \"userId\": \"<UUID-USER>\",\n  \"totalPrice\": 1500000,\n  \"customerName\": \"Budi\",\n  \"customerEmail\": \"budi@example.com\",\n  \"customerPhone\": \"08123456789\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/orders",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "orders"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "SHOW ALL",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/orders",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "orders"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "SHOW BY ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/orders/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "orders",
+                                ":id"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "UPDATE",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"status\": \"PAID\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/orders/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "orders",
+                                ":id"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "DELETE",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/orders/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "orders",
+                                ":id"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "RATINGS",
+            "item": [
+                {
+                    "name": "CREATE RATING",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"projectId\": \"<UUID-PROJECT>\",\n  \"score\": 5,\n  \"comment\": \"Wah aplikasinya kerenn! Recommend banget!\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/ratings",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "ratings"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "SHOW BY PROJECT",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/ratings/project/:projectId",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "ratings",
+                                "project",
+                                ":projectId"
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
