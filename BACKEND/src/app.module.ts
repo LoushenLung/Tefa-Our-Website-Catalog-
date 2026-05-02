@@ -9,6 +9,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { ProjectsModule } from './projects/projects.module';
 import { CartsModule } from './carts/carts.module';
 import { OrdersModule } from './orders/orders.module';
+import { PaymentsModule } from './payments/payments.module';
 import { RatingsModule } from './ratings/ratings.module';
 import { MajorsModule } from './app/majors/majors.module';
 import { BatchesModule } from './app/batches/batches.module';
@@ -17,7 +18,7 @@ import { StudentsModule } from './app/students/students.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true,      //
+      isGlobal: true, //
       envFilePath: '.env', //
     }),
 
@@ -28,6 +29,7 @@ import { StudentsModule } from './app/students/students.module';
     ProjectsModule,
     CartsModule,
     OrdersModule,
+    PaymentsModule,
     RatingsModule,
     MajorsModule,
     BatchesModule,
