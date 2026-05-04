@@ -13,7 +13,7 @@ export class PaymentService {
   async getBill(orderId: number) {
     const order = await this.prisma.order.findUnique({
       where: { id: orderId },
-      include: { items: true },
+      include: { orderitem: true },
     });
 
     if (!order) {
@@ -25,7 +25,7 @@ export class PaymentService {
       orderCode: order.orderCode,
       totalPrice: order.totalPrice,
       status: order.status,
-      items: order.items,
+      items: order.orderitem,
     };
   }
 
@@ -52,7 +52,7 @@ export class PaymentService {
     );
 
     // Simpan PaymentProof ke database
-    const paymentProof = await this.prisma.paymentProof.create({
+    const paymentProof = await this.prisma.paymentproof.create({
       data: {
         orderId,
         fileUrl: uploadResult.secure_url,
@@ -73,7 +73,7 @@ export class PaymentService {
   }
 
   async getPaymentProof(orderId: number) {
-    return await this.prisma.paymentProof.findMany({
+    return await this.prisma.paymentproof.findMany({
       where: { orderId },
     });
   }

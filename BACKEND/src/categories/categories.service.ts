@@ -29,7 +29,7 @@ export class CategoriesService {
   async findOne(id: number) {
     const category = await this.prisma.category.findUnique({
       where: { id: Number(id) },
-      include: { projects: true },
+      include: { project: true },
     });
     if (!category) throw new NotFoundException(`Category with id ${id} not found`);
     return category;
@@ -62,11 +62,11 @@ export class CategoriesService {
   async remove(id: number) {
     const category = await this.prisma.category.findUnique({
       where: { id: Number(id) },
-      include: { projects: true },
+      include: { project: true },
     });
     if (!category) throw new NotFoundException(`Category with id ${id} not found`);
-    if (category.projects.length > 0) {
-      throw new BadRequestException(`Cannot delete category "${category.name}" because it still has ${category.projects.length} project(s) attached`);
+    if (category.project.length > 0) {
+      throw new BadRequestException(`Cannot delete category "${category.name}" because it still has ${category.project.length} project(s) attached`);
     }
 
     return await this.prisma.category.delete({

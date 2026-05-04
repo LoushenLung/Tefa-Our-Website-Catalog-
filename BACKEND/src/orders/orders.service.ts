@@ -71,14 +71,14 @@ export class OrdersService {
 
   async findAll() {
     return await this.prisma.order.findMany({
-      include: { items: true, paymentProofs: true },
+      include: { orderitem: true, paymentproof: true },
     });
   }
 
   async findOne(id: number) {
     const order = await this.prisma.order.findUnique({
       where: { id: Number(id) },
-      include: { items: true, paymentProofs: true },
+      include: { orderitem: true, paymentproof: true },
     });
     if (!order) throw new NotFoundException(`Order with id ${id} not found`);
     return order;
