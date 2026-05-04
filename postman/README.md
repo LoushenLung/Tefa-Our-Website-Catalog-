@@ -8,7 +8,8 @@ TEFA Backend - Postman Usage Guide
 2. **USERS** - Create, Read, Update, Delete data user dan admin.
 3. **CATEGORIES** - Kategori untuk projek (Create, Read, Update, Delete).
 4. **PROJECTS** - Menggantikan fitur entitas Product lama. Punya sistem **Upload Thumbnail ke Cloudinary**.
-5. **CARTS** - Fitur keranjang belanja (menggantikan entitas Wishlists).
+5. **MAJORS, BATCHES, & STUDENTS** - Database pendukung untuk menginputkan nama-nama Jurusan, Angkatan, dan data Siswa yang diperlukan sebelum membuat/upload Project. Anda bisa menambahkan data siswa secara manual melalui endpoint Create di folder ini.
+6. **CARTS** - Fitur keranjang belanja (menggantikan entitas Wishlists).
 6. **ORDERS** - Fitur pesanan checkout dan snapshot pelanggan (menggantikan entitas Inquiries).
 7. **RATINGS** - Fitur otomatis untuk menambahkan ulasan dan rata-rata bintang ke sebuah projek.
 
@@ -28,7 +29,8 @@ TEFA Backend - Postman Usage Guide
 - Gunakan endpoint berjenis **GET** untuk melist data (tidak butuh tipe upload).
 - Anda harus menaruh **Bearer Token** ke header (dengan cara mengisinya di _collection variable_ jika itu adalah _Protected Routes_).
 - Fitur **PROJECTS** kini menggunakan mode **form-data** untuk `POST (Create)` & `PATCH (Update)` guna menangani berkas/file gambar agar lolos menuju _Cloudinary_. Jangan pakai tipe format "raw JSON" di bagian ini!
-- Ganti String Placeholder yang ada seperti `<UUID-KATEGORI>`, `<UUID-PROJECT>`, dll dengan UUID sungguhan dari database yang baru Anda Create/Insert.
+- **MENAMBAHKAN MULTIPLE STUDENTS DI PROJECTS:** Karena skema yang baru mendukung fitur banyak murid untuk satu project (beserta perannya), khusus untuk mengunggah siswanya buka tab body di Postman, tambahkan Key baru bernama `students`. Pilih tipe text dan isikan value berformat "JSON stringified" seperti ini: `[{"id": 1, "role": "Ketua Kelompok"}, {"id": 2, "role": "UI/UX Designer"}]`
+- Ganti String Placeholder yang ada seperti `<UUID-KATEGORI>`, `<UUID-PROJECT>`, dll dengan UUID/ID sungguhan dari database yang baru Anda Create/Insert.
 
 ### How to get a token
 1. Buka folder `AUTH`.
@@ -81,6 +83,7 @@ Local testing flow
 6. Run the `CREATE` request for a category first, then use its UUID in `PRODUCTS > CREATE`.
 
 Notes
-- The collection is a template, so replace placeholder values like `<uuid>` with real IDs from your database.
+- The collection is a template, so replace placeholder values like `<uuid>` or ID numbers with real IDs from your database.
+- The PROJECTS endpoints use form-data for uploads. To associate multiple students with a project, use the `students` key in form-data and set the value to a stringified JSON array: `[{"id": 1, "role": "Ketua Kelompok"}]`.
 - The structure is meant to be similar to your example: grouped folders and CRUD verbs.
 - If you want, I can also add a ready-to-import Postman environment file next.

@@ -1,6 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CloudinaryService } from '../helper/cloudinary.service';
+import { VerifyPaymentDto } from './dto/verify-payment.dto';
 
 @Injectable()
 export class PaymentService {
@@ -64,12 +65,55 @@ export class PaymentService {
       data: { status: 'WAITING_VERIFICATION' },
     });
 
-    return paymentProof;
+    return {
+      success: true,
+      message: 'Payment proof uploaded successfully',
+      data: paymentProof
+    };
   }
 
   async getPaymentProof(orderId: number) {
     return await this.prisma.paymentProof.findMany({
       where: { orderId },
     });
+  }
+
+  async verifyPayment(paymentProofId: number, verifyDto: VerifyPaymentDto) {
+    const paymentProof = await this.prisma.paymentProof.findUnique({
+      where: { id: paymentProofId },
+      include: { order: true },
+    });
+
+    if (!paymentProof) {
+      throw new BadRequestException('Payment proof not found');
+    }
+
+    // Update status payment proof
+    const updatedProof = await this.prisma.paymentProof.update({
+      where: { id: paymentProofId },
+      data: {
+        status: verifyDto.status,
+        adminNote: verifyDto.adminNote,
+      },
+    });
+
+    // Jika payment approved, update order status menjadi PAID
+    if (verifyDto.status === 'APPROVED') {
+      await this.prisma.order.update({
+        where: { id: paymentProof.orderId },
+        data: { status: 'PAID' },
+      });
+    } else if (verifyDto.status === 'REJECTED') {
+       await this.prisma.order.update({
+        where: { id: paymentProof.orderId },
+        data: { status: 'REJECTED' },
+      });
+    }
+
+    return {
+      success: true,
+      message: `Payment status updated to ${verifyDto.status}`,
+      data: updatedProof
+    };
   }
 }
