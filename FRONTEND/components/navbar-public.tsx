@@ -48,6 +48,12 @@ export default function Navbar() {
             >
               Products
             </Link>
+            <Link 
+              href="/catalog" 
+              className="text-sm font-bold text-slate-500 transition-colors hover:text-red-600"
+            >
+              Catalog
+            </Link>
           </div>
         </div>
 

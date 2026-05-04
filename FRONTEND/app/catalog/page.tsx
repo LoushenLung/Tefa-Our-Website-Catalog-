@@ -47,7 +47,7 @@ const PRODUCTS: Product[] = [
     currency: "IDR",
     stock: 5,
     status: "PUBLISHED",
-    specs: { MCU: "ESP32", Koneksi: "WiFi + MQTT", Catu Daya: "5V USB-C" },
+    specs: { MCU: "ESP32", Koneksi: "WiFi + MQTT", "Catu Daya": "5V USB-C" },
     category: { name: "IoT & Jaringan", slug: "iot-jaringan" },
     image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80",
     badge: "Baru",
