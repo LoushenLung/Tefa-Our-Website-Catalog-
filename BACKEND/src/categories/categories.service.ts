@@ -5,7 +5,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class CategoriesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async create(createCategoryDto: CreateCategoryDto) {
     if (!createCategoryDto.name) throw new BadRequestException('name is required');
