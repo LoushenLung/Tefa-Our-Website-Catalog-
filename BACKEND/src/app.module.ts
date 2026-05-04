@@ -13,12 +13,13 @@ import { RatingsModule } from './ratings/ratings.module';
 import { MajorsModule } from './app/majors/majors.module';
 import { BatchesModule } from './app/batches/batches.module';
 import { StudentsModule } from './app/students/students.module';
+import { PaymentModule } from './payment/payment.module'; // ← add this
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true,      //
-      envFilePath: '.env', //
+      isGlobal: true,
+      envFilePath: '.env',
     }),
 
     BcryptModule,
@@ -32,6 +33,7 @@ import { StudentsModule } from './app/students/students.module';
     MajorsModule,
     BatchesModule,
     StudentsModule,
+    PaymentModule, // ← add this
   ],
   controllers: [AppController],
   providers: [AppService],
