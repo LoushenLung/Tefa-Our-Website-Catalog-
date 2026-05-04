@@ -5,69 +5,81 @@ import { PrismaService } from '../../prisma/prisma.service';
 export class CartsService {
   constructor(private prisma: PrismaService) { }
 
-  async create(data: any) {
-    if (!data.userId) throw new BadRequestException('userId is required');
-
-    const user = await this.prisma.user.findUnique({ where: { id: Number(data.userId) } });
-    if (!user) throw new NotFoundException(`User with id ${data.userId} not found`);
-
-    const existingCart = await this.prisma.cart.findFirst({ where: { userId: Number(data.userId) } });
-    if (existingCart) throw new BadRequestException(`User with id ${data.userId} already has a cart`);
-
-    return await this.prisma.cart.create({
-      data: {
-        ...data,
-        userId: Number(data.userId),
-      },
+  // Ambil cart user aktif, jika belum ada, buatkan otomatis
+  async getCart(userId: number) {
+    let cart = await this.prisma.cart.findUnique({
+      where: { userId },
+      include: {
+        items: {
+          include: {
+            project: true,
+          }
+        },
+      }
     });
-  }
 
-  async findAll() {
-    return await this.prisma.cart.findMany({ include: { items: true } });
-  }
+    if (!cart) {
+      cart = await this.prisma.cart.create({
+        data: { userId },
+        include: { items: { include: { project: true } } }
+      });
+    }
 
-  async findOne(id: number) {
-    const cart = await this.prisma.cart.findUnique({
-      where: { id: Number(id) },
-      include: { items: true },
-    });
-    if (!cart) throw new NotFoundException(`Cart with id ${id} not found`);
     return cart;
   }
 
-  async update(id: number, data: any) {
-    const cart = await this.prisma.cart.findUnique({ where: { id: Number(id) } });
-    if (!cart) throw new NotFoundException(`Cart with id ${id} not found`);
+  // Tambahkan item ke cart
+  async addItem(userId: number, projectId: number, quantity: number = 1) {
+    const project = await this.prisma.project.findUnique({ where: { id: projectId } });
+    if (!project) throw new NotFoundException('Project not found');
 
-    if (data.userId) {
-      const user = await this.prisma.user.findUnique({ where: { id: Number(data.userId) } });
-      if (!user) throw new NotFoundException(`User with id ${data.userId} not found`);
+    const cart = await this.getCart(userId);
 
-      const existingCart = await this.prisma.cart.findFirst({
-        where: { userId: Number(data.userId), NOT: { id: Number(id) } },
+    const existingItem = await this.prisma.cartItem.findUnique({
+      where: {
+        cartId_projectId: { cartId: cart.id, projectId }
+      }
+    });
+
+    if (existingItem) {
+      return await this.prisma.cartItem.update({
+        where: { id: existingItem.id },
+        data: { quantity: existingItem.quantity + quantity },
       });
-      if (existingCart) throw new BadRequestException(`User with id ${data.userId} already has a cart`);
+    } else {
+      return await this.prisma.cartItem.create({
+        data: {
+          cartId: cart.id,
+          projectId,
+          quantity,
+        },
+      });
+    }
+  }
+
+  // Hapus item dari cart
+  async removeItem(userId: number, projectId: number) {
+    const cart = await this.getCart(userId);
+    const existingItem = await this.prisma.cartItem.findUnique({
+      where: {
+        cartId_projectId: { cartId: cart.id, projectId }
+      }
+    });
+
+    if (!existingItem) {
+      throw new NotFoundException('Item not found in cart');
     }
 
-    return await this.prisma.cart.update({
-      where: { id: Number(id) },
-      data: {
-        ...data,
-        ...(data.userId && { userId: Number(data.userId) }),
-      },
+    return await this.prisma.cartItem.delete({
+      where: { id: existingItem.id }
     });
   }
 
-  async remove(id: number) {
-    const cart = await this.prisma.cart.findUnique({
-      where: { id: Number(id) },
-      include: { items: true },
+  // Kosongkan cart (Hapus isi, biarkan cart induk)
+  async clearCart(userId: number) {
+    const cart = await this.getCart(userId);
+    return await this.prisma.cartItem.deleteMany({
+      where: { cartId: cart.id }
     });
-    if (!cart) throw new NotFoundException(`Cart with id ${id} not found`);
-    if (cart.items.length > 0) {
-      throw new BadRequestException(`Cannot delete cart with id ${id} because it still has ${cart.items.length} item(s) inside`);
-    }
-
-    return await this.prisma.cart.delete({ where: { id: Number(id) } });
   }
 }

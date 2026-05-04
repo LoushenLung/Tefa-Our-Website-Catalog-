@@ -1,29 +1,72 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 
-const VALID_STATUSES = ['PENDING', 'PENDING_PAYMENT', 'WAITING_VERIFICATION', 'PAID', 'CANCELLED'];
+const VALID_STATUSES = ['PENDING', 'PENDING_PAYMENT', 'WAITING_VERIFICATION', 'PAID', 'CANCELLED', 'REJECTED'];
 
 @Injectable()
 export class OrdersService {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: any) {
-    if (!data.orderCode) throw new BadRequestException('orderCode is required');
-    if (!data.userId) throw new BadRequestException('userId is required');
-    if (!data.totalPrice) throw new BadRequestException('totalPrice is required');
+  async checkout(userId: number, data: any) {
     if (!data.customerName) throw new BadRequestException('customerName is required');
     if (!data.customerEmail) throw new BadRequestException('customerEmail is required');
     if (!data.customerPhone) throw new BadRequestException('customerPhone is required');
 
-    const existing = await this.prisma.order.findFirst({ where: { orderCode: data.orderCode } });
-    if (existing) throw new BadRequestException(`Order with code "${data.orderCode}" already exists`);
-
-    return await this.prisma.order.create({
-      data: {
-        ...data,
-        userId: Number(data.userId),
-      },
+    // 1. Ambil cart user
+    const cart = await this.prisma.cart.findUnique({
+      where: { userId: Number(userId) },
+      include: { items: { include: { project: true } } }
     });
+
+    if (!cart || cart.items.length === 0) {
+      throw new BadRequestException('Cart is empty. Cannot checkout.');
+    }
+
+    // 2. Hitung harga dan persiapkan OrderItem
+    let totalPrice = 0;
+    const orderItemsPayload = cart.items.map(item => {
+      const price = Number(item.project.price);
+      totalPrice += price * item.quantity;
+
+      return {
+        projectId: item.project.id,
+        projectName: item.project.title,
+        price: price,
+        thumbnail: item.project.thumbnail,
+        quantity: item.quantity,
+      };
+    });
+
+    // 3. Generate Order Code acak
+    const orderCode = `ORD-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    // 4. Lakukan Transaksi (Buat order + Hapus isi keranjang)
+    const result = await this.prisma.$transaction(async (tx) => {
+      const order = await tx.order.create({
+        data: {
+          orderCode,
+          userId: Number(userId),
+          totalPrice,
+          status: 'PENDING_PAYMENT',
+          customerName: data.customerName,
+          customerEmail: data.customerEmail,
+          customerPhone: data.customerPhone,
+          items: {
+            create: orderItemsPayload
+          }
+        },
+        include: { items: true }
+      });
+
+      // Kosongkan keranjang setelah checkout
+      await tx.cartItem.deleteMany({
+        where: { cartId: cart.id }
+      });
+
+      return order;
+    });
+
+    return result;
   }
 
   async findAll() {

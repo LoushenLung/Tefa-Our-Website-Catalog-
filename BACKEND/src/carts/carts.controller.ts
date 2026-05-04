@@ -1,40 +1,92 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, UseGuards, Request, HttpStatus, HttpException, ParseIntPipe } from '@nestjs/common';
 import { CartsService } from './carts.service';
 import { AuthGuard } from '../auth/auth.guard';
 
+@UseGuards(AuthGuard)
 @Controller('carts')
 export class CartsController {
   constructor(private readonly cartsService: CartsService) { }
 
-  @UseGuards(AuthGuard)
-  @Post()
-  create(@Request() req, @Body() data: any) {
-    data.userId = req.user.sub; // Inject userId JWT Token secara otomatis
-    return this.cartsService.create(data);
-  }
-
-  @UseGuards(AuthGuard)
   @Get()
-  findAll() {
-    return this.cartsService.findAll();
+  async getMyCart(@Request() req) {
+    try {
+      const data = await this.cartsService.getCart(req.user.sub);
+      return {
+        success: true,
+        message: 'Cart retrieved successfully',
+        data,
+      };
+    } catch (error: any) {
+      throw new HttpException({
+        success: false,
+        message: error.message || 'Internal server error',
+      }, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
-  @UseGuards(AuthGuard)
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.cartsService.findOne(Number(id));
+  @Post('items')
+  async addItem(@Request() req, @Body() body: { projectId: number, quantity?: number }) {
+    try {
+      if (!body.projectId) {
+        throw new HttpException('projectId is required', HttpStatus.BAD_REQUEST);
+      }
+      const data = await this.cartsService.addItem(req.user.sub, body.projectId, body.quantity || 1);
+      return {
+        success: true,
+        message: 'Item added to cart successfully',
+        data,
+      };
+    } catch (error: any) {
+      if (error.code === 'P2025' || error.status === 404) {
+        throw new HttpException({
+          success: false,
+          message: 'Project not found',
+        }, HttpStatus.NOT_FOUND);
+      }
+      throw new HttpException({
+        success: false,
+        message: error.message || 'Internal server error',
+      }, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
-  @UseGuards(AuthGuard)
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() data: any) {
-    if(data.userId) delete data.userId; // Cegah injeksi manipulasi ID Keranjang
-    return this.cartsService.update(Number(id), data);
+  @Delete('items/:projectId')
+  async removeItem(@Request() req, @Param('projectId', ParseIntPipe) projectId: number) {
+    try {
+      const data = await this.cartsService.removeItem(req.user.sub, projectId);
+      return {
+        success: true,
+        message: 'Item removed from cart successfully',
+        data,
+      };
+    } catch (error: any) {
+      if (error.code === 'P2025' || error.status === 404) {
+        throw new HttpException({
+          success: false,
+          message: 'Item not found in cart',
+        }, HttpStatus.NOT_FOUND);
+      }
+      throw new HttpException({
+        success: false,
+        message: error.message || 'Internal server error',
+      }, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
-  @UseGuards(AuthGuard)
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.cartsService.remove(Number(id));
+  @Delete()
+  async clearCart(@Request() req) {
+    try {
+      const data = await this.cartsService.clearCart(req.user.sub);
+      return {
+        success: true,
+        message: 'Cart cleared successfully',
+        data,
+      };
+    } catch (error: any) {
+      throw new HttpException({
+        success: false,
+        message: error.message || 'Internal server error',
+      }, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 } 

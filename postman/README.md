@@ -1,86 +1,67 @@
-TEFA Backend - Postman Usage Guide
+# TEFA Backend - Postman Usage Guide
 
-### File structure
-- `TEFA-Backend.postman_collection.json` - Koleksi utama yang mencakup seluruh CRUD API per sumber daya.
+File ini berisi panduan untuk melakukan *testing* semua endpoint API ke Backend TEFA menggunakan Postman.
 
-### What is inside the collection
-1. **AUTH** - Menghasilkan token JWT (`authToken`) melalui autentikasi kredensial (Login).
-2. **USERS** - Create, Read, Update, Delete data user dan admin.
-3. **CATEGORIES** - Kategori untuk projek (Create, Read, Update, Delete).
-4. **PROJECTS** - Menggantikan fitur entitas Product lama. Punya sistem **Upload Thumbnail ke Cloudinary**.
-5. **CARTS** - Fitur keranjang belanja (menggantikan entitas Wishlists).
-6. **ORDERS** - Fitur pesanan checkout dan snapshot pelanggan (menggantikan entitas Inquiries).
-7. **RATINGS** - Fitur otomatis untuk menambahkan ulasan dan rata-rata bintang ke sebuah projek.
+## 📂 File Structure
+- `TEFA-Backend.postman_collection.json` - File koleksi utama yang mencakup seluruh endpoint, digabungkan per modul / resource.
 
-### How to import
-1. Buka aplikasi Postman.
-2. Klik menu `File` > `Import`.
-3. Pilih & telusuri file `postman/TEFA-Backend.postman_collection.json`.
-4. Folder akan muncul di bilah kiri sidebar secara otomatis.
+## ⚙️ Setup Awal & Authentication
+1. **Import File**: Buka aplikasi Postman > klik `File` -> `Import` > pilih `TEFA-Backend.postman_collection.json`.
+2. **Set Environment Variables**:
+   - Buat Environment baru di Postman.
+   - Tambahkan variabel `baseUrl` (Contoh value: `http://localhost:3000`).
+   - Tambahkan variabel `authToken` (Kosongkan nilainya terlebih dahulu).
+3. **Mendapatkan Token (Login)**:
+   - Buka folder **AUTH** > jalankan **LOGIN**.
+   - Salin/copy token dari respons server dan masukkan / tempelkan token tersebut pada tab Environment Variable `authToken`.
 
-### How to set up variables
-1. Buat _Environment_ di Postman (contoh: `Local TEFA`).
-2. Buat _Variable_ `baseUrl` dengan nilai (value): `http://localhost:3000`.
-3. Buat _Variable_ `authToken` dan kosongkan nilainya terlebih dulu.
-4. Pilih environment tersebut dari drowdown di pojok kanan atas sebelum mengetes APIs.
+> **⚠️ PERHATIAN PENTING TENTANG ROLE:**
+> Sistem sekarang sangat bergantung kepada peran (ROLE) dari token yang dipakai! Jangan gunakan token Admin untuk membuat pesanan, dan jangan gunakan token Customer/User untuk memverifikasi pesanan.
 
-### Endpoint Rules & Notes
-- Gunakan endpoint berjenis **GET** untuk melist data (tidak butuh tipe upload).
-- Anda harus menaruh **Bearer Token** ke header (dengan cara mengisinya di _collection variable_ jika itu adalah _Protected Routes_).
-- Fitur **PROJECTS** kini menggunakan mode **form-data** untuk `POST (Create)` & `PATCH (Update)` guna menangani berkas/file gambar agar lolos menuju _Cloudinary_. Jangan pakai tipe format "raw JSON" di bagian ini!
-- Ganti String Placeholder yang ada seperti `<UUID-KATEGORI>`, `<UUID-PROJECT>`, dll dengan UUID sungguhan dari database yang baru Anda Create/Insert.
+---
 
-### How to get a token
-1. Buka folder `AUTH`.
-2. Kirim permintaan (Send Request) `LOGIN`.
-3. Salin/Copy output token yang dihasilkan, dan masukkan ke _value_ variable bernama `authToken` Anda di environment.
-TEFA Backend - Postman Usage Guide
+## 🛒 Flow E-Commerce Lanjutan (User & Admin POV)
 
-File structure
-- `TEFA-Backend.postman_collection.json` - main collection with CRUD folders per resource
+Karena kita sudah mengimplementasikan otomatisasi Cart dan validasi sistem Payment Proof. Gunakan urutan berikut untuk mencoba alur transaksi (checkout) dari perspektif masing-masing peran:
 
-What is inside the collection
-- `AUTH` - login request to get `authToken`
-- `USERS` - create, list, detail, update, delete user
-- `CATEGORIES` - create, list, detail, update, delete category
-- `PRODUCTS` - create, list, detail, update, delete product
-- `WISHLISTS` - create, list, detail, update, delete wishlist item
-- `INQUIRIES` - create, list, detail, update, delete inquiry
+### 🧑‍💻 POV 1: Customer (User System)
+*Pastikan kamu menggunakan token milik akun dengan role `USER`.*
 
-How to import
-1. Open Postman.
-2. Click `File` > `Import`.
-3. Select `postman/TEFA-Backend.postman_collection.json`.
-4. After import, the folders should appear in the left sidebar.
+1. **Memasukkan Produk ke Keranjang**: 
+   - Buka folder **CARTS** > **ADD ITEM TO CART**.
+   - Input id project dan quantity di body (JSON). Keranjang akan otomatis dibuat untuk User ini jika sebelumnya belum punya.
+2. **Lihat Isi Keranjang (Opsional)**:
+   - Buka **SHOW MY CART** untuk mengecek total barang sebelum checkout.
+3. **Checkout Pesanan**:
+   - Buka folder **ORDERS** > **CHECKOUT (FROM CART)**.
+   - Pada JSON Body, cukup isi `customerName`, `customerEmail`, dan `customerPhone`.
+   - **(Otomatis)** Sistem akan mengkalkulasi harga dari keranjangmu, membuat ID Order, dan langsung menghapus/mengosongkan isi cart User kamu!
+4. **Membayar & Tagihan**:
+   - Simpan ID Order dari hasil respons Checkout. 
+   - Buka folder **PAYMENTS** > **GET BILL**. Masukkan tipe metode dan detail rek tujuan (*hanya untuk info tagihan tambahan sebelum membayar*).
+5. **Upload Bukti Bayar**:
+   - Buka folder **PAYMENTS** > **UPLOAD PROOF**.
+   - Masukkan ID Order pada baris URL. 
+   - Ini bertipe **form/data**. Masukkan file foto resep/struk tf anda di key `file`. Status Order Anda akan diubah otomatis ke `WAITING_VERIFICATION`.
 
-How to set up variables
-1. Create a Postman environment, for example `Local TEFA`.
-2. Add `baseUrl` with value like `http://localhost:3000`.
-3. Add `authToken` and leave it empty at first.
-4. Select that environment from the top-right dropdown before sending requests.
+### 👨‍💼 POV 2: Administrator (Admin System)
+*Ganti tipe `authToken` saat ini dengan token login milik akun ber-role `ADMIN`.*
 
-How to use the CRUD folders correctly
-- Use `CREATE` for `POST` requests.
-- Use `SHOW ALL` for `GET` list endpoints.
-- Use `SHOW BY ID` for single-resource `GET` endpoints and replace `:id` with the actual UUID.
-- Use `UPDATE` for `PATCH` requests.
-- Use `DELETE` for removing data.
-- For protected routes, put `Bearer {{authToken}}` in the `Authorization` header.
+1. **Mengecek Pesanan yang Masuk**:
+   - Buka folder **ORDERS** > **SHOW ALL** atau **SHOW BY ID**.
+   - Admin dapat melihat orderan dengan status `WAITING_VERIFICATION`.
+2. **Lihat Bukti Transfer User**:
+   - Buka folder **PAYMENTS** > **GET PROOF BY ORDER**.
+   - Admin akan menerima url *Cloudinary Image* dari resi yang User unggah sebelumnya.
+3. **Verifikasi Pembayaran & Rilis**:
+   - Buka folder **PAYMENTS** > **VERIFY PAYMENT (ADMIN)**.
+   - Modifikasi JSON Body untuk mengirimkan status `APPROVED` atau `REJECTED` beserta nota dari Admin.
+   - Status Order secara otomatis bergeser menjadi `PAID` apabila Approved! Selesai.
 
-How to get a token
-1. Open the `AUTH` folder.
-2. Send the `LOGIN` request.
-3. Copy the returned token into `authToken` in your environment.
+---
 
-Local testing flow
-1. Start the backend locally.
-2. Import the collection.
-3. Set the environment variables.
-4. Send `AUTH > LOGIN` first.
-5. Use the token for protected requests.
-6. Run the `CREATE` request for a category first, then use its UUID in `PRODUCTS > CREATE`.
-
-Notes
-- The collection is a template, so replace placeholder values like `<uuid>` with real IDs from your database.
-- The structure is meant to be similar to your example: grouped folders and CRUD verbs.
-- If you want, I can also add a ready-to-import Postman environment file next.
+## 📌 Endpoint Rules & General Notes
+- **PROJECTS**: Endpoint berjenis form-data untuk mendukung *Cloudinary Image Upload* (`thumbnail`).
+  - Menambahkan spesifik array of objects di FormData cukup berikan Value JSON Stringified langsung pada key tersebut, contoh: key = `students` | value = `[{"id": 1, "role": "Ketua Kelompok"}]`.
+- **Placeholder**: Ubah variabel string seperti `<UUID-KATEGORI>`, atau angka seperti `:id` menggunakan parameter asli dari database yang sinkron di PC kamu.
+- Selalu re-login jika ingin beralih mencoba API dari POV Admin atau User agar meminimalisir error Role atau Ownership di token.
