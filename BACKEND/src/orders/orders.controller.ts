@@ -10,6 +10,11 @@ import { Role as RoleEnum } from '@prisma/client';
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) { }
 
+  @Post()
+  async createOrder(@Request() req, @Body() data: any) {
+    return this.checkout(req, data);
+  }
+
   @Post('checkout')
   async checkout(@Request() req, @Body() data: any) {
     try {

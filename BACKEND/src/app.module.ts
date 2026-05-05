@@ -14,6 +14,7 @@ import { MajorsModule } from './app/majors/majors.module';
 import { BatchesModule } from './app/batches/batches.module';
 import { StudentsModule } from './app/students/students.module';
 import { PaymentModule } from './payment/payment.module';
+import { ContactsModule } from './contacts/contacts.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { PaymentModule } from './payment/payment.module';
     BatchesModule,
     StudentsModule,
     PaymentModule,
+    ContactsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

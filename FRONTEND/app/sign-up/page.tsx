@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { signIn } from "next-auth/react";
+// TODO: import { signIn } from "next-auth/react"; — aktifkan saat backend sudah terhubung
 import { Mail, Lock, EyeOff, ArrowRight, ArrowLeft, Store } from "lucide-react";
 
 export default function SignInPage() {
@@ -11,7 +11,8 @@ export default function SignInPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Logging in with:", { email, password });
+    // TODO: kirim POST ke /api/auth/register saat backend sudah terhubung
+    alert("[DEV MODE] Register belum terhubung ke backend.");
   };
 
   return (
