@@ -9,25 +9,25 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-enum Role {
-  USER
-  ADMIN
-}
+  enum Role {
+    USER
+    ADMIN
+  }
 
-enum ProjectStatus {
-  DRAFT
-  PUBLISHED
-  ARCHIVED
-}
+  enum ProjectStatus {
+    DRAFT
+    PUBLISHED
+    ARCHIVED
+  }
 
-enum OrderStatus {
-  PENDING
-  PENDING_PAYMENT
-  WAITING_VERIFICATION
-  PAID
-  REJECTED
-  CANCELLED
-}
+  enum OrderStatus {
+    PENDING
+    PENDING_PAYMENT
+    WAITING_VERIFICATION
+    PAID
+    REJECTED
+    CANCELLED
+  }
 
 enum PaymentProofStatus {
   PENDING
@@ -52,177 +52,167 @@ model Contact {
   updatedAt DateTime      @updatedAt
 }
 
-model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String
-  name      String
-  phone     String?
-  avatarUrl String?
-  role      Role     @default(USER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  model User {
+    id        Int      @id @default(autoincrement())
+    email     String   @unique
+    password  String
+    name      String
+    phone     String?
+    avatarUrl String?
+    role      Role     @default(USER)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-  cart    Cart?
-  orders  Order[]
-  ratings Rating[]
-}
+    cart    Cart?
+    orders  Order[]
+    ratings Rating[]
+  }
 
-model Category {
-  id       Int       @id @default(autoincrement())
-  name     String    @unique
-  slug     String    @unique
-  projects Project[]
-}
+  model Category {
+    id       Int       @id @default(autoincrement())
+    name     String    @unique
+    slug     String    @unique
+    projects Project[]
+  }
 
-model Major {
-  id       Int       @id @default(autoincrement())
-  name     String    @unique
-  students Student[]
-}
+  model Major {
+    id       Int       @id @default(autoincrement())
+    name     String    @unique
+    students Student[]
+  }
 
-model Batch {
-  id       Int       @id @default(autoincrement())
-  year     String    @unique
-  students Student[]
-}
+  model Batch {
+    id       Int       @id @default(autoincrement())
+    year     String    @unique
+    students Student[]
+  }
 
-model Student {
-  id       Int              @id @default(autoincrement())
-  nis      String           @unique
-  name     String
-  majorId  Int
-  batchId  Int
-  major    Major            @relation(fields: [majorId], references: [id])
-  batch    Batch            @relation(fields: [batchId], references: [id])
-  projects ProjectStudent[]
-}
+  model Student {
+    id       Int       @id @default(autoincrement())
+    nis      String    @unique
+    name     String
+    majorId  Int
+    batchId  Int
+    major    Major     @relation(fields: [majorId], references: [id])
+    batch    Batch     @relation(fields: [batchId], references: [id])
+    projects Project[]
+  }
 
-model Project {
-  id            Int           @id @default(autoincrement())
-  title         String
-  slug          String        @unique
-  description   String        @db.Text
-  price         Decimal       @default(0.00) @db.Decimal(10, 2)
-  thumbnail     String?
-  mediaUrls     Json
-  status        ProjectStatus @default(DRAFT)
-  averageRating Decimal       @default(0.00) @db.Decimal(3, 2)
-  totalReviews  Int           @default(0)
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  model Project {
+    id            Int           @id @default(autoincrement())
+    title         String
+    slug          String        @unique
+    description   String        @db.Text
+    price         Decimal       @default(0.00) @db.Decimal(10, 2)
+    thumbnail     String?
+    mediaUrls     Json
+    status        ProjectStatus @default(DRAFT)
+    averageRating Decimal       @default(0.00) @db.Decimal(3, 2)
+    totalReviews  Int           @default(0)
+    createdAt     DateTime      @default(now())
+    updatedAt     DateTime      @updatedAt
 
-  categoryId Int
-  category   Category @relation(fields: [categoryId], references: [id])
+    categoryId Int
+    category   Category     @relation(fields: [categoryId], references: [id])
+    
+    studentId  Int?
+    student    Student?     @relation(fields: [studentId], references: [id])
+    
+    tags       ProjectTag[]
+    cartItems  CartItem[]
+    ratings    Rating[]
+  }
 
-  students ProjectStudent[]
+  model Tag {
+    id       Int          @id @default(autoincrement())
+    name     String       @unique
+    projects ProjectTag[]
+  }
 
-  tags      ProjectTag[]
-  cartItems CartItem[]
-  ratings   Rating[]
-}
+  model ProjectTag {
+    projectId Int
+    tagId     Int
+    project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
-model ProjectStudent {
-  projectId Int
-  studentId Int
-  role      String? // Contoh tambahan field untuk menyimpan peran (Ketua/Anggota, dll)
+    @@id([projectId, tagId])
+  }
 
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  model Cart {
+    id        Int      @id @default(autoincrement())
+    userId    Int      @unique
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-  @@id([projectId, studentId])
-}
+    user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+    items CartItem[]
+  }
 
-model Tag {
-  id       Int          @id @default(autoincrement())
-  name     String       @unique
-  projects ProjectTag[]
-}
+  model CartItem {
+    id        Int     @id @default(autoincrement())
+    cartId    Int
+    projectId Int
+    quantity  Int     @default(1)
 
-model ProjectTag {
-  projectId Int
-  tagId     Int
-  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+    cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+    project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
-  @@id([projectId, tagId])
-}
+    @@unique([cartId, projectId])
+  }
 
-model Cart {
-  id        Int      @id @default(autoincrement())
-  userId    Int      @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  model Order {
+    id            Int         @id @default(autoincrement())
+    orderCode     String      @unique
+    userId        Int
+    totalPrice    Decimal     @db.Decimal(10, 2)
+    status        OrderStatus @default(PENDING)
+    
+    customerName  String
+    customerEmail String
+    customerPhone String?
 
-  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items CartItem[]
-}
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-model CartItem {
-  id        Int @id @default(autoincrement())
-  cartId    Int
-  projectId Int
-  quantity  Int @default(1)
+    user          User           @relation(fields: [userId], references: [id])
+    items         OrderItem[]
+    paymentProofs PaymentProof[]
+  }
 
-  cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  model OrderItem {
+    id          Int     @id @default(autoincrement())
+    orderId     Int
+    projectId   Int?    
+    
+    projectName String
+    price       Decimal @db.Decimal(10, 2)
+    thumbnail   String?
+    quantity    Int
 
-  @@unique([cartId, projectId])
-}
+    order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  }
 
-model Order {
-  id         Int         @id @default(autoincrement())
-  orderCode  String      @unique
-  userId     Int
-  totalPrice Decimal     @db.Decimal(10, 2)
-  status     OrderStatus @default(PENDING)
+  model PaymentProof {
+    id        Int                @id @default(autoincrement())
+    orderId   Int
+    fileUrl   String
+    status    PaymentProofStatus @default(PENDING)
+    adminNote String?            @db.Text
+    createdAt DateTime           @default(now())
 
-  customerName  String
-  customerEmail String
-  customerPhone String?
+    order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  }
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  model Rating {
+    id        Int      @id @default(autoincrement())
+    userId    Int
+    projectId Int
+    score     Int      
+    comment   String?  @db.Text
+    createdAt DateTime @default(now())
 
-  user          User           @relation(fields: [userId], references: [id])
-  items         OrderItem[]
-  paymentProofs PaymentProof[]
-}
+    user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
-model OrderItem {
-  id        Int  @id @default(autoincrement())
-  orderId   Int
-  projectId Int?
-
-  projectName String
-  price       Decimal @db.Decimal(10, 2)
-  thumbnail   String?
-  quantity    Int
-
-  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
-}
-
-model PaymentProof {
-  id        Int                @id @default(autoincrement())
-  orderId   Int
-  fileUrl   String
-  status    PaymentProofStatus @default(PENDING)
-  adminNote String?            @db.Text
-  createdAt DateTime           @default(now())
-
-  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
-}
-
-model Rating {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  projectId Int
-  score     Int
-  comment   String?  @db.Text
-  createdAt DateTime @default(now())
-
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, projectId])
-}
+    @@unique([userId, projectId])
+  }

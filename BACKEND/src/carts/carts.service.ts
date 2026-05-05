@@ -28,6 +28,19 @@ export class CartsService {
     return cart;
   }
 
+  async findAll() {
+    return await this.prisma.cart.findMany({ include: { items: true } });
+  }
+
+  async findOne(id: number) {
+    const cart = await this.prisma.cart.findUnique({
+      where: { id: Number(id) },
+      include: { items: true },
+    });
+    if (!cart) throw new NotFoundException(`Cart with id ${id} not found`);
+    return cart;
+  }
+
   // Tambahkan item ke cart
   async addItem(userId: number, projectId: number, quantity: number = 1) {
     const project = await this.prisma.project.findUnique({ where: { id: projectId } });
@@ -81,5 +94,18 @@ export class CartsService {
     return await this.prisma.cartItem.deleteMany({
       where: { cartId: cart.id }
     });
+  }
+
+  async remove(id: number) {
+    const cart = await this.prisma.cart.findUnique({
+      where: { id: Number(id) },
+      include: { items: true },
+    });
+    if (!cart) throw new NotFoundException(`Cart with id ${id} not found`);
+    if (cart.items.length > 0) {
+      throw new BadRequestException(`Cannot delete cart with id ${id} because it still has ${cart.items.length} item(s) inside`);
+    }
+
+    return await this.prisma.cart.delete({ where: { id: Number(id) } });
   }
 }
