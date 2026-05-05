@@ -7,6 +7,23 @@ import { AuthGuard } from '../auth/auth.guard';
 export class CartsController {
   constructor(private readonly cartsService: CartsService) { }
 
+  @Post()
+  async createCart(@Request() req) {
+    try {
+      const data = await this.cartsService.getCart(req.user.sub);
+      return {
+        success: true,
+        message: 'Cart created successfully',
+        data,
+      };
+    } catch (error: any) {
+      throw new HttpException({
+        success: false,
+        message: error.message || 'Internal server error',
+      }, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   @Get()
   async getMyCart(@Request() req) {
     try {

@@ -3,12 +3,17 @@ import { OrdersService } from './orders.service';
 import { AuthGuard } from '../auth/auth.guard';
 import { RolesGuard } from '../helper/roles-guard';
 import { Roles } from '../helper/roles.decorator';
-import { Role as RoleEnum } from '@prisma/client';
+import { Role as RoleEnum } from '../../generated/prisma';
 
 @Controller('orders')
 @UseGuards(AuthGuard)
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) { }
+
+  @Post()
+  async createOrder(@Request() req, @Body() data: any) {
+    return this.checkout(req, data);
+  }
 
   @Post('checkout')
   async checkout(@Request() req, @Body() data: any) {
