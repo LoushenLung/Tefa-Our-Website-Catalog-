@@ -16,7 +16,7 @@ import { PaymentService } from './payment.service';
 import { UploadPaymentProofDto } from './dto/upload-payment-proof.dto';
 import { AuthGuard } from '../auth/auth.guard';
 import { RolesGuard } from '../helper/roles-guard';
-import { Role as RoleEnum } from '@prisma/client';
+import { Role as RoleEnum } from '../../generated/prisma';
 import { Roles } from '../helper/roles.decorator';
 import { VerifyPaymentDto } from './dto/verify-payment.dto';
 

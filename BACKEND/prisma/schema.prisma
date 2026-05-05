@@ -4,8 +4,9 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 enum Role {
@@ -32,6 +33,23 @@ enum PaymentProofStatus {
   PENDING
   APPROVED
   REJECTED
+}
+
+enum ContactStatus {
+  UNREAD
+  READ
+  REPLIED
+}
+
+model Contact {
+  id        Int           @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String?
+  message   String        @db.Text
+  status    ContactStatus @default(UNREAD)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 }
 
 model User {

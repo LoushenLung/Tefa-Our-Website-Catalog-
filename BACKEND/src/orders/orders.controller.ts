@@ -3,7 +3,7 @@ import { OrdersService } from './orders.service';
 import { AuthGuard } from '../auth/auth.guard';
 import { RolesGuard } from '../helper/roles-guard';
 import { Roles } from '../helper/roles.decorator';
-import { Role as RoleEnum } from '@prisma/client';
+import { Role as RoleEnum } from '../../generated/prisma';
 
 @Controller('orders')
 @UseGuards(AuthGuard)
