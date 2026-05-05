@@ -5,7 +5,7 @@ import { UpdateContactDto } from './dto/update-contact.dto';
 import FormatValidation from '../helper/validation-formats';
 import { AuthGuard } from '../auth/auth.guard';
 import { RolesGuard, Role } from '../helper/roles-guard';
-import { Role as RoleEnum } from '../../generated/prisma';
+import { Role as RoleEnum } from '@prisma/client';
 
 @Controller('contacts')
 export class ContactsController {

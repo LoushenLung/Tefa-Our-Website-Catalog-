@@ -7,19 +7,15 @@ export class ProjectsService {
 
   private normalizeProjectData(data: any) {
     const normalized: any = { ...data };
-    
-    if (data.studentId !== undefined) {
-      normalized.studentId = Number(data.studentId);
-    }
-    
+
+
     if (data.categoryId !== undefined) {
       normalized.categoryId = Number(data.categoryId);
     }
-    
-    // Pisahkan 'students' jika masih dikirim dari client lama
-    if (normalized.students) {
-      delete normalized.students;
-    }
+
+    delete normalized.students;
+    delete normalized.studentId;
+
 
     return normalized;
   }
@@ -36,7 +32,7 @@ export class ProjectsService {
     return await this.prisma.project.findMany({
       include: {
         category: true,
-        student: { include: { major: true, batch: true } },
+
       },
     });
   }
@@ -46,7 +42,7 @@ export class ProjectsService {
       where: { id: Number(id) },
       include: {
         category: true,
-        student: { include: { major: true, batch: true } },
+
       },
     });
   }
