@@ -33,6 +33,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
                 default:
                     status = HttpStatus.BAD_REQUEST;
                     message = 'Terjadi kesalahan pada database.';
+                    console.error('[Prisma Error]:', exception);
                     break;
             }
         }
