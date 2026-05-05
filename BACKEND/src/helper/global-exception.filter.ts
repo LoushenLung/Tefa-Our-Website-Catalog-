@@ -42,10 +42,12 @@ export class GlobalExceptionFilter implements ExceptionFilter {
             console.error('[Unhandled Exception]:', exception); // Log di terminal server backend
         }
 
-        // Kembalikan JSON yang sudah terstandardisasi
+        // Kembalikan JSON yang sudah terstandardisasi sesuai permintaan
         response.status(status).json({
-            success: false,
-            message: message,
+            code: status,
+            status: 'error',
+            message: Array.isArray(message) ? message[0] : message,
+            data: null
         });
     }
 }
