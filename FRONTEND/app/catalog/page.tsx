@@ -47,7 +47,11 @@ const PRODUCTS: Product[] = [
     currency: "IDR",
     stock: 5,
     status: "PUBLISHED",
+
+    // specs: { MCU: "ESP32", Koneksi: "WiFi + MQTT", CatuDaya: "5V USB-C" },
+
     specs: { MCU: "ESP32", Koneksi: "WiFi + MQTT", "Catu Daya": "5V USB-C" },
+
     category: { name: "IoT & Jaringan", slug: "iot-jaringan" },
     image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80",
     badge: "Baru",
@@ -379,11 +383,10 @@ export default function CatalogPage() {
                 key={cat.slug}
                 id={`cat-${cat.slug}`}
                 onClick={() => setActiveCategory(cat.slug)}
-                className={`px-4 py-1.5 rounded-full text-sm font-semibold border transition-all ${
-                  activeCategory === cat.slug
+                className={`px-4 py-1.5 rounded-full text-sm font-semibold border transition-all ${activeCategory === cat.slug
                     ? "bg-red-600 border-red-600 text-white shadow-[0_0_12px_rgba(220,38,38,0.35)]"
                     : "bg-white/5 border-white/10 text-zinc-400 hover:border-white/30 hover:text-white"
-                }`}
+                  }`}
               >
                 {cat.label}
               </button>

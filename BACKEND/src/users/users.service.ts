@@ -120,4 +120,20 @@ export class UsersService {
 
     return await this.prisma.user.delete({ where: { id: Number(id) } });
   }
+
+  async toggleTwoFactor(id: number, enable: boolean) {
+    const user = await this.prisma.user.findUnique({ where: { id: Number(id) } });
+    if (!user) throw new NotFoundException(`User with id ${id} not found`);
+
+    return await this.prisma.user.update({
+      where: { id: Number(id) },
+      data: { isTwoFactorEnabled: enable },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        isTwoFactorEnabled: true,
+      },
+    });
+  }
 }

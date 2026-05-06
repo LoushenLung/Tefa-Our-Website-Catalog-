@@ -15,6 +15,7 @@ import { BatchesModule } from './app/batches/batches.module';
 import { StudentsModule } from './app/students/students.module';
 import { PaymentModule } from './payment/payment.module';
 import { ContactsModule } from './contacts/contacts.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { ContactsModule } from './contacts/contacts.module';
     StudentsModule,
     PaymentModule,
     ContactsModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

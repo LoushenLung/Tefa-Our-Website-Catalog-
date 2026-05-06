@@ -58,13 +58,26 @@ model Contact {
     name      String
     phone     String?
     avatarUrl String?
-    role      Role     @default(USER)
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    role               Role     @default(USER)
+    isTwoFactorEnabled Boolean  @default(false)
+    createdAt          DateTime @default(now())
+    updatedAt          DateTime @updatedAt
 
     cart    Cart?
     orders  Order[]
     ratings Rating[]
+  }
+
+  model OtpCode {
+    id        Int      @id @default(autoincrement())
+    email     String
+    code      String
+    expiresAt DateTime
+    used      Boolean  @default(false)
+    attempts  Int      @default(0)
+    createdAt DateTime @default(now())
+
+    @@index([email])
   }
 
   model Category {
