@@ -1,18 +1,26 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 // TODO: import { signIn } from "next-auth/react"; — aktifkan saat backend sudah terhubung
 import { Mail, Lock, EyeOff, ArrowRight, ArrowLeft, Store } from "lucide-react";
 
 export default function SignInPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // TODO: kirim POST ke /api/auth/login saat backend sudah terhubung
-    alert("[DEV MODE] Login belum terhubung ke backend.");
+    
+    // [DEV MODE] Simulasi role-based login
+    if (email.toLowerCase().includes("admin")) {
+      router.push("/admin");
+    } else {
+      router.push("/user");
+    }
   };
 
   // TODO: aktifkan handleGoogleSignIn saat backend & NextAuth sudah dikonfigurasi

@@ -42,12 +42,12 @@ export default function Navbar() {
             >
               Majors
             </Link>
-            <Link 
+            {/* <Link 
               href="#products" 
               className="text-sm font-bold text-slate-500 transition-colors hover:text-red-600"
             >
               Products
-            </Link>
+            </Link> */}
             <Link 
               href="/catalog" 
               className="text-sm font-bold text-slate-500 transition-colors hover:text-red-600"
