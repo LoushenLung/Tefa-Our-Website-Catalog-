@@ -6,7 +6,15 @@ import { ResponseInterceptor } from './helper/response.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  
+
+  // Aktifkan CORS agar frontend bisa akses dari URL manapun
+  app.enableCors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: false,
+  });
+
   // Daftarkan Global Filter untuk standardisasi Error
   app.useGlobalFilters(new GlobalExceptionFilter());
 
