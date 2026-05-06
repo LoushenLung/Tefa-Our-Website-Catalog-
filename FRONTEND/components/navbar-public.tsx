@@ -1,9 +1,29 @@
 "use client";
 
 import Link from "next/link";
-import { Search, LogIn, UserPlus } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, LogIn, UserPlus, LogOut, LayoutDashboard } from "lucide-react";
 
 export default function Navbar() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState("");
+
+  useEffect(() => {
+    // Cek session di localStorage saat komponen mount
+    const session = localStorage.getItem("user_session");
+    if (session) {
+      const userData = JSON.parse(session);
+      setIsLoggedIn(true);
+      setUserRole(userData.role);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("user_session");
+    setIsLoggedIn(false);
+    window.location.href = "/";
+  };
+
   return (
     // Mengubah text-white menjadi text-slate-900 dan bg-white/70 untuk efek glassmorphism cerah
     <nav className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/70 backdrop-blur-md text-slate-900">
@@ -42,12 +62,6 @@ export default function Navbar() {
             >
               Majors
             </Link>
-            {/* <Link 
-              href="#products" 
-              className="text-sm font-bold text-slate-500 transition-colors hover:text-red-600"
-            >
-              Products
-            </Link> */}
             <Link 
               href="/catalog" 
               className="text-sm font-bold text-slate-500 transition-colors hover:text-red-600"
@@ -72,21 +86,43 @@ export default function Navbar() {
           </div>
 
           <div className="flex items-center gap-2">
-            <Link
-              href="/sign-in"
-              className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-slate-700 transition-colors hover:text-red-600"
-            >
-              <LogIn size={18} />
-              <span className="hidden sm:inline">Login</span>
-            </Link>
-            
-            <Link
-              href="/sign-up"
-              className="flex items-center gap-2 rounded-full bg-red-600 px-6 py-2 text-sm font-bold text-white shadow-lg shadow-red-200 transition-all hover:bg-red-700 active:scale-95"
-            >
-              <UserPlus size={18} />
-              <span>Sign Up</span>
-            </Link>
+            {!isLoggedIn ? (
+              <>
+                <Link
+                  href="/sign-in"
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-slate-700 transition-colors hover:text-red-600"
+                >
+                  <LogIn size={18} />
+                  <span className="hidden sm:inline">Login</span>
+                </Link>
+                
+                <Link
+                  href="/sign-up"
+                  className="flex items-center gap-2 rounded-full bg-red-600 px-6 py-2 text-sm font-bold text-white shadow-lg shadow-red-200 transition-all hover:bg-red-700 active:scale-95"
+                >
+                  <UserPlus size={18} />
+                  <span>Sign Up</span>
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  href={userRole === "admin" ? "/admin" : "/user"}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-slate-700 transition-colors hover:text-red-600"
+                >
+                  <LayoutDashboard size={18} />
+                  <span className="hidden sm:inline">Dashboard</span>
+                </Link>
+                
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 rounded-full bg-slate-100 px-6 py-2 text-sm font-bold text-slate-700 transition-all hover:bg-red-50 hover:text-red-600 active:scale-95 border border-slate-200"
+                >
+                  <LogOut size={18} />
+                  <span>Logout</span>
+                </button>
+              </>
+            )}
           </div>
         </div>
 

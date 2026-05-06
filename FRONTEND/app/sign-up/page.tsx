@@ -1,18 +1,38 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
-// TODO: import { signIn } from "next-auth/react"; — aktifkan saat backend sudah terhubung
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Mail, Lock, EyeOff, ArrowRight, ArrowLeft, Store } from "lucide-react";
 
-export default function SignInPage() {
+export default function SignUpPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // TODO: kirim POST ke /api/auth/register saat backend sudah terhubung
-    alert("[DEV MODE] Register belum terhubung ke backend.");
+    
+    // [DEV MODE] Simulasi registration
+    const role = email.toLowerCase().includes("admin") ? "admin" : "user";
+    const userSession = {
+      email: email,
+      role: role,
+      isLoggedIn: true,
+      name: email.split("@")[0]
+    };
+    
+    // Simpan ke localStorage
+    localStorage.setItem("user_session", JSON.stringify(userSession));
+    
+    alert("Registration successful! (Demo Mode)");
+    
+    if (role === "admin") {
+      router.push("/admin");
+    } else {
+      router.push("/user");
+    }
   };
 
   return (
@@ -40,9 +60,9 @@ export default function SignInPage() {
 
           {/* Header */}
           <div className="mb-8 text-center">
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Welcome Back</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Join Us</h1>
             <p className="mt-2 text-sm leading-relaxed text-slate-500">
-              Sign in to access the SMK Telkom <br /> Malang Student Project Marketplace.
+              Create an account to explore the SMK Telkom <br /> Malang Student Project Marketplace.
             </p>
           </div>
 
@@ -102,7 +122,7 @@ export default function SignInPage() {
               type="submit"
               className="flex w-full items-center justify-center gap-2 rounded-md bg-red-600 py-3 text-sm font-semibold text-white shadow-lg shadow-red-200 transition-all hover:bg-red-700 active:scale-[0.98]"
             >
-              Login to Account
+              Create Account
               <ArrowRight size={16} />
             </button>
           </form>
@@ -119,9 +139,9 @@ export default function SignInPage() {
 
           {/* Footer Text */}
           <p className="text-center text-sm text-slate-500">
-            New to the marketplace?{" "}
-            <Link href="/sign-up" className="font-bold text-red-600 hover:underline">
-              Create a new account
+            Already have an account?{" "}
+            <Link href="/sign-in" className="font-bold text-red-600 hover:underline">
+              Login here
             </Link>
           </p>
         </div>

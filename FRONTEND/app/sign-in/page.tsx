@@ -16,7 +16,18 @@ export default function SignInPage() {
     // TODO: kirim POST ke /api/auth/login saat backend sudah terhubung
     
     // [DEV MODE] Simulasi role-based login
-    if (email.toLowerCase().includes("admin")) {
+    const role = email.toLowerCase().includes("admin") ? "admin" : "user";
+    const userSession = {
+      email: email,
+      role: role,
+      isLoggedIn: true,
+      name: email.split("@")[0]
+    };
+    
+    // Simpan ke localStorage untuk persistensi sementara
+    localStorage.setItem("user_session", JSON.stringify(userSession));
+    
+    if (role === "admin") {
       router.push("/admin");
     } else {
       router.push("/user");
