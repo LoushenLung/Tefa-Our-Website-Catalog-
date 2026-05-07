@@ -69,10 +69,10 @@ export default function SignInPage() {
         if (payload.role === "ADMIN") {
           router.push("/admin");
         } else {
-          router.push("/landing");
+          router.push("/customer");
         }
       } catch {
-        router.push("/landing");
+        router.push("/customer");
       }
       
     } catch (err) {

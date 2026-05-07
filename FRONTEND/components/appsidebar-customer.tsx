@@ -34,12 +34,12 @@ export default function CustomerHeader() {
                 console.error("Session error");
             }
         }
-    }, []);
+    }, [pathname]); // Re-check session when path changes
 
     const handleLogout = async () => {
         await deleteCookie("accessToken");
         localStorage.removeItem("user_session");
-        window.location.href = "/sign-in";
+        window.location.href = "/";
     };
 
     const menuItems = [

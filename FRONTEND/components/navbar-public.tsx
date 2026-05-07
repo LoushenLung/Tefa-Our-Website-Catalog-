@@ -5,9 +5,9 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Search, LogIn, UserPlus, LogOut, LayoutDashboard } from "lucide-react";
 
-export default function Navbar() {
+export default function Navbar({ serverIsLoggedIn }: { serverIsLoggedIn: boolean }) {
   const pathname = usePathname();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(serverIsLoggedIn);
   const [userRole, setUserRole] = useState("");
 
   useEffect(() => {
@@ -19,9 +19,12 @@ export default function Navbar() {
         setUserRole(userData.role);
       } catch (e) {
         console.error("Session parse error");
+        setIsLoggedIn(false);
       }
+    } else {
+      setIsLoggedIn(false);
     }
-  }, []);
+  }, [pathname]); // Re-check every time route changes
 
   const handleLogout = () => {
     localStorage.removeItem("user_session");
@@ -30,7 +33,8 @@ export default function Navbar() {
   };
 
   // Pengecekan ini HARUS di bawah useEffect agar tidak melanggar aturan Hook
-  if (pathname.startsWith("/customer") || pathname.startsWith("/admin") || pathname.startsWith("/user")) {
+  // Sembunyikan navbar publik jika sudah login (karena pakai header user) atau di route dashboard
+  if (isLoggedIn || pathname.startsWith("/customer") || pathname.startsWith("/admin") || pathname.startsWith("/user")) {
     return null;
   }
 

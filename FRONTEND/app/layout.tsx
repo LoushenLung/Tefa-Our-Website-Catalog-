@@ -3,7 +3,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Providers from "@/components/Providers";
-import Navbar from "@/components/navbar-public"; // Sesuaikan path foldernya
+import Navbar from "@/components/navbar-public"; 
+import { cookies } from "next/headers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,16 +21,19 @@ export const metadata: Metadata = {
   description: "Teaching Factory SMK Telkom Malang",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const isLoggedIn = cookieStore.has("accessToken");
+
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <Providers>
-          <Navbar /> {/* Navbar dipasang di sini */}
+          <Navbar serverIsLoggedIn={isLoggedIn} />
           <main>{children}</main>
         </Providers>
       </body>
