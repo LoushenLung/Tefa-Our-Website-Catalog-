@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ShoppingCart, Search, Star, ChevronDown } from "lucide-react";
@@ -306,23 +306,11 @@ function ProductCard({ product }: { product: Product }) {
 }
 
 export default function CatalogPage() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userRole, setUserRole] = useState("");
-  const [activeCategory, setActiveCategory] = useState("all");
   const [search, setSearch] = useState("");
+  const [activeCategory, setActiveCategory] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
 
-  useEffect(() => {
-    const session = localStorage.getItem("user_session");
-    if (session) {
-      const userData = JSON.parse(session);
-      setIsLoggedIn(true);
-      setUserRole(userData.role);
-    }
-  }, []);
-
   const filtered = useMemo(() => {
-    // ... existing filtered logic ...
     let result = PRODUCTS.filter((p) => p.status === "PUBLISHED");
 
     if (activeCategory !== "all") {
@@ -360,11 +348,34 @@ export default function CatalogPage() {
   }, [search, activeCategory, sortBy]);
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans selection:bg-red-500 selection:text-white">
-      {/* ── Hero / Header ──────────────────────────────────────────────────── */}
-      <section className="pt-32 pb-16 px-4 relative overflow-hidden">
-        {/* Background glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-red-600/10 rounded-full blur-[120px] pointer-events-none" />
+    <div className="min-h-screen bg-white text-slate-900 font-sans overflow-x-hidden selection:bg-red-500 selection:text-white">
+
+      {/* ── HEADER IDENTIK ──────────────────────────────────────────────────── */}
+      <nav className="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-slate-100 shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 lg:px-12 h-16 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center font-bold text-white text-xl">T</div>
+            <span className="font-black text-xl tracking-tighter text-slate-900">TEFA <span className="text-red-600">MOKLET</span></span>
+          </Link>
+
+          <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-500">
+            <Link href="/#about" className="hover:text-slate-900 transition-colors">About</Link>
+            <Link href="/#majors" className="hover:text-slate-900 transition-colors">Majors</Link>
+            <Link href="/catalog" className="text-red-600">Catalog</Link>
+          </div>
+
+          <Link
+            href="/sign-in"
+            className="px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-full text-sm font-bold transition-all active:scale-95 shadow-md shadow-red-100"
+          >
+            Sign In
+          </Link>
+        </div>
+      </nav>
+
+      {/* ── Hero / Header Catalog ──────────────────────────────────────────────────── */}
+      <section className="pt-32 pb-16 px-6 lg:px-12 bg-slate-50 relative overflow-hidden">
+        <div className="absolute -top-20 -right-20 w-96 h-96 bg-red-100 rounded-full blur-3xl opacity-50 pointer-events-none" />
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="flex items-center gap-2 mb-6 text-sm">
             <Link href="/" className="text-slate-400 hover:text-red-600 transition-colors">Home</Link>

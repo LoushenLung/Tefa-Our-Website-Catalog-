@@ -64,7 +64,11 @@ export default function SignUpPage() {
       const data = await res.json();
 
       if (!res.ok) {
+<<<<<<< HEAD
         // NestJS bisa return message sebagai string atau array
+=======
+        // NestJS biasanya mengembalikan message string atau array
+>>>>>>> 77201f9 (update catalog and landing page, fix sign-up backend)
         const message = Array.isArray(data?.message)
           ? data.message[0]
           : data?.message || "Registrasi gagal, coba lagi.";
@@ -72,10 +76,18 @@ export default function SignUpPage() {
         return;
       }
 
+<<<<<<< HEAD
       // Registrasi berhasil → redirect ke sign-in
       window.location.href = "/sign-in";
     } catch {
       setErrors({ api: "Tidak dapat terhubung ke server. Coba lagi nanti." });
+=======
+      // Registrasi berhasil -> redirect ke halaman sign-in menggunakan router
+      router.push("/sign-in");
+      
+    } catch (err) {
+      setErrors({ api: "Tidak dapat terhubung ke server. Periksa koneksi backend." });
+>>>>>>> 77201f9 (update catalog and landing page, fix sign-up backend)
     } finally {
       setLoading(false);
     }
