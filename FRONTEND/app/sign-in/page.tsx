@@ -3,61 +3,82 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+// Pastikan sudah instal: npm install lucide-react
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Store, ChevronLeft } from "lucide-react";
+// Sesuaikan path import dengan lokasi file cookie kamu
+import { storeCookie } from "@/lib/client-cookies";
 
 export default function SignInPage() {
   const router = useRouter();
-  const [showPassword, setShowPassword] = useState(false);
+  
+  // State Logika
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({ email: "", password: "" });
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
 
-  const validate = () => {
-    const newErrors: Record<string, string> = {};
-    if (!form.email.trim()) newErrors.email = "Email wajib diisi.";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
-      newErrors.email = "Format email tidak valid.";
-    if (!form.password) newErrors.password = "Password wajib diisi.";
-    return newErrors;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Handler Login
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    const validation = validate();
-    if (Object.keys(validation).length > 0) {
-      setErrors(validation);
-      return;
-    }
-    setErrors({});
+    setError("");
     setLoading(true);
+
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: form.email, password: form.password }),
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        setErrors({ api: data?.message || "Email atau password salah." });
-      } else {
-        const data = await res.json();
-        // TODO: simpan token ke cookie/localStorage sesuai auth strategy
-        if (data?.user?.role === "ADMIN") {
+      const requestBody = JSON.stringify({ email, password });
+      
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: requestBody,
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        setError(result?.message || "Email atau password salah.");
+        return;
+      }
+
+      const responseData = result.data;
+
+      // Jika backend meminta 2FA / OTP
+      if (responseData?.requires2FA) {
+        setError(responseData.message || "Kode OTP telah dikirim ke email Anda.");
+        return;
+      }
+
+      // Simpan token ke cookie
+      const token = responseData?.access_token;
+      if (!token) {
+        setError("Login gagal: token tidak ditemukan.");
+        return;
+      }
+
+      await storeCookie("accessToken", token);
+
+      // Decode role dari JWT payload untuk redirect
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        if (payload.role === "ADMIN") {
           router.push("/admin");
         } else {
-          router.push("/user");
+          router.push("/customer");
         }
+      } catch {
+        router.push("/customer");
       }
-    } catch {
-      setErrors({ api: "Tidak dapat terhubung ke server." });
+      
+    } catch (err) {
+      setError("Tidak dapat terhubung ke server. Periksa koneksi backend.");
     } finally {
       setLoading(false);
     }
-  };
-
-  // TODO: aktifkan saat NextAuth/OAuth sudah dikonfigurasi
-  const handleGoogleSignIn = () => {
-    alert("[DEV MODE] Google Sign-In belum terhubung ke backend.");
   };
 
   return (
@@ -74,7 +95,7 @@ export default function SignInPage() {
             Home
           </Link>
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center font-bold text-white text-xl">T</div>
+            <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center font-bold text-white text-xl shadow-md">T</div>
             <span className="font-black text-xl tracking-tighter text-slate-900">TEFA</span>
           </Link>
         </div>
@@ -94,17 +115,17 @@ export default function SignInPage() {
       <main className="flex-1 flex items-center justify-center pt-24 pb-12 px-4 relative z-10">
         <div className="w-full max-w-md">
 
-          {/* CARD */}
+          {/* CARD UTAMA */}
           <div className="bg-white rounded-[2rem] border border-slate-100 shadow-2xl shadow-slate-200/60 overflow-hidden">
-
-            {/* TOP ACCENT */}
+            
+            {/* GRADIENT ACCENT */}
             <div className="h-1.5 bg-gradient-to-r from-red-600 via-red-500 to-red-400" />
 
             <div className="p-8 space-y-6">
 
-              {/* HEADER */}
+              {/* HEADER SECTION */}
               <div className="text-center space-y-2">
-                <div className="mx-auto w-14 h-14 bg-red-600 rounded-2xl flex items-center justify-center shadow-lg shadow-red-200 mb-4">
+                <div className="mx-auto w-14 h-14 bg-red-600 rounded-2xl flex items-center justify-center shadow-lg shadow-red-200 mb-4 transition-transform hover:scale-110 duration-300">
                   <Store size={26} className="text-white" />
                 </div>
                 <h1 className="text-2xl font-black text-slate-900 tracking-tight">
@@ -115,35 +136,35 @@ export default function SignInPage() {
                 </p>
               </div>
 
-              {/* API ERROR */}
-              {errors.api && (
-                <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 font-medium">
-                  {errors.api}
+              {/* ERROR MESSAGE */}
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 font-medium animate-shake">
+                  {error}
                 </div>
               )}
 
-              {/* FORM */}
-              <form onSubmit={handleSubmit} className="space-y-4">
-
-                {/* EMAIL */}
+              {/* LOGIN FORM */}
+              <form onSubmit={handleSignIn} className="space-y-4">
+                
+                {/* EMAIL INPUT */}
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                    Email Address
+                    Email
                   </label>
-                  <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border bg-slate-50 focus-within:bg-white focus-within:border-red-400 focus-within:shadow-sm focus-within:shadow-red-100 transition-all ${errors.email ? "border-red-400 bg-red-50" : "border-slate-200"}`}>
+                  <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border bg-slate-50 focus-within:bg-white focus-within:border-red-400 focus-within:shadow-sm focus-within:shadow-red-100 transition-all ${error ? 'border-red-400' : 'border-slate-200'}`}>
                     <Mail size={16} className="text-slate-400 shrink-0" />
                     <input
                       type="email"
-                      placeholder="student@smktelkom-mlg.sch.id"
-                      value={form.email}
-                      onChange={(e) => setForm({ ...form, email: e.target.value })}
+                      placeholder="user@example.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       className="flex-1 bg-transparent text-slate-800 text-sm outline-none placeholder:text-slate-400"
+                      required
                     />
                   </div>
-                  {errors.email && <p className="text-red-500 text-xs font-medium">{errors.email}</p>}
                 </div>
 
-                {/* PASSWORD */}
+                {/* PASSWORD INPUT */}
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
                     <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
@@ -153,14 +174,15 @@ export default function SignInPage() {
                       Forgot password?
                     </Link>
                   </div>
-                  <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border bg-slate-50 focus-within:bg-white focus-within:border-red-400 focus-within:shadow-sm focus-within:shadow-red-100 transition-all ${errors.password ? "border-red-400 bg-red-50" : "border-slate-200"}`}>
+                  <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border bg-slate-50 focus-within:bg-white focus-within:border-red-400 focus-within:shadow-sm focus-within:shadow-red-100 transition-all ${error ? 'border-red-400' : 'border-slate-200'}`}>
                     <Lock size={16} className="text-slate-400 shrink-0" />
                     <input
                       type={showPassword ? "text" : "password"}
                       placeholder="••••••••"
-                      value={form.password}
-                      onChange={(e) => setForm({ ...form, password: e.target.value })}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                       className="flex-1 bg-transparent text-slate-800 text-sm outline-none placeholder:text-slate-400"
+                      required
                     />
                     <button
                       type="button"
@@ -170,10 +192,9 @@ export default function SignInPage() {
                       {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
-                  {errors.password && <p className="text-red-500 text-xs font-medium">{errors.password}</p>}
                 </div>
 
-                {/* SUBMIT */}
+                {/* SUBMIT BUTTON */}
                 <button
                   type="submit"
                   disabled={loading}
@@ -182,7 +203,7 @@ export default function SignInPage() {
                   {loading ? (
                     <span className="flex items-center gap-2">
                       <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      Memproses...
+                      Processing...
                     </span>
                   ) : (
                     <>
@@ -196,26 +217,11 @@ export default function SignInPage() {
               {/* DIVIDER */}
               <div className="flex items-center gap-4">
                 <div className="flex-1 h-px bg-slate-100" />
-                <span className="text-slate-400 text-xs font-medium">ATAU</span>
+                <span className="text-slate-400 text-xs font-medium">OR</span>
                 <div className="flex-1 h-px bg-slate-100" />
               </div>
 
-              {/* GOOGLE SIGN IN */}
-              <button
-                type="button"
-                onClick={handleGoogleSignIn}
-                className="w-full flex items-center justify-center gap-3 py-3 border-2 border-slate-200 rounded-xl text-slate-700 font-bold text-sm hover:bg-slate-50 hover:border-slate-300 transition-all"
-              >
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                  <path d="M17.64 9.2045C17.64 8.5663 17.5827 7.9527 17.4764 7.3636H9V10.845H13.8436C13.635 11.97 13.0009 12.9231 12.0477 13.5613V15.8195H14.9564C16.6582 14.2527 17.64 11.9454 17.64 9.2045Z" fill="#4285F4"/>
-                  <path d="M9 18C11.43 18 13.4673 17.1941 14.9564 15.8195L12.0477 13.5613C11.2418 14.1013 10.2109 14.4204 9 14.4204C6.65591 14.4204 4.67182 12.8372 3.96409 10.71H0.957275V13.0418C2.43818 15.9831 5.48182 18 9 18Z" fill="#34A853"/>
-                  <path d="M3.96409 10.71C3.78409 10.17 3.68182 9.5931 3.68182 9C3.68182 8.4068 3.78409 7.8299 3.96409 7.29V4.9581H0.957273C0.347727 6.1731 0 7.5477 0 9C0 10.4522 0.347727 11.8268 0.957273 13.0418L3.96409 10.71Z" fill="#FBBC05"/>
-                  <path d="M9 3.5795C10.3214 3.5795 11.5077 4.0336 12.4405 4.9254L15.0218 2.344C13.4632 0.8917 11.4259 0 9 0C5.48182 0 2.43818 2.0168 0.957275 4.9581L3.96409 7.29C4.67182 5.1627 6.65591 3.5795 9 3.5795Z" fill="#EA4335"/>
-                </svg>
-                Sign in with Google
-              </button>
-
-              {/* REGISTER LINK */}
+              {/* SECONDARY ACTION */}
               <p className="text-center text-sm text-slate-500">
                 New to the marketplace?{" "}
                 <Link href="/sign-up" className="text-red-600 font-bold hover:underline">

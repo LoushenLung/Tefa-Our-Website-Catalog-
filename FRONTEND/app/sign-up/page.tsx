@@ -39,6 +39,7 @@ export default function SignUpPage() {
     }
     setErrors({});
     setLoading(true);
+
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
         method: "POST",
@@ -50,15 +51,22 @@ export default function SignUpPage() {
           role: "USER",
         }),
       });
+
+      const data = await res.json();
+
       if (!res.ok) {
-        const data = await res.json();
-        setErrors({ api: data?.message || "Registrasi gagal, coba lagi." });
-      } else {
-        // Redirect to sign-in after success
-        window.location.href = "/sign-in";
+        // NestJS bisa return message sebagai string atau array
+        const message = Array.isArray(data?.message)
+          ? data.message[0]
+          : data?.message || "Registrasi gagal, coba lagi.";
+        setErrors({ api: message });
+        return;
       }
+
+      // Registrasi berhasil → redirect ke sign-in
+      window.location.href = "/sign-in";
     } catch {
-      setErrors({ api: "Tidak dapat terhubung ke server." });
+      setErrors({ api: "Tidak dapat terhubung ke server. Coba lagi nanti." });
     } finally {
       setLoading(false);
     }
@@ -84,9 +92,7 @@ export default function SignUpPage() {
         </div>
         <span className="text-slate-500 text-sm">
           Sudah punya akun?{" "}
-          <Link href="/sign-in" className="text-red-600 font-bold hover:underline">
-            Login
-          </Link>
+          <Link href="/sign-in" className="text-red-600 font-bold hover:underline">Login</Link>
         </span>
       </nav>
 
@@ -97,43 +103,29 @@ export default function SignUpPage() {
       {/* MAIN CONTENT */}
       <main className="flex-1 flex items-center justify-center pt-24 pb-12 px-4 relative z-10">
         <div className="w-full max-w-md">
-
-          {/* CARD */}
           <div className="bg-white rounded-[2rem] border border-slate-100 shadow-2xl shadow-slate-200/60 overflow-hidden">
-
-            {/* TOP ACCENT */}
             <div className="h-1.5 bg-gradient-to-r from-red-600 via-red-500 to-red-400" />
-
             <div className="p-8 space-y-6">
-
-              {/* HEADER */}
               <div className="text-center space-y-2">
                 <div className="mx-auto w-14 h-14 bg-red-600 rounded-2xl flex items-center justify-center shadow-lg shadow-red-200 mb-4">
                   <Rocket size={26} className="text-white" />
                 </div>
-                <h1 className="text-2xl font-black text-slate-900 tracking-tight">
-                  Buat Akun Baru
-                </h1>
+                <h1 className="text-2xl font-black text-slate-900 tracking-tight">Buat Akun Baru</h1>
                 <p className="text-slate-500 text-sm leading-relaxed">
                   Daftar dan mulai jelajahi karya terbaik siswa<br />SMK Telkom Malang.
                 </p>
               </div>
 
-              {/* API ERROR */}
               {errors.api && (
                 <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 font-medium">
                   {errors.api}
                 </div>
               )}
 
-              {/* FORM */}
               <form onSubmit={handleSubmit} className="space-y-4">
-
                 {/* NAME */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                    Nama Lengkap
-                  </label>
+                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Nama Lengkap</label>
                   <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border bg-slate-50 focus-within:bg-white focus-within:border-red-400 focus-within:shadow-sm focus-within:shadow-red-100 transition-all ${errors.name ? "border-red-400 bg-red-50" : "border-slate-200"}`}>
                     <User size={16} className="text-slate-400 shrink-0" />
                     <input
@@ -149,9 +141,7 @@ export default function SignUpPage() {
 
                 {/* EMAIL */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                    Alamat Email
-                  </label>
+                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Alamat Email</label>
                   <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border bg-slate-50 focus-within:bg-white focus-within:border-red-400 focus-within:shadow-sm focus-within:shadow-red-100 transition-all ${errors.email ? "border-red-400 bg-red-50" : "border-slate-200"}`}>
                     <Mail size={16} className="text-slate-400 shrink-0" />
                     <input
@@ -167,9 +157,7 @@ export default function SignUpPage() {
 
                 {/* PASSWORD */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                    Password
-                  </label>
+                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Password</label>
                   <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border bg-slate-50 focus-within:bg-white focus-within:border-red-400 focus-within:shadow-sm focus-within:shadow-red-100 transition-all ${errors.password ? "border-red-400 bg-red-50" : "border-slate-200"}`}>
                     <Lock size={16} className="text-slate-400 shrink-0" />
                     <input
@@ -179,11 +167,7 @@ export default function SignUpPage() {
                       onChange={(e) => setForm({ ...form, password: e.target.value })}
                       className="flex-1 bg-transparent text-slate-800 text-sm outline-none placeholder:text-slate-400"
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="text-slate-400 hover:text-slate-600 transition-colors shrink-0"
-                    >
+                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="text-slate-400 hover:text-slate-600 transition-colors shrink-0">
                       {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
@@ -192,9 +176,7 @@ export default function SignUpPage() {
 
                 {/* CONFIRM PASSWORD */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                    Konfirmasi Password
-                  </label>
+                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Konfirmasi Password</label>
                   <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border bg-slate-50 focus-within:bg-white focus-within:border-red-400 focus-within:shadow-sm focus-within:shadow-red-100 transition-all ${errors.confirmPassword ? "border-red-400 bg-red-50" : "border-slate-200"}`}>
                     <Lock size={16} className="text-slate-400 shrink-0" />
                     <input
@@ -204,20 +186,13 @@ export default function SignUpPage() {
                       onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
                       className="flex-1 bg-transparent text-slate-800 text-sm outline-none placeholder:text-slate-400"
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowConfirm(!showConfirm)}
-                      className="text-slate-400 hover:text-slate-600 transition-colors shrink-0"
-                    >
+                    <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="text-slate-400 hover:text-slate-600 transition-colors shrink-0">
                       {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
-                  {errors.confirmPassword && (
-                    <p className="text-red-500 text-xs font-medium">{errors.confirmPassword}</p>
-                  )}
+                  {errors.confirmPassword && <p className="text-red-500 text-xs font-medium">{errors.confirmPassword}</p>}
                 </div>
 
-                {/* SUBMIT */}
                 <button
                   type="submit"
                   disabled={loading}
@@ -229,26 +204,18 @@ export default function SignUpPage() {
                       Memproses...
                     </span>
                   ) : (
-                    <>
-                      Buat Akun
-                      <ArrowRight size={18} />
-                    </>
+                    <> Buat Akun <ArrowRight size={18} /> </>
                   )}
                 </button>
               </form>
 
-              {/* DIVIDER */}
               <div className="flex items-center gap-4">
                 <div className="flex-1 h-px bg-slate-100" />
                 <span className="text-slate-400 text-xs font-medium">ATAU</span>
                 <div className="flex-1 h-px bg-slate-100" />
               </div>
 
-              {/* GOOGLE SIGN IN */}
-              <button
-                type="button"
-                className="w-full flex items-center justify-center gap-3 py-3 border-2 border-slate-200 rounded-xl text-slate-700 font-bold text-sm hover:bg-slate-50 hover:border-slate-300 transition-all"
-              >
+              <button type="button" className="w-full flex items-center justify-center gap-3 py-3 border-2 border-slate-200 rounded-xl text-slate-700 font-bold text-sm hover:bg-slate-50 hover:border-slate-300 transition-all">
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
                   <path d="M17.64 9.2045C17.64 8.5663 17.5827 7.9527 17.4764 7.3636H9V10.845H13.8436C13.635 11.97 13.0009 12.9231 12.0477 13.5613V15.8195H14.9564C16.6582 14.2527 17.64 11.9454 17.64 9.2045Z" fill="#4285F4"/>
                   <path d="M9 18C11.43 18 13.4673 17.1941 14.9564 15.8195L12.0477 13.5613C11.2418 14.1013 10.2109 14.4204 9 14.4204C6.65591 14.4204 4.67182 12.8372 3.96409 10.71H0.957275V13.0418C2.43818 15.9831 5.48182 18 9 18Z" fill="#34A853"/>
@@ -258,15 +225,11 @@ export default function SignUpPage() {
                 Sign Up dengan Google
               </button>
 
-              {/* LOGIN LINK */}
               <p className="text-center text-sm text-slate-500">
                 Sudah punya akun?{" "}
-                <Link href="/sign-in" className="text-red-600 font-bold hover:underline">
-                  Login sekarang
-                </Link>
+                <Link href="/sign-in" className="text-red-600 font-bold hover:underline">Login sekarang</Link>
               </p>
 
-              {/* SECURITY BADGE */}
               <div className="flex items-center justify-center gap-1.5 text-slate-400 text-xs">
                 <Lock size={11} />
                 <span className="uppercase tracking-wider font-medium">Secure Institutional Registration</span>
