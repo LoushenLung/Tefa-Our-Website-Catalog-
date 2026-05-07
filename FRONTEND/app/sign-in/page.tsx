@@ -214,6 +214,8 @@ export default function SignInPage() {
                 </svg>
                 Sign in with Google
               </button>
+            </div>
+          </div>
 
           {/* Footer Text */}
           <p className="mt-8 text-center text-sm text-slate-500">
