@@ -6,7 +6,6 @@ import { useState } from "react";
 // Pastikan sudah instal: npm install lucide-react
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Store, ChevronLeft } from "lucide-react";
 import { storeCookie } from "@/lib/client-cookies";
-import { getApiUrl } from "@/lib/env";
 
 export default function SignInPage() {
   const router = useRouter();
@@ -26,7 +25,7 @@ export default function SignInPage() {
       const requestBody = JSON.stringify({ email, password });
       
       const response = await fetch(
-        getApiUrl('auth/login'),
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
         {
           method: "POST",
           headers: {

@@ -6,7 +6,7 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen bg-white text-slate-900 font-sans overflow-x-hidden selection:bg-red-500 selection:text-white">
       
-      {/* SECTION 1: HERO (Modern & Clean) */}
+      {/* SECTION 1: HERO (Tetap) */}
       <section className="relative min-h-[90vh] flex items-center pt-20 bg-slate-50">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 grid lg:grid-cols-2 gap-12 items-center relative z-10">
           <div className="space-y-8 animate-in fade-in slide-in-from-left duration-1000">
@@ -43,7 +43,7 @@ export default function LandingPage() {
             <div className="absolute -top-12 -right-12 w-64 h-64 bg-red-100 rounded-full blur-3xl opacity-50" />
             <div className="relative z-10 bg-white p-4 rounded-[2.5rem] shadow-2xl border border-slate-100">
               <Image 
-                src="/hero.png" // Pastikan gambar ini tersedia di folder public
+                src="/hero.png" 
                 alt="Product Showcase" 
                 width={600} 
                 height={600} 
@@ -54,7 +54,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* SECTION 2: ABOUT TEFA (Value Proposition) */}
+      {/* SECTION 2: ABOUT TEFA (Tetap) */}
       <section id="about" className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
@@ -97,7 +97,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* SECTION 3: JURUSAN & SHOWCASE (Product Portfolio) */}
+      {/* SECTION 3: JURUSAN & SHOWCASE */}
       <section id="majors" className="py-24 bg-slate-50">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
@@ -111,7 +111,7 @@ export default function LandingPage() {
           </div>
 
           <div className="space-y-20">
-            {/* RPL - Software */}
+            {/* RPL (Tetap) */}
             <div className="bg-white rounded-[3rem] p-8 lg:p-12 shadow-sm border border-slate-100 overflow-hidden relative">
               <div className="grid lg:grid-cols-2 gap-12 items-center">
                 <div className="space-y-6">
@@ -131,7 +131,7 @@ export default function LandingPage() {
                     </div>
                   </div>
                   <Link href="/catalog?major=rpl" className="inline-flex items-center gap-2 text-red-600 font-bold hover:gap-4 transition-all">
-                    Lihat Produk RPL <ArrowRight size={20} />
+                    Liat Produk RPL <ArrowRight size={20} />
                   </Link>
                 </div>
                 <div className="relative group">
@@ -141,7 +141,7 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* TKJ - Infrastructure */}
+            {/* TKJ (Tetap) */}
             <div className="bg-white rounded-[3rem] p-8 lg:p-12 shadow-sm border border-slate-100 overflow-hidden relative">
               <div className="grid lg:grid-cols-2 gap-12 items-center">
                 <div className="order-2 lg:order-1 relative group">
@@ -171,14 +171,10 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* PG - Game Development */}
+            {/* PG - Game Development (DIUBAH: Foto di Kanan) */}
             <div className="bg-white rounded-[3rem] p-8 lg:p-12 shadow-sm border border-slate-100 overflow-hidden relative">
               <div className="grid lg:grid-cols-2 gap-12 items-center">
-                <div className="order-2 lg:order-1 relative group">
-                  <div className="absolute inset-0 bg-purple-600 rounded-2xl -rotate-3 group-hover:rotate-0 transition-transform duration-500" />
-                  <Image src="/pg.png" alt="Game Dev Showcase" width={600} height={400} className="relative z-10 rounded-2xl shadow-lg object-cover" />
-                </div>
-                <div className="order-1 lg:order-2 space-y-6">
+                <div className="space-y-6">
                   <span className="text-purple-600 font-bold uppercase text-xs tracking-widest bg-purple-50 px-3 py-1 rounded-full">Game Design & Development</span>
                   <h4 className="text-3xl font-black">Pengembangan Game</h4>
                   <p className="text-slate-600 leading-relaxed">
@@ -198,6 +194,10 @@ export default function LandingPage() {
                     Lihat Produk Game <ArrowRight size={20} />
                   </Link>
                 </div>
+                <div className="relative group">
+                  <div className="absolute inset-0 bg-purple-600 rounded-2xl rotate-3 group-hover:rotate-0 transition-transform duration-500" />
+                  <Image src="/pg.png" alt="Game Dev Showcase" width={600} height={400} className="relative z-10 rounded-2xl shadow-lg object-cover" />
+                </div>
               </div>
             </div>
 
@@ -205,25 +205,52 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="py-16 bg-white border-t border-slate-100">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center font-bold text-white text-xl">T</div>
-              <span className="font-black text-xl tracking-tighter text-slate-900">TEFA MOKLET</span>
+      {/* FOOTER (DIUBAH: Teks ke Bawah & Pesan Jual Projek) */}
+      <footer className="bg-white border-t border-slate-100 pt-20 pb-12">
+        <div className="max-w-7xl mx-auto px-6 lg:px-12">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+            
+            {/* Brand */}
+            <div className="space-y-6">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center font-bold text-white text-xl">T</div>
+                <span className="font-black text-xl tracking-tighter text-slate-900">TEFA <span className="text-red-600">MOKLET</span></span>
+              </div>
+              <p className="text-slate-500 text-sm leading-relaxed">
+                Wadah inovasi dan kreativitas siswa SMK Telkom Malang dalam menghasilkan produk berstandar industri.
+              </p>
             </div>
-            <p className="text-slate-400 text-sm italic">"The Future is Ours"</p>
-          </div>
-          <div className="text-slate-500 text-sm">
-            © 2026 SMK Telkom Malang. Dibuat dengan dedikasi tinggi.
-          </div>
-          <div className="flex gap-6">
-            {["Instagram", "Website", "LinkedIn"].map((social) => (
-              <Link key={social} href="#" className="text-slate-400 hover:text-red-600 font-bold transition-colors">
-                {social}
+
+            {/* Jual Projek (CTA) */}
+            <div className="lg:col-span-2 space-y-4">
+              <h4 className="font-bold text-slate-900 text-lg">Mau jual projek? Hubungi kami</h4>
+              <p className="text-slate-500 text-sm max-w-sm">
+                Punya karya inovatif hasil pembelajaran? Tim TEFA Moklet siap membantu mempromosikan produk Anda di katalog resmi kami.
+              </p>
+              <Link 
+                href="https://wa.me/089520057980" // Ganti dengan nomor asli
+                className="inline-flex items-center gap-2 text-red-600 font-bold hover:gap-4 transition-all"
+              >
+                Mulai Kolaborasi <ArrowRight size={16} />
               </Link>
-            ))}
+            </div>
+
+            {/* Social Media (Ke Bawah) */}
+            <div className="space-y-4">
+              <h4 className="font-bold text-slate-900">Media Sosial</h4>
+              <div className="flex flex-col gap-3">
+                <Link href="https://wa.me/089520057980" className="text-slate-500 hover:text-red-600 text-sm transition-colors font-medium">WhatsApp</Link>
+                <Link href="#" className="text-slate-500 hover:text-red-600 text-sm transition-colors font-medium">Instagram</Link>
+                <Link href="#" className="text-slate-500 hover:text-red-600 text-sm transition-colors font-medium">LinkedIn</Link>
+              </div>
+            </div>
+
+          </div>
+
+          <div className="pt-8 border-t border-slate-100 text-center">
+            <p className="text-slate-400 text-xs tracking-widest uppercase">
+              © 2026 TEFA MOKLET - SMK Telkom Malang. Dibuat dengan dedikasi tinggi.
+            </p>
           </div>
         </div>
       </footer>

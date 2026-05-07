@@ -20,7 +20,7 @@ export const storeCookie = async (
   expiresInDays: number = 1
 ) => {
   const cookieStore = await cookies();
-  
+
   cookieStore.set(name, value, {
     maxAge: 60 * 60 * 24 * expiresInDays, // Konversi hari ke detik
     path: "/",
