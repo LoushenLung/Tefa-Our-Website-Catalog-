@@ -14,9 +14,6 @@ export default function LandingPage() {
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 border border-red-100 text-red-600 text-xs font-bold uppercase tracking-wider w-fit">
                 <Rocket size={14} /> Future Digital Talent
               </div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-50 border border-green-100 text-green-600 text-xs font-bold uppercase tracking-wider w-fit">
-                <ShieldCheck size={14} /> Logged In as User (POV: User)
-              </div>
             </div>
             <h1 className="text-5xl lg:text-7xl font-black leading-[1.1] tracking-tight text-slate-900">
               Inovasi Siswa <br />

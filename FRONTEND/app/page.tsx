@@ -1,46 +1,9 @@
-import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
-import CustomerHeader from "@/components/appsidebar-customer";
 import { ShieldCheck, Rocket, ShoppingCart, Globe, ArrowRight } from "lucide-react";
 
 export default async function Home() {
-  const cookieStore = await cookies();
-  const isLoggedIn = cookieStore.has("accessToken");
 
-  // ── VIEW UNTUK USER YANG SUDAH LOGIN ───────────────────────────────────
-  if (isLoggedIn) {
-    return (
-      <div className="min-h-screen bg-slate-50 font-sans flex flex-col">
-        <CustomerHeader />
-        <main className="flex-1 w-full max-w-screen-xl mx-auto p-6 lg:p-8">
-          <div className="flex flex-col gap-4 mb-8">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-50 border border-green-100 text-green-600 text-xs font-bold uppercase tracking-wider w-fit">
-              <ShieldCheck size={14} /> Logged In as User (POV: User)
-            </div>
-          </div>
-          <div className="bg-white rounded-[2rem] p-8 shadow-sm border border-slate-100">
-             <h1 className="text-3xl font-black text-slate-900 tracking-tight">Selamat Datang Kembali!</h1>
-             <p className="text-slate-500 mt-2">Ini adalah dashboard utama kamu di root URL.</p>
-             <div className="mt-8 grid md:grid-cols-2 gap-6">
-                <div className="p-6 bg-red-50 rounded-2xl border border-red-100 group hover:bg-red-100/50 transition-all cursor-pointer">
-                   <h3 className="font-bold text-red-600 flex items-center gap-2">
-                      <Rocket size={18} /> Projects Saya
-                   </h3>
-                   <p className="text-sm text-slate-600 mt-1">Cek progres project yang sedang kamu beli.</p>
-                </div>
-                <div className="p-6 bg-blue-50 rounded-2xl border border-blue-100 group hover:bg-blue-100/50 transition-all cursor-pointer">
-                   <h3 className="font-bold text-blue-600 flex items-center gap-2">
-                      <ShoppingCart size={18} /> Katalog Terbaru
-                   </h3>
-                   <p className="text-sm text-slate-600 mt-1">Jelajahi inovasi terbaru dari siswa kami.</p>
-                </div>
-             </div>
-          </div>
-        </main>
-      </div>
-    );
-  }
 
   // ── VIEW UNTUK GUEST (LANDING PAGE) ────────────────────────────────────
   return (
