@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ShoppingCart, Rocket, ShieldCheck, Globe } from "lucide-react";
 
-export default function user() {
+export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen bg-white text-slate-900 font-sans overflow-x-hidden selection:bg-red-500 selection:text-white">
       

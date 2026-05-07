@@ -1,13 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Eye, EyeOff, User, Mail, Lock, ArrowRight, Rocket, ChevronLeft } from "lucide-react";
 
 export default function SignUpPage() {
+  const router = useRouter(); // Menggunakan useRouter Next.js
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
+  
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -41,15 +44,20 @@ export default function SignUpPage() {
     setLoading(true);
 
     try {
+      // Sesuai dengan format di Postman, otomatis role "USER"
+      const requestBody = JSON.stringify({
+        email: form.email,
+        password: form.password,
+        name: form.name,
+        role: "USER",
+      });
+
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: form.name,
-          email: form.email,
-          password: form.password,
-          role: "USER",
-        }),
+        headers: { 
+          "Content-Type": "application/json" 
+        },
+        body: requestBody,
       });
 
       const data = await res.json();

@@ -43,6 +43,29 @@ export default async function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-white text-slate-900 font-sans overflow-x-hidden selection:bg-red-500 selection:text-white">
       
+      {/* ── HEADER IDENTIK DENGAN CATALOG ───────────────────────────────────── */}
+      <nav className="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-slate-100 shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 lg:px-12 h-16 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center font-bold text-white text-xl">T</div>
+            <span className="font-black text-xl tracking-tighter text-slate-900">TEFA <span className="text-red-600">MOKLET</span></span>
+          </Link>
+
+          <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-500">
+            <Link href="/#about" className="hover:text-slate-900 transition-colors">About</Link>
+            <Link href="/#majors" className="hover:text-slate-900 transition-colors">Majors</Link>
+            <Link href="/catalog" className="text-red-600">Catalog</Link>
+          </div>
+
+          <Link
+            href="/sign-in"
+            className="px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-full text-sm font-bold transition-all active:scale-95 shadow-md shadow-red-100"
+          >
+            Sign In
+          </Link>
+        </div>
+      </nav>
+
       {/* SECTION 1: HERO (Modern & Clean) */}
       <section className="relative min-h-[90vh] flex items-center pt-20 bg-slate-50">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 grid lg:grid-cols-2 gap-12 items-center relative z-10">

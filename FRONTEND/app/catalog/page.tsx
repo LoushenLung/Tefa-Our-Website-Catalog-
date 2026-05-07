@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { ShoppingCart, Search, Star, ChevronDown } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 interface Product {
@@ -18,20 +19,28 @@ interface Product {
   category: { name: string; slug: string };
   image: string;
   badge?: string;
+  rating: number;
+  reviewCount: number;
+}
+
+function seededRating(id: string): { rating: number; reviewCount: number } {
+  const seed = id.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
+  const rating = 3.5 + ((seed * 17) % 15) / 10; 
+  const reviewCount = 4 + ((seed * 31) % 97);    
+  return { rating: Math.round(rating * 10) / 10, reviewCount };
 }
 
 // ─── Dummy Data ───────────────────────────────────────────────────────────────
-const PRODUCTS: Product[] = [
+const RAW_PRODUCTS = [
   {
     id: "1",
     name: "SiAbsen – Sistem Absensi Digital",
     slug: "siabsen-sistem-absensi-digital",
-    description:
-      "Aplikasi absensi berbasis QR-code real-time untuk sekolah dan instansi. Dilengkapi dashboard analitik, notifikasi orang tua, dan laporan otomatis PDF.",
+    description: "Aplikasi absensi berbasis QR-code real-time untuk sekolah dan instansi. Dilengkapi dashboard analitik, notifikasi orang tua, dan laporan otomatis PDF.",
     price: 4500000,
-    currency: "IDR",
+    currency: "IDR" as const,
     stock: 10,
-    status: "PUBLISHED",
+    status: "PUBLISHED" as const,
     specs: { Platform: "Web + Android", Stack: "Next.js, NestJS, MySQL", Tim: "3 Siswa RPL" },
     category: { name: "Software & Web", slug: "software-web" },
     image: "https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=600&q=80",
@@ -41,17 +50,12 @@ const PRODUCTS: Product[] = [
     id: "2",
     name: "SmartHome Controller – IoT Hub",
     slug: "smarthome-controller-iot-hub",
-    description:
-      "Perangkat IoT berbasis ESP32 yang menghubungkan lampu, kipas, dan kunci pintu ke aplikasi mobile. Kontrol rumah dari mana saja via internet.",
+    description: "Perangkat IoT berbasis ESP32 yang menghubungkan lampu, kipas, dan kunci pintu ke aplikasi mobile. Kontrol rumah dari mana saja via internet.",
     price: 1800000,
-    currency: "IDR",
+    currency: "IDR" as const,
     stock: 5,
-    status: "PUBLISHED",
-
-    // specs: { MCU: "ESP32", Koneksi: "WiFi + MQTT", CatuDaya: "5V USB-C" },
-
+    status: "PUBLISHED" as const,
     specs: { MCU: "ESP32", Koneksi: "WiFi + MQTT", "Catu Daya": "5V USB-C" },
-
     category: { name: "IoT & Jaringan", slug: "iot-jaringan" },
     image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80",
     badge: "Baru",
@@ -60,12 +64,11 @@ const PRODUCTS: Product[] = [
     id: "3",
     name: "NusantaraQuest – 2D RPG Game",
     slug: "nusantaraquest-2d-rpg-game",
-    description:
-      "Game RPG 2D berbasis budaya Nusantara dengan 5 chapter cerita, 20+ karakter unik, dan musik tradisional orisinal. Tersedia di PC dan Android.",
+    description: "Game RPG 2D berbasis budaya Nusantara dengan 5 chapter cerita, 20+ karakter unik, dan musik tradisional orisinal. Tersedia di PC dan Android.",
     price: 350000,
-    currency: "IDR",
+    currency: "IDR" as const,
     stock: 999,
-    status: "PUBLISHED",
+    status: "PUBLISHED" as const,
     specs: { Engine: "Unity 2022", Platform: "PC & Android", Rating: "E (Semua Umur)" },
     category: { name: "Game & Animasi", slug: "game-animasi" },
     image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600&q=80",
@@ -75,12 +78,11 @@ const PRODUCTS: Product[] = [
     id: "4",
     name: "CyberShield – Audit Keamanan Jaringan",
     slug: "cybershield-audit-keamanan-jaringan",
-    description:
-      "Layanan audit keamanan jaringan komprehensif: scanning vulnerabilitas, pentest, dan laporan remediasi lengkap untuk bisnis UMKM hingga enterprise.",
+    description: "Layanan audit keamanan jaringan komprehensif: scanning vulnerabilitas, pentest, dan laporan remediasi lengkap untuk bisnis UMKM hingga enterprise.",
     price: 7500000,
-    currency: "IDR",
+    currency: "IDR" as const,
     stock: 3,
-    status: "PUBLISHED",
+    status: "PUBLISHED" as const,
     specs: { Durasi: "3–5 Hari Kerja", Output: "Laporan PDF 50+ hal", Sertifikasi: "CEH Compliant" },
     category: { name: "IoT & Jaringan", slug: "iot-jaringan" },
     image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=600&q=80",
@@ -89,12 +91,11 @@ const PRODUCTS: Product[] = [
     id: "5",
     name: "BatiKraft – E-Commerce UMKM",
     slug: "batikraft-ecommerce-umkm",
-    description:
-      "Platform e-commerce siap pakai untuk pelaku UMKM kerajinan. Fitur: manajemen produk, payment gateway, laporan penjualan, dan chatbot CS otomatis.",
+    description: "Platform e-commerce siap pakai untuk pelaku UMKM kerajinan. Fitur: manajemen produk, payment gateway, laporan penjualan, dan chatbot CS otomatis.",
     price: 6000000,
-    currency: "IDR",
+    currency: "IDR" as const,
     stock: 7,
-    status: "PUBLISHED",
+    status: "PUBLISHED" as const,
     specs: { CMS: "Custom Admin Panel", Payment: "Midtrans, QRIS", Hosting: "VPS Ready" },
     category: { name: "Software & Web", slug: "software-web" },
     image: "https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=600&q=80",
@@ -103,12 +104,11 @@ const PRODUCTS: Product[] = [
     id: "6",
     name: "LanGuru – Platform E-Learning Bahasa",
     slug: "languru-platform-elearning-bahasa",
-    description:
-      "Platform belajar bahasa Inggris interaktif dengan metode gamifikasi, live session bersama tutor, dan AI-powered pronunciation checker.",
+    description: "Platform belajar bahasa Inggris interaktif dengan metode gamifikasi, live session bersama tutor, dan AI-powered pronunciation checker.",
     price: 2800000,
-    currency: "IDR",
+    currency: "IDR" as const,
     stock: 15,
-    status: "PUBLISHED",
+    status: "PUBLISHED" as const,
     specs: { Fitur: "AI + Gamification", Konten: "500+ Modul", Akses: "Seumur Hidup" },
     category: { name: "Software & Web", slug: "software-web" },
     image: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=600&q=80",
@@ -118,12 +118,11 @@ const PRODUCTS: Product[] = [
     id: "7",
     name: "ShadowPath – 3D Puzzle Horror Game",
     slug: "shadowpath-3d-puzzle-horror-game",
-    description:
-      "Game horror puzzle 3D dengan atmosfer mencekam, mekanik cahaya unik, dan 4 ending berbeda berdasarkan pilihan pemain. Optimasi untuk Mid-end PC.",
+    description: "Game horror puzzle 3D dengan atmosfer mencekam, mekanik cahaya unik, dan 4 ending berbeda berdasarkan pilihan pemain. Optimasi untuk Mid-end PC.",
     price: 120000,
-    currency: "IDR",
+    currency: "IDR" as const,
     stock: 999,
-    status: "PUBLISHED",
+    status: "PUBLISHED" as const,
     specs: { Engine: "Unreal Engine 5", Platform: "PC", Rating: "17+ (Horror)" },
     category: { name: "Game & Animasi", slug: "game-animasi" },
     image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&q=80",
@@ -132,12 +131,11 @@ const PRODUCTS: Product[] = [
     id: "8",
     name: "AgroSense – Sensor Pertanian Pintar",
     slug: "agrosense-sensor-pertanian-pintar",
-    description:
-      "Sistem monitoring lahan pertanian berbasis IoT dengan sensor kelembaban tanah, suhu, dan curah hujan. Data real-time dikirim ke dashboard mobile.",
+    description: "Sistem monitoring lahan pertanian berbasis IoT dengan sensor kelembaban tanah, suhu, dan curah hujan. Data real-time dikirim ke dashboard mobile.",
     price: 2200000,
-    currency: "IDR",
+    currency: "IDR" as const,
     stock: 8,
-    status: "PUBLISHED",
+    status: "PUBLISHED" as const,
     specs: { Sensor: "Soil + DHT22 + Rain", Range: "500m RF", Baterai: "Solar + Li-ion" },
     category: { name: "IoT & Jaringan", slug: "iot-jaringan" },
     image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=600&q=80",
@@ -147,17 +145,21 @@ const PRODUCTS: Product[] = [
     id: "9",
     name: "PixelCraft Studio – Jasa Animasi 2D",
     slug: "pixelcraft-studio-jasa-animasi-2d",
-    description:
-      "Layanan pembuatan animasi 2D profesional: motion graphic, explainer video, karakter animasi, dan konten media sosial branded untuk bisnis Anda.",
+    description: "Layanan pembuatan animasi 2D profesional: motion graphic, explainer video, karakter animasi, dan konten media sosial branded untuk bisnis Anda.",
     price: 3500000,
-    currency: "IDR",
+    currency: "IDR" as const,
     stock: 6,
-    status: "PUBLISHED",
+    status: "PUBLISHED" as const,
     specs: { Software: "Adobe Animate, After Effects", Durasi: "30–90 detik", Revisi: "3x Free" },
     category: { name: "Game & Animasi", slug: "game-animasi" },
     image: "https://images.unsplash.com/photo-1626785774573-4b799315345d?w=600&q=80",
   },
 ];
+
+const PRODUCTS: Product[] = RAW_PRODUCTS.map((p) => ({
+  ...p,
+  ...seededRating(p.id),
+}));
 
 const CATEGORIES = [
   { label: "Semua", slug: "all" },
@@ -168,12 +170,12 @@ const CATEGORIES = [
 
 const SORT_OPTIONS = [
   { label: "Terbaru", value: "newest" },
+  { label: "Rating Tertinggi", value: "rating-desc" },
   { label: "Harga: Rendah → Tinggi", value: "price-asc" },
   { label: "Harga: Tinggi → Rendah", value: "price-desc" },
   { label: "Nama A–Z", value: "name-asc" },
 ];
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
 function formatIDR(price: number) {
   return new Intl.NumberFormat("id-ID", {
     style: "currency",
@@ -182,28 +184,52 @@ function formatIDR(price: number) {
   }).format(price);
 }
 
-const BADGE_COLORS: Record<string, string> = {
-  Terlaris: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
-  Baru: "bg-green-500/20 text-green-400 border-green-500/30",
-  "Pilihan Editor": "bg-purple-500/20 text-purple-400 border-purple-500/30",
-  Hot: "bg-red-500/20 text-red-400 border-red-500/30",
-  Inovasi: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+const BADGE_STYLES: Record<string, string> = {
+  Terlaris: "bg-yellow-50 text-yellow-700 border-yellow-200",
+  Baru: "bg-green-50 text-green-700 border-green-200",
+  "Pilihan Editor": "bg-purple-50 text-purple-700 border-purple-200",
+  Hot: "bg-red-50 text-red-700 border-red-200",
+  Inovasi: "bg-blue-50 text-blue-700 border-blue-200",
 };
 
-const CATEGORY_ACCENT: Record<string, string> = {
-  "Software & Web": "text-red-400",
-  "IoT & Jaringan": "text-blue-400",
-  "Game & Animasi": "text-purple-400",
+const CATEGORY_ACCENT: Record<string, { text: string; bg: string }> = {
+  "Software & Web": { text: "text-red-600", bg: "bg-red-50" },
+  "IoT & Jaringan": { text: "text-blue-600", bg: "bg-blue-50" },
+  "Game & Animasi": { text: "text-purple-600", bg: "bg-purple-50" },
 };
 
-// ─── Product Card ─────────────────────────────────────────────────────────────
+function StarRating({ rating, reviewCount }: { rating: number; reviewCount: number }) {
+  return (
+    <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-0.5">
+        {[1, 2, 3, 4, 5].map((star) => {
+          const filled = rating >= star;
+          const half = !filled && rating >= star - 0.5;
+          return (
+            <div key={star} className="relative w-3.5 h-3.5">
+              <Star size={14} className="text-slate-200 fill-slate-200 absolute inset-0" />
+              {(filled || half) && (
+                <div className={`absolute inset-0 overflow-hidden ${half ? "w-1/2" : "w-full"}`}>
+                  <Star size={14} className="text-yellow-400 fill-yellow-400" />
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      <span className="text-xs font-bold text-slate-700">{rating.toFixed(1)}</span>
+      <span className="text-xs text-slate-400">({reviewCount})</span>
+    </div>
+  );
+}
+
 function ProductCard({ product }: { product: Product }) {
   const [imgError, setImgError] = useState(false);
+  const accent = CATEGORY_ACCENT[product.category.name] ?? { text: "text-slate-500", bg: "bg-slate-100" };
 
   return (
-    <article className="group relative flex flex-col bg-zinc-900 border border-white/8 rounded-2xl overflow-hidden hover:border-white/20 hover:shadow-[0_0_40px_rgba(220,38,38,0.12)] transition-all duration-300">
-      {/* Image */}
-      <div className="relative h-52 overflow-hidden bg-zinc-800">
+    <article className="group relative flex flex-col bg-white border border-slate-100 rounded-3xl overflow-hidden hover:shadow-xl hover:shadow-slate-200/60 hover:border-red-100 transition-all duration-300">
+      <div className="relative h-52 overflow-hidden bg-slate-100">
         {!imgError ? (
           <Image
             src={product.image}
@@ -213,65 +239,65 @@ function ProductCard({ product }: { product: Product }) {
             onError={() => setImgError(true)}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-zinc-600">
+          <div className="w-full h-full flex items-center justify-center text-slate-300">
             <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
           </div>
         )}
-        {/* Overlay gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/80 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
 
-        {/* Badge */}
         {product.badge && (
-          <span className={`absolute top-3 left-3 px-2.5 py-1 text-xs font-bold border rounded-full backdrop-blur-sm ${BADGE_COLORS[product.badge] ?? "bg-white/10 text-white border-white/20"}`}>
+          <span className={`absolute top-3 left-3 px-2.5 py-1 text-xs font-bold border rounded-full bg-white/90 backdrop-blur-sm ${BADGE_STYLES[product.badge] ?? "text-slate-600 border-slate-200"}`}>
             {product.badge}
           </span>
         )}
 
-        {/* Stock indicator */}
-        <span className={`absolute top-3 right-3 px-2.5 py-1 text-xs font-semibold rounded-full backdrop-blur-sm ${product.stock > 0 ? "bg-green-500/20 text-green-400 border border-green-500/30" : "bg-red-500/20 text-red-400 border border-red-500/30"}`}>
-          {product.stock > 0 ? (product.stock < 5 ? `Sisa ${product.stock}` : "Tersedia") : "Habis"}
+        <span className={`absolute top-3 right-3 px-2.5 py-1 text-xs font-semibold rounded-full bg-white/90 backdrop-blur-sm border ${
+          product.stock === 0
+            ? "text-red-600 border-red-200"
+            : product.stock < 5
+            ? "text-orange-600 border-orange-200"
+            : "text-green-600 border-green-200"
+        }`}>
+          {product.stock === 0 ? "Habis" : product.stock < 5 ? `Sisa ${product.stock}` : "Tersedia"}
         </span>
       </div>
 
-      {/* Body */}
       <div className="flex flex-col flex-1 p-5 gap-3">
-        {/* Category */}
-        <span className={`text-xs font-bold tracking-widest uppercase ${CATEGORY_ACCENT[product.category.name] ?? "text-zinc-400"}`}>
+        <span className={`self-start text-xs font-bold tracking-widest uppercase px-2.5 py-1 rounded-full ${accent.text} ${accent.bg}`}>
           {product.category.name}
         </span>
 
-        {/* Name */}
-        <h3 className="font-bold text-white text-base leading-snug group-hover:text-red-400 transition-colors line-clamp-2">
+        <h3 className="font-black text-slate-900 text-base leading-snug group-hover:text-red-600 transition-colors line-clamp-2">
           {product.name}
         </h3>
 
-        {/* Description */}
-        <p className="text-zinc-500 text-sm leading-relaxed line-clamp-2">{product.description}</p>
+        <StarRating rating={product.rating} reviewCount={product.reviewCount} />
 
-        {/* Specs pills */}
-        <div className="flex flex-wrap gap-1.5 mt-1">
+        <p className="text-slate-500 text-sm leading-relaxed line-clamp-2">{product.description}</p>
+
+        <div className="flex flex-wrap gap-1.5">
           {Object.entries(product.specs)
             .slice(0, 2)
             .map(([k, v]) => (
-              <span key={k} className="px-2 py-0.5 bg-white/5 border border-white/8 rounded-md text-xs text-zinc-400">
-                <span className="text-zinc-600">{k}:</span> {v}
+              <span key={k} className="px-2.5 py-1 bg-slate-50 border border-slate-100 rounded-lg text-xs text-slate-500">
+                <span className="text-slate-400">{k}:</span> {v}
               </span>
             ))}
         </div>
 
-        {/* Footer: price + CTA */}
-        <div className="flex items-end justify-between mt-auto pt-4 border-t border-white/8">
+        <div className="flex items-end justify-between mt-auto pt-4 border-t border-slate-100">
           <div>
-            <div className="text-xs text-zinc-600 mb-0.5">Mulai dari</div>
-            <div className="text-lg font-black text-white">{formatIDR(product.price)}</div>
+            <div className="text-xs text-slate-400 mb-0.5">Mulai dari</div>
+            <div className="text-lg font-black text-slate-900">{formatIDR(product.price)}</div>
           </div>
           <Link
             href={`/catalog/${product.slug}`}
-            className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white text-sm font-bold rounded-xl transition-all active:scale-95 hover:shadow-[0_0_15px_rgba(220,38,38,0.4)]"
+            className="flex items-center gap-1.5 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-xl transition-all active:scale-95 shadow-md shadow-red-100"
           >
-            Detail →
+            <ShoppingCart size={14} />
+            Detail
           </Link>
         </div>
       </div>
@@ -279,7 +305,6 @@ function ProductCard({ product }: { product: Product }) {
   );
 }
 
-// ─── Main Page ────────────────────────────────────────────────────────────────
 export default function CatalogPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState("");
@@ -300,12 +325,10 @@ export default function CatalogPage() {
     // ... existing filtered logic ...
     let result = PRODUCTS.filter((p) => p.status === "PUBLISHED");
 
-    // Category filter
     if (activeCategory !== "all") {
       result = result.filter((p) => p.category.slug === activeCategory);
     }
 
-    // Search filter
     if (search.trim()) {
       const q = search.toLowerCase();
       result = result.filter(
@@ -316,8 +339,10 @@ export default function CatalogPage() {
       );
     }
 
-    // Sort
     switch (sortBy) {
+      case "rating-desc":
+        result = [...result].sort((a, b) => b.rating - a.rating);
+        break;
       case "price-asc":
         result = [...result].sort((a, b) => a.price - b.price);
         break;
@@ -327,7 +352,7 @@ export default function CatalogPage() {
       case "name-asc":
         result = [...result].sort((a, b) => a.name.localeCompare(b.name));
         break;
-      default: // newest — keep original order
+      default:
         break;
     }
 
@@ -341,95 +366,100 @@ export default function CatalogPage() {
         {/* Background glow */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-red-600/10 rounded-full blur-[120px] pointer-events-none" />
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="flex items-center gap-2 mb-4">
-            <Link href="/" className="text-zinc-500 hover:text-white text-sm transition-colors">Home</Link>
-            <span className="text-zinc-700">/</span>
-            <span className="text-zinc-300 text-sm font-medium">Katalog Produk</span>
+          <div className="flex items-center gap-2 mb-6 text-sm">
+            <Link href="/" className="text-slate-400 hover:text-red-600 transition-colors">Home</Link>
+            <span className="text-slate-300">/</span>
+            <span className="text-slate-700 font-semibold">Katalog Produk</span>
           </div>
-          <h1 className="text-4xl md:text-6xl font-black tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-zinc-500">
-            Katalog Produk
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 border border-red-100 text-red-600 text-xs font-bold uppercase tracking-wider mb-4">
+            <Star size={12} className="fill-red-400 text-red-400" /> {PRODUCTS.length}+ Produk Tersedia
+          </div>
+          <h1 className="text-4xl md:text-6xl font-black tracking-tight text-slate-900 mb-4">
+            Katalog <span className="text-red-600 underline decoration-red-200 underline-offset-8">Produk</span>
           </h1>
-          <p className="text-zinc-400 text-lg max-w-2xl">
+          <p className="text-slate-500 text-lg max-w-2xl leading-relaxed">
             Temukan karya inovatif siswa-siswi TEFA SMK Telkom Malang — dari software, solusi IoT, hingga game & animasi berkualitas industri.
           </p>
         </div>
       </section>
 
-      {/* ── Filter & Search Bar ────────────────────────────────────────────── */}
-      <section className="sticky top-16 z-40 bg-black/80 backdrop-blur-md border-b border-white/8 px-4 py-4">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-          {/* Category Tabs */}
-          <div className="flex gap-2 flex-wrap">
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat.slug}
-                id={`cat-${cat.slug}`}
-                onClick={() => setActiveCategory(cat.slug)}
-                className={`px-4 py-1.5 rounded-full text-sm font-semibold border transition-all ${activeCategory === cat.slug
-                    ? "bg-red-600 border-red-600 text-white shadow-[0_0_12px_rgba(220,38,38,0.35)]"
-                    : "bg-white/5 border-white/10 text-zinc-400 hover:border-white/30 hover:text-white"
-                  }`}
-              >
-                {cat.label}
-              </button>
-            ))}
+      {/* ── DESAIN FILTER & SEARCH BAR YANG DIPERBAGUS ────────────────────────────────────────────── */}
+      <section className="sticky top-16 z-40 bg-white/95 backdrop-blur-xl border-b border-slate-100 shadow-sm py-4 transition-all">
+        <div className="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col lg:flex-row gap-4 items-center justify-between">
+          
+          <div className="relative w-full lg:max-w-md group">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <Search size={18} className="text-slate-400 group-focus-within:text-red-500 transition-colors" />
+            </div>
+            <input
+              type="text"
+              placeholder="Cari produk inovatif..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-11 pr-4 py-3 bg-white border-2 border-slate-100 rounded-2xl text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-red-400 focus:ring-4 focus:ring-red-50 transition-all shadow-sm"
+            />
           </div>
 
-          {/* Search + Sort */}
-          <div className="flex gap-3 w-full sm:w-auto">
-            <div className="relative flex-1 sm:w-64">
-              <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              <input
-                id="catalog-search"
-                type="text"
-                placeholder="Cari produk..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-zinc-900 border border-white/10 rounded-xl text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-red-500/50 transition-colors"
-              />
-            </div>
-            <select
-              id="catalog-sort"
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="px-3 py-2 bg-zinc-900 border border-white/10 rounded-xl text-sm text-zinc-300 focus:outline-none focus:border-red-500/50 transition-colors cursor-pointer"
-            >
-              {SORT_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
+          <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto items-center">
+            
+            <div className="flex p-1 bg-slate-50 rounded-2xl border border-slate-200/60 overflow-x-auto w-full sm:w-auto no-scrollbar">
+              {CATEGORIES.map((cat) => (
+                <button
+                  key={cat.slug}
+                  onClick={() => setActiveCategory(cat.slug)}
+                  className={`whitespace-nowrap px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 ${
+                    activeCategory === cat.slug
+                      ? "bg-white text-red-600 shadow-sm"
+                      : "text-slate-500 hover:text-slate-800 hover:bg-slate-200/50"
+                  }`}
+                >
+                  {cat.label}
+                </button>
               ))}
-            </select>
+            </div>
+
+            <div className="relative w-full sm:w-auto min-w-[180px]">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="w-full appearance-none px-4 pr-10 py-3 bg-white border-2 border-slate-100 rounded-2xl text-sm font-semibold text-slate-700 focus:outline-none focus:border-red-400 focus:ring-4 focus:ring-red-50 transition-all cursor-pointer shadow-sm"
+              >
+                {SORT_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+              <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+                <ChevronDown size={16} className="text-slate-400" />
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* ── Product Grid ───────────────────────────────────────────────────── */}
-      <main className="max-w-7xl mx-auto px-4 py-12">
-        {/* Result count */}
+      <main className="max-w-7xl mx-auto px-6 lg:px-12 py-12">
         <div className="flex items-center justify-between mb-8">
-          <p className="text-zinc-500 text-sm">
+          <p className="text-slate-500 text-sm">
             Menampilkan{" "}
-            <span className="text-white font-semibold">{filtered.length}</span>{" "}
+            <span className="text-slate-900 font-bold">{filtered.length}</span>{" "}
             produk
             {activeCategory !== "all" && (
-              <> di <span className="text-red-400">{CATEGORIES.find((c) => c.slug === activeCategory)?.label}</span></>
+              <> di <span className="text-red-600 font-semibold">{CATEGORIES.find((c) => c.slug === activeCategory)?.label}</span></>
             )}
             {search && (
-              <> untuk "<span className="text-white">{search}</span>"</>
+              <> untuk &quot;<span className="text-slate-900 font-semibold">{search}</span>&quot;</>
             )}
           </p>
           {(search || activeCategory !== "all") && (
             <button
               onClick={() => { setSearch(""); setActiveCategory("all"); }}
-              className="text-xs text-zinc-500 hover:text-white transition-colors underline underline-offset-2"
+              className="text-xs text-slate-400 hover:text-red-600 transition-colors underline underline-offset-2 font-medium"
             >
               Reset filter
             </button>
           )}
         </div>
 
-        {/* Grid */}
         {filtered.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filtered.map((product) => (
@@ -437,37 +467,33 @@ export default function CatalogPage() {
             ))}
           </div>
         ) : (
-          /* Empty State */
           <div className="flex flex-col items-center justify-center py-32 gap-6 text-center">
-            <div className="w-20 h-20 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center">
-              <svg className="w-10 h-10 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+            <div className="w-20 h-20 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center">
+              <Search size={32} className="text-slate-300" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-white mb-1">Produk tidak ditemukan</h3>
-              <p className="text-zinc-500 text-sm">Coba kata kunci atau kategori yang berbeda.</p>
+              <h3 className="text-lg font-black text-slate-900 mb-1">Produk tidak ditemukan</h3>
+              <p className="text-slate-500 text-sm">Coba kata kunci atau kategori yang berbeda.</p>
             </div>
             <button
               onClick={() => { setSearch(""); setActiveCategory("all"); }}
-              className="px-5 py-2 bg-red-600 hover:bg-red-500 text-white text-sm font-bold rounded-xl transition-all active:scale-95"
+              className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-xl transition-all active:scale-95 shadow-md shadow-red-100"
             >
               Lihat Semua Produk
             </button>
           </div>
         )}
 
-        {/* Stats strip */}
         {filtered.length > 0 && (
-          <div className="mt-20 grid grid-cols-3 gap-6 py-10 border-t border-white/8">
+          <div className="mt-20 grid grid-cols-3 gap-6 py-10 border-t border-slate-100">
             {[
               { value: `${PRODUCTS.length}+`, label: "Total Produk" },
               { value: "3", label: "Kategori Unggulan" },
               { value: "100%", label: "Karya Siswa" },
             ].map((stat) => (
               <div key={stat.label} className="text-center">
-                <div className="text-3xl font-black text-red-500 mb-1">{stat.value}</div>
-                <div className="text-sm text-zinc-500 uppercase tracking-widest font-medium">{stat.label}</div>
+                <div className="text-3xl font-black text-red-600 mb-1">{stat.value}</div>
+                <div className="text-sm text-slate-400 uppercase tracking-widest font-semibold">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -475,17 +501,22 @@ export default function CatalogPage() {
       </main>
 
       {/* ── Footer ─────────────────────────────────────────────────────────── */}
-      <footer className="py-12 px-4 border-t border-white/10 bg-black">
+      <footer className="py-16 bg-white border-t border-slate-100 px-6 lg:px-12">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center font-bold text-xl">T</div>
-            <span className="font-bold text-xl tracking-tighter">TEFA MOKLET</span>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center font-bold text-white text-xl">T</div>
+              <span className="font-black text-xl tracking-tighter text-slate-900">TEFA MOKLET</span>
+            </div>
+            <p className="text-slate-400 text-sm italic">"The Future is Ours"</p>
           </div>
-          <div className="text-zinc-500 text-sm">© 2026 SMK Telkom Malang. All rights reserved.</div>
+          <div className="text-slate-500 text-sm">© 2026 SMK Telkom Malang. Dibuat dengan dedikasi tinggi.</div>
           <div className="flex gap-6">
-            <a href="#" className="text-zinc-400 hover:text-white transition-colors text-sm">Instagram</a>
-            <a href="#" className="text-zinc-400 hover:text-white transition-colors text-sm">Website</a>
-            <a href="#" className="text-zinc-400 hover:text-white transition-colors text-sm">LinkedIn</a>
+            {["Instagram", "Website", "LinkedIn"].map((social) => (
+              <Link key={social} href="#" className="text-slate-400 hover:text-red-600 font-bold transition-colors">
+                {social}
+              </Link>
+            ))}
           </div>
         </div>
       </footer>

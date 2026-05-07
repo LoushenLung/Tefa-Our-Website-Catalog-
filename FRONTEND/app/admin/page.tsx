@@ -65,7 +65,7 @@ export default function AdminDashboard() {
     const userData = JSON.parse(session);
     if (userData.role !== "admin") {
       alert("Access Denied: Admin only.");
-      router.push("/user");
+      router.push("/landing");
       return;
     }
 
