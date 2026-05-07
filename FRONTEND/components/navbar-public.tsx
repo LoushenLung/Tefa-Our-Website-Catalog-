@@ -1,12 +1,19 @@
 "use client";
 
-import Link from "next/link";
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 import { Search, LogIn, UserPlus, LogOut, LayoutDashboard } from "lucide-react";
 
 export default function Navbar() {
+  const pathname = usePathname();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState("");
+
+  // Jangan tampilkan Navbar di halaman Dashboard Admin & User
+  if (pathname.startsWith("/admin") || pathname.startsWith("/user")) {
+    return null;
+  }
 
   useEffect(() => {
     // Cek session di localStorage saat komponen mount

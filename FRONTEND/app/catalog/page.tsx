@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -281,11 +281,23 @@ function ProductCard({ product }: { product: Product }) {
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function CatalogPage() {
-  const [search, setSearch] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
+  const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("newest");
 
+  useEffect(() => {
+    const session = localStorage.getItem("user_session");
+    if (session) {
+      const userData = JSON.parse(session);
+      setIsLoggedIn(true);
+      setUserRole(userData.role);
+    }
+  }, []);
+
   const filtered = useMemo(() => {
+    // ... existing filtered logic ...
     let result = PRODUCTS.filter((p) => p.status === "PUBLISHED");
 
     // Category filter
@@ -324,36 +336,6 @@ export default function CatalogPage() {
 
   return (
     <div className="min-h-screen bg-black text-white font-sans selection:bg-red-500 selection:text-white">
-      {/* ── Navbar ─────────────────────────────────────────────────────────── */}
-      <nav className="fixed top-0 w-full z-50 border-b border-white/10 bg-black/60 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center font-bold text-xl">
-                T
-              </div>
-              <span className="font-bold text-xl tracking-tighter">
-                TEFA <span className="text-red-500">MOKLET</span>
-              </span>
-            </Link>
-
-            <div className="hidden md:flex items-center gap-8 text-sm font-medium text-zinc-400">
-              <Link href="/#about" className="hover:text-white transition-colors">About</Link>
-              <Link href="/#tefa" className="hover:text-white transition-colors">TEFA</Link>
-              <Link href="/#majors" className="hover:text-white transition-colors">Majors</Link>
-              <Link href="/catalog" className="text-white">Catalog</Link>
-            </div>
-
-            <Link
-              href="/sign-in"
-              className="bg-white text-black px-5 py-2 rounded-full text-sm font-bold hover:bg-zinc-200 transition-all active:scale-95"
-            >
-              Sign In
-            </Link>
-          </div>
-        </div>
-      </nav>
-
       {/* ── Hero / Header ──────────────────────────────────────────────────── */}
       <section className="pt-32 pb-16 px-4 relative overflow-hidden">
         {/* Background glow */}

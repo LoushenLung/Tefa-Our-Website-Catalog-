@@ -1,10 +1,15 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { 
   ShoppingBag, 
   ShoppingCart, 
   Users, 
   TrendingUp,
   ArrowUpRight,
-  ArrowDownRight
+  ArrowDownRight,
+  Loader2
 } from "lucide-react";
 
 const stats = [
@@ -47,6 +52,33 @@ const recentOrders = [
 ];
 
 export default function AdminDashboard() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const session = localStorage.getItem("user_session");
+    if (!session) {
+      router.push("/sign-in");
+      return;
+    }
+
+    const userData = JSON.parse(session);
+    if (userData.role !== "admin") {
+      alert("Access Denied: Admin only.");
+      router.push("/user");
+      return;
+    }
+
+    setLoading(false);
+  }, [router]);
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-red-600" />
+      </div>
+    );
+  }
   return (
     <div className="space-y-6">
       {/* Stats Grid */}

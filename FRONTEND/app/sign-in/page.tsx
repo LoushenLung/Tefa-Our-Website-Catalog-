@@ -214,22 +214,22 @@ export default function SignInPage() {
                 </svg>
                 Sign in with Google
               </button>
-
-              {/* REGISTER LINK */}
-              <p className="text-center text-sm text-slate-500">
-                New to the marketplace?{" "}
-                <Link href="/sign-up" className="text-red-600 font-bold hover:underline">
-                  Create a new account
-                </Link>
-              </p>
-
-              {/* SECURITY BADGE */}
-              <div className="flex items-center justify-center gap-1.5 text-slate-400 text-xs">
-                <Lock size={11} />
-                <span className="uppercase tracking-wider font-medium">Secure Institutional Login Gateway</span>
-              </div>
             </div>
           </div>
+
+          {/* Footer Text */}
+          <p className="mt-8 text-center text-sm text-slate-500">
+            New to the TEFA?{" "}
+            <Link href="/sign-up" className="font-bold text-red-600 hover:underline">
+              Create a new account
+            </Link>
+          </p>
+        </div>
+
+        {/* Bottom Secure Tag */}
+        <div className="flex items-center justify-center gap-2 border-t border-slate-50 bg-slate-50/50 py-4 text-[10px] font-medium text-slate-400 uppercase tracking-tight">
+          <Lock size={12} />
+          Secure Institutional Login Gateway
         </div>
       </main>
     </div>
