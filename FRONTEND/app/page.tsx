@@ -23,14 +23,14 @@ export default async function Home() {
               Jelajahi berbagai produk digital dan fisik hasil karya terbaik siswa SMK Telkom Malang yang dikembangkan dengan standar industri profesional.
             </p>
             <div className="flex flex-wrap gap-4">
-              <Link 
+              <Link
                 href="/catalog"
                 className="group flex items-center gap-2 px-8 py-4 bg-red-600 text-white rounded-full font-bold text-lg hover:bg-red-700 transition-all shadow-xl shadow-red-200 active:scale-95"
               >
                 <ShoppingCart size={20} />
                 Mulai Belanja
               </Link>
-              <Link 
+              <Link
                 href="/sign-in"
                 className="px-8 py-4 bg-white border-2 border-slate-200 text-slate-700 rounded-full font-bold text-lg hover:bg-slate-50 transition-all active:scale-95"
               >
@@ -41,11 +41,11 @@ export default async function Home() {
 
           <div className="relative hidden lg:block animate-in fade-in zoom-in duration-1000">
             <div className="relative z-10 bg-white p-4 rounded-[2.5rem] shadow-2xl border border-slate-100">
-              <Image 
+              <Image
                 src="/hero.png"
-                alt="Product Showcase" 
-                width={600} 
-                height={600} 
+                alt="Product Showcase"
+                width={600}
+                height={600}
                 className="rounded-[2rem] object-cover"
                 priority
               />
@@ -69,20 +69,20 @@ export default async function Home() {
 
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { 
-                icon: <ShieldCheck className="text-red-600" size={32} />, 
-                title: "Standar Industri", 
-                desc: "Setiap produk melalui proses quality control ketat yang setara dengan standar perusahaan teknologi global." 
+              {
+                icon: <ShieldCheck className="text-red-600" size={32} />,
+                title: "Standar Industri",
+                desc: "Setiap produk melalui proses quality control ketat yang setara dengan standar perusahaan teknologi global."
               },
-              { 
-                icon: <Globe className="text-red-600" size={32} />, 
-                title: "Akses Global", 
-                desc: "Kami memasarkan produk hingga ke pasar internasional, membuktikan kualitas talenta lokal Moklet." 
+              {
+                icon: <Globe className="text-red-600" size={32} />,
+                title: "Akses Global",
+                desc: "Kami memasarkan produk hingga ke pasar internasional, membuktikan kualitas talenta lokal Moklet."
               },
-              { 
-                icon: <ShoppingCart className="text-red-600" size={32} />, 
-                title: "Dukung Karya Lokal", 
-                desc: "Setiap pembelian Anda berkontribusi langsung pada pengembangan fasilitas pendidikan dan beasiswa siswa." 
+              {
+                icon: <ShoppingCart className="text-red-600" size={32} />,
+                title: "Dukung Karya Lokal",
+                desc: "Setiap pembelian Anda berkontribusi langsung pada pengembangan fasilitas pendidikan dan beasiswa siswa."
               }
             ].map((item, i) => (
               <div key={i} className="group p-8 bg-slate-50 rounded-3xl border border-slate-100 hover:bg-white hover:shadow-xl hover:border-red-100 transition-all duration-300">
@@ -96,11 +96,11 @@ export default async function Home() {
           </div>
         </div>
       </section>
-      
+
       {/* Footer */}
       <footer className="py-12 bg-slate-50 border-t border-slate-100">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 text-center text-slate-500 text-sm">
-           © 2026 TEFA MOKLET - SMK Telkom Malang. All rights reserved.
+          © 2026 TEFA MOKLET - SMK Telkom Malang. All rights reserved.
         </div>
       </footer>
     </div>

@@ -32,9 +32,8 @@ export default function Navbar({ serverIsLoggedIn }: { serverIsLoggedIn: boolean
     window.location.href = "/";
   };
 
-  // Pengecekan ini HARUS di bawah useEffect agar tidak melanggar aturan Hook
-  // Sembunyikan navbar publik jika sudah login (karena pakai header user) atau di route dashboard
-  if (isLoggedIn || pathname.startsWith("/customer") || pathname.startsWith("/admin") || pathname.startsWith("/user")) {
+  // Sembunyikan navbar publik HANYA jika berada di dalam route dashboard
+  if (pathname.startsWith("/customer") || pathname.startsWith("/admin") || pathname.startsWith("/user")) {
     return null;
   }
 

@@ -43,12 +43,10 @@ export default function CustomerHeader() {
     };
 
     const menuItems = [
-        { label: "Dashboard", href: "/customer/dashboard", icon: LayoutDashboard },
+        { label: "Dashboard", href: "/customer", icon: LayoutDashboard },
         { label: "My Profile", href: "/customer/profile", icon: User },
-        { label: "My Projects", href: "/customer/projects", icon: Package },
         { label: "Keranjang", href: "/customer/cart", icon: ShoppingCart },
-        { label: "Catalog", href: "/catalog", icon: BookOpen },
-        { label: "Wishlist", href: "/customer/wishlist", icon: Heart },
+        { label: "Catalog", href: "../catalog", icon: BookOpen },
         { label: "Settings", href: "/customer/settings", icon: Settings },
     ];
 
