@@ -159,6 +159,38 @@ export default function SignInPage() {
               Create a new account
             </Link>
           </p>
+
+          {/* [DEV ONLY] Quick Login Helpers */}
+          <div className="mt-8 rounded-lg border border-dashed border-slate-200 p-4">
+            <p className="mb-3 text-center text-[10px] font-bold uppercase tracking-widest text-slate-400">
+              Developer Quick Login
+            </p>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setEmail("admin@telkom.id");
+                  setPassword("admin123");
+                }}
+                className="flex-1 rounded border border-red-200 bg-red-50 py-1.5 text-xs font-semibold text-red-600 transition-colors hover:bg-red-100"
+              >
+                Login as Admin
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setEmail("student@telkom.id");
+                  setPassword("student123");
+                }}
+                className="flex-1 rounded border border-slate-200 bg-slate-50 py-1.5 text-xs font-semibold text-slate-600 transition-colors hover:bg-slate-100"
+              >
+                Login as User
+              </button>
+            </div>
+            <p className="mt-2 text-center text-[9px] text-slate-400 italic">
+              *Tips: Email contains "admin" will be redirected to Admin Dashboard.
+            </p>
+          </div>
         </div>
 
         {/* Bottom Secure Tag */}

@@ -1,10 +1,41 @@
-import { User, Mail, Calendar, MapPin, Package } from "lucide-react";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { User, Mail, Calendar, MapPin, Package, Loader2 } from "lucide-react";
 
 export default function UserDashboard() {
+  const router = useRouter();
+  const [userData, setUserData] = useState<{name: string, email: string} | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const session = localStorage.getItem("user_session");
+    if (!session) {
+      router.push("/sign-in");
+      return;
+    }
+
+    const data = JSON.parse(session);
+    setUserData({
+      name: data.name || "User",
+      email: data.email
+    });
+    setLoading(false);
+  }, [router]);
+
   const recentOrders = [
     { id: "ORD-001", product: "Website Profil Sekolah", date: "Today", status: "In Progress" },
     { id: "ORD-005", product: "Aplikasi Absensi", date: "May 1, 2026", status: "Completed" },
   ];
+
+  if (loading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-red-600" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -24,13 +55,13 @@ export default function UserDashboard() {
               <dt className="text-sm font-medium text-slate-500 flex items-center gap-2">
                 <User size={16} /> Full name
               </dt>
-              <dd className="mt-1 text-sm text-slate-900 sm:mt-0 sm:col-span-2">Budi Santoso</dd>
+              <dd className="mt-1 text-sm text-slate-900 sm:mt-0 sm:col-span-2">{userData?.name}</dd>
             </div>
             <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
               <dt className="text-sm font-medium text-slate-500 flex items-center gap-2">
                 <Mail size={16} /> Email address
               </dt>
-              <dd className="mt-1 text-sm text-slate-900 sm:mt-0 sm:col-span-2">student@smktelkom-mlg.sch.id</dd>
+              <dd className="mt-1 text-sm text-slate-900 sm:mt-0 sm:col-span-2">{userData?.email}</dd>
             </div>
             <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
               <dt className="text-sm font-medium text-slate-500 flex items-center gap-2">
