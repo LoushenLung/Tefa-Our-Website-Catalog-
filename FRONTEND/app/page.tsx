@@ -1,8 +1,45 @@
+import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ShoppingCart, Rocket, ShieldCheck, Globe } from "lucide-react";
+import CustomerHeader from "@/components/appsidebar-customer";
+import { ShieldCheck, Rocket, ShoppingCart, Globe, ArrowRight } from "lucide-react";
 
-export default function Home() {
+export default async function Home() {
+  const cookieStore = await cookies();
+  const isLoggedIn = cookieStore.has("accessToken");
+
+  // Jika sudah login, tampilkan versi Dashboard User
+  if (isLoggedIn) {
+    return (
+      <div className="min-h-screen bg-slate-50 font-sans flex flex-col">
+        <CustomerHeader />
+        <main className="flex-1 w-full max-w-screen-xl mx-auto p-6 lg:p-8">
+          <div className="flex flex-col gap-4 mb-8">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-50 border border-green-100 text-green-600 text-xs font-bold uppercase tracking-wider w-fit">
+              <ShieldCheck size={14} /> Logged In as User (POV: User)
+            </div>
+          </div>
+          {/* Kamu bisa copy isi dari app/user/page.tsx ke sini atau buat komponen baru */}
+          <div className="bg-white rounded-[2rem] p-8 shadow-sm border border-slate-100">
+             <h1 className="text-3xl font-black text-slate-900">Selamat Datang Kembali!</h1>
+             <p className="text-slate-500 mt-2">Ini adalah dashboard utama kamu di root URL.</p>
+             <div className="mt-8 grid md:grid-cols-2 gap-6">
+                <div className="p-6 bg-red-50 rounded-2xl border border-red-100">
+                   <h3 className="font-bold text-red-600">Projects Saya</h3>
+                   <p className="text-sm text-slate-600 mt-1">Cek progres project yang sedang kamu beli.</p>
+                </div>
+                <div className="p-6 bg-blue-50 rounded-2xl border border-blue-100">
+                   <h3 className="font-bold text-blue-600">Katalog Terbaru</h3>
+                   <p className="text-sm text-slate-600 mt-1">Jelajahi inovasi terbaru dari siswa kami.</p>
+                </div>
+             </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // Jika BELUM login, tampilkan Landing Page Publik
   return (
     <div className="flex flex-col min-h-screen bg-white text-slate-900 font-sans overflow-x-hidden selection:bg-red-500 selection:text-white">
       

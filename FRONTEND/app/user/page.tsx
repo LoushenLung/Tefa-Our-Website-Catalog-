@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ShoppingCart, Rocket, ShieldCheck, Globe } from "lucide-react";
 
-export default function customer() {
+export default function user() {
   return (
     <div className="flex flex-col min-h-screen bg-white text-slate-900 font-sans overflow-x-hidden selection:bg-red-500 selection:text-white">
       
@@ -10,8 +10,13 @@ export default function customer() {
       <section className="relative min-h-[90vh] flex items-center pt-20 bg-slate-50">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 grid lg:grid-cols-2 gap-12 items-center relative z-10">
           <div className="space-y-8 animate-in fade-in slide-in-from-left duration-1000">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 border border-red-100 text-red-600 text-xs font-bold uppercase tracking-wider">
-              <Rocket size={14} /> Future Digital Talent
+            <div className="flex flex-col gap-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 border border-red-100 text-red-600 text-xs font-bold uppercase tracking-wider w-fit">
+                <Rocket size={14} /> Future Digital Talent
+              </div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-50 border border-green-100 text-green-600 text-xs font-bold uppercase tracking-wider w-fit">
+                <ShieldCheck size={14} /> Logged In as User (POV: User)
+              </div>
             </div>
             <h1 className="text-5xl lg:text-7xl font-black leading-[1.1] tracking-tight text-slate-900">
               Inovasi Siswa <br />
