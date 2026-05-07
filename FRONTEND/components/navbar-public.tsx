@@ -1,81 +1,36 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { Search, LogIn, UserPlus, LogOut, LayoutDashboard } from "lucide-react";
 
-export default function Navbar({ serverIsLoggedIn }: { serverIsLoggedIn: boolean }) {
-  const pathname = usePathname();
-  const [isLoggedIn, setIsLoggedIn] = useState(serverIsLoggedIn);
-  const [userRole, setUserRole] = useState("");
-
-  useEffect(() => {
-    const session = localStorage.getItem("user_session");
-    if (session) {
-      try {
-        const userData = JSON.parse(session);
-        setIsLoggedIn(true);
-        setUserRole(userData.role);
-      } catch (e) {
-        console.error("Session parse error");
-        setIsLoggedIn(false);
-      }
-    } else {
-      setIsLoggedIn(false);
-    }
-  }, [pathname]); // Re-check every time route changes
-
-  const handleLogout = () => {
-    localStorage.removeItem("user_session");
-    setIsLoggedIn(false);
-    window.location.href = "/";
-  };
-
-  // Sembunyikan navbar publik HANYA jika berada di dalam route dashboard
-  if (pathname.startsWith("/customer") || pathname.startsWith("/admin") || pathname.startsWith("/user")) {
-    return null;
-  }
-
+export default function Header() {
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/70 backdrop-blur-md text-slate-900">
-      <div className="mx-auto flex h-16 max-w-screen-xl items-center justify-between px-8 lg:px-16">
-        <div className="flex items-center">
-          <Link href="/" className="group flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-600 font-bold text-xl text-white transition-transform group-hover:scale-110 shadow-md">T</div>
-            <span className="text-xl font-black tracking-tighter text-slate-900 italic">TEFA</span>
+    <nav className="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-slate-100 shadow-sm">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12 h-16 flex items-center justify-between">
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center font-bold text-white text-xl">T</div>
+          <span className="font-black text-xl tracking-tighter text-slate-900">TEFA <span className="text-red-600">MOKLET</span></span>
+        </Link>
+
+        {/* Navigation Links */}
+        <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-500">
+          <Link href="/#about" className="hover:text-slate-900 transition-colors">About</Link>
+          <Link href="/#majors" className="hover:text-slate-900 transition-colors">Majors</Link>
+          <Link href="/catalog" className="text-red-600">Catalog</Link>
+        </div>
+
+        {/* Auth Buttons */}
+        <div className="flex items-center gap-2 md:gap-4">
+          <Link
+            href="/sign-in"
+            className="px-4 py-2 text-slate-600 hover:text-red-600 font-bold text-sm transition-colors"
+          >
+            Sign In
           </Link>
-        </div>
-
-        <div className="hidden flex-1 items-center justify-center md:flex ml-10">
-          <div className="flex items-center gap-10">
-            <Link href="/" className="text-sm font-bold text-slate-500 transition-colors hover:text-red-600">Home</Link>
-            <Link href="#about" className="text-sm font-bold text-slate-500 transition-colors hover:text-red-600">About</Link>
-            <Link href="/catalog" className="text-sm font-bold text-slate-500 transition-colors hover:text-red-600">Catalog</Link>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-6">
-          <div className="relative hidden xl:block">
-            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-              <Search size={16} />
-            </div>
-            <input type="text" placeholder="Cari produk..." className="w-40 rounded-full border border-slate-200 bg-slate-100 py-1.5 pl-9 pr-4 text-xs text-slate-900 outline-none transition-all focus:w-52 focus:border-red-500 focus:bg-white" />
-          </div>
-
-          <div className="flex items-center gap-2">
-            {!isLoggedIn ? (
-              <>
-                <Link href="/sign-in" className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-slate-700 transition-colors hover:text-red-600"><LogIn size={18} /> Login</Link>
-                <Link href="/sign-up" className="flex items-center gap-2 rounded-full bg-red-600 px-6 py-2 text-sm font-bold text-white shadow-lg shadow-red-200 transition-all hover:bg-red-700 active:scale-95"><UserPlus size={18} /> Sign Up</Link>
-              </>
-            ) : (
-              <>
-                <Link href={userRole === "ADMIN" ? "/admin" : "/customer"} className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-slate-700 transition-colors hover:text-red-600"><LayoutDashboard size={18} /> Dashboard</Link>
-                <button onClick={handleLogout} className="flex items-center gap-2 rounded-full bg-slate-100 px-6 py-2 text-sm font-bold text-slate-700 transition-all hover:bg-red-50 hover:text-red-600 active:scale-95 border border-slate-200"><LogOut size={18} /> Logout</button>
-              </>
-            )}
-          </div>
+          <Link
+            href="/sign-up"
+            className="px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-full text-sm font-bold transition-all active:scale-95 shadow-md shadow-red-100"
+          >
+            Sign Up
+          </Link>
         </div>
       </div>
     </nav>
