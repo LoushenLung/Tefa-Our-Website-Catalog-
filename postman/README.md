@@ -60,8 +60,47 @@ Karena kita sudah mengimplementasikan otomatisasi Cart dan validasi sistem Payme
 
 ---
 
+## 🔐 Role-Based Access Control (RBAC) Matrix
+
+Berikut adalah daftar hak akses CRUD berdasarkan Role di sistem:
+
+| Modul | Endpoint | USER | ADMIN | Keterangan |
+| :--- | :--- | :---: | :---: | :--- |
+| **AUTH** | Login & Verify OTP | ✅ | ✅ | Semua user bisa login & pakai 2FA |
+| **USERS** | Toggle 2FA (Self) | ✅ | ✅ | User hanya bisa toggle akun sendiri |
+| **USERS** | Toggle 2FA (Others)| ❌ | ✅ | Admin bisa bantu reset 2FA user lain |
+| **USERS** | CRUD Users | ❌ | ✅ | Hanya Admin yang bisa kelola data user |
+| **PROJECTS** | View Projects | ✅ | ✅ | Publik/User bisa lihat katalog |
+| **PROJECTS** | Create/Update/Delete| ❌ | ✅ | Hanya Admin yang bisa ubah katalog |
+| **CARTS** | Manage Cart | ✅ | ✅ | User kelola belanjaan masing-masing |
+| **ORDERS** | Checkout | ✅ | ✅ | User buat pesanan dari cart |
+| **ORDERS** | View All Orders | ❌ | ✅ | Admin pantau semua transaksi |
+| **PAYMENTS**| Upload Proof | ✅ | ✅ | User unggah struk bayar |
+| **PAYMENTS**| Verify Payment | ❌ | ✅ | Admin konfirmasi keabsahan struk |
+
+---
+
+## 🛡️ Panduan Fitur 2FA (Optional)
+
+Sistem 2FA (Two-Factor Authentication) bersifat opsional dan bisa diaktifkan per user.
+
+### Alur Kerja:
+1. **Aktivasi**: 
+   - Gunakan endpoint `PATCH /users/toggle-2fa`.
+   - Masukkan `{"enable": true}` di body.
+   - Status 2FA sekarang aktif untuk akun Anda.
+2. **Login Dua Tahap**:
+   - Jalankan `POST /auth/login`.
+   - Respons akan berisi `"requires2FA": true` dan email OTP terkirim ke Gmail Anda.
+   - Gunakan kode 6-digit dari email untuk endpoint `POST /auth/verify-otp`.
+3. **Penyelamatan Akun**:
+   - Jika User kehilangan akses email, **Admin** dapat mematikan 2FA user tersebut melalui `PATCH /users/toggle-2fa` dengan menyertakan `userId` di body request.
+
+---
+
 ## 📌 Endpoint Rules & General Notes
 - **PROJECTS**: Endpoint berjenis form-data untuk mendukung *Cloudinary Image Upload* (`thumbnail`).
   - Menambahkan spesifik array of objects di FormData cukup berikan Value JSON Stringified langsung pada key tersebut, contoh: key = `students` | value = `[{"id": 1, "role": "Ketua Kelompok"}]`.
 - **Placeholder**: Ubah variabel string seperti `<UUID-KATEGORI>`, atau angka seperti `:id` menggunakan parameter asli dari database yang sinkron di PC kamu.
+- **Bearer Token**: Semua endpoint (kecuali Login) membutuhkan header `Authorization: Bearer {{authToken}}`.
 - Selalu re-login jika ingin beralih mencoba API dari POV Admin atau User agar meminimalisir error Role atau Ownership di token.

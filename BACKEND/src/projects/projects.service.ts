@@ -3,7 +3,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class ProjectsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   private normalizeProjectData(data: any) {
     const normalized: any = { ...data };
@@ -12,6 +12,7 @@ export class ProjectsService {
     if (data.categoryId !== undefined) {
       normalized.categoryId = Number(data.categoryId);
     }
+
 
     delete normalized.students;
     delete normalized.studentId;
