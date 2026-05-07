@@ -8,7 +8,7 @@ export default async function Home() {
   const cookieStore = await cookies();
   const isLoggedIn = cookieStore.has("accessToken");
 
-  // Jika sudah login, tampilkan versi Dashboard User
+  // ── VIEW UNTUK USER YANG SUDAH LOGIN ───────────────────────────────────
   if (isLoggedIn) {
     return (
       <div className="min-h-screen bg-slate-50 font-sans flex flex-col">
@@ -19,17 +19,20 @@ export default async function Home() {
               <ShieldCheck size={14} /> Logged In as User (POV: User)
             </div>
           </div>
-          {/* Kamu bisa copy isi dari app/user/page.tsx ke sini atau buat komponen baru */}
           <div className="bg-white rounded-[2rem] p-8 shadow-sm border border-slate-100">
-             <h1 className="text-3xl font-black text-slate-900">Selamat Datang Kembali!</h1>
+             <h1 className="text-3xl font-black text-slate-900 tracking-tight">Selamat Datang Kembali!</h1>
              <p className="text-slate-500 mt-2">Ini adalah dashboard utama kamu di root URL.</p>
              <div className="mt-8 grid md:grid-cols-2 gap-6">
-                <div className="p-6 bg-red-50 rounded-2xl border border-red-100">
-                   <h3 className="font-bold text-red-600">Projects Saya</h3>
+                <div className="p-6 bg-red-50 rounded-2xl border border-red-100 group hover:bg-red-100/50 transition-all cursor-pointer">
+                   <h3 className="font-bold text-red-600 flex items-center gap-2">
+                      <Rocket size={18} /> Projects Saya
+                   </h3>
                    <p className="text-sm text-slate-600 mt-1">Cek progres project yang sedang kamu beli.</p>
                 </div>
-                <div className="p-6 bg-blue-50 rounded-2xl border border-blue-100">
-                   <h3 className="font-bold text-blue-600">Katalog Terbaru</h3>
+                <div className="p-6 bg-blue-50 rounded-2xl border border-blue-100 group hover:bg-blue-100/50 transition-all cursor-pointer">
+                   <h3 className="font-bold text-blue-600 flex items-center gap-2">
+                      <ShoppingCart size={18} /> Katalog Terbaru
+                   </h3>
                    <p className="text-sm text-slate-600 mt-1">Jelajahi inovasi terbaru dari siswa kami.</p>
                 </div>
              </div>
@@ -39,34 +42,10 @@ export default async function Home() {
     );
   }
 
-  // Jika BELUM login, tampilkan Landing Page Publik
+  // ── VIEW UNTUK GUEST (LANDING PAGE) ────────────────────────────────────
   return (
     <div className="flex flex-col min-h-screen bg-white text-slate-900 font-sans overflow-x-hidden selection:bg-red-500 selection:text-white">
-      
-      {/* ── HEADER IDENTIK DENGAN CATALOG ───────────────────────────────────── */}
-      <nav className="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-slate-100 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center font-bold text-white text-xl">T</div>
-            <span className="font-black text-xl tracking-tighter text-slate-900">TEFA <span className="text-red-600">MOKLET</span></span>
-          </Link>
-
-          <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-500">
-            <Link href="/#about" className="hover:text-slate-900 transition-colors">About</Link>
-            <Link href="/#majors" className="hover:text-slate-900 transition-colors">Majors</Link>
-            <Link href="/catalog" className="text-red-600">Catalog</Link>
-          </div>
-
-          <Link
-            href="/sign-in"
-            className="px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-full text-sm font-bold transition-all active:scale-95 shadow-md shadow-red-100"
-          >
-            Sign In
-          </Link>
-        </div>
-      </nav>
-
-      {/* SECTION 1: HERO (Modern & Clean) */}
+      {/* Hero Section */}
       <section className="relative min-h-[90vh] flex items-center pt-20 bg-slate-50">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 grid lg:grid-cols-2 gap-12 items-center relative z-10">
           <div className="space-y-8 animate-in fade-in slide-in-from-left duration-1000">
@@ -82,37 +61,37 @@ export default async function Home() {
             </p>
             <div className="flex flex-wrap gap-4">
               <Link 
-                href="#products"
+                href="/catalog"
                 className="group flex items-center gap-2 px-8 py-4 bg-red-600 text-white rounded-full font-bold text-lg hover:bg-red-700 transition-all shadow-xl shadow-red-200 active:scale-95"
               >
                 <ShoppingCart size={20} />
                 Mulai Belanja
               </Link>
               <Link 
-                href="#about"
+                href="/sign-in"
                 className="px-8 py-4 bg-white border-2 border-slate-200 text-slate-700 rounded-full font-bold text-lg hover:bg-slate-50 transition-all active:scale-95"
               >
-                About TEFA
+                Sign In
               </Link>
             </div>
           </div>
 
           <div className="relative hidden lg:block animate-in fade-in zoom-in duration-1000">
-            <div className="absolute -top-12 -right-12 w-64 h-64 bg-red-100 rounded-full blur-3xl opacity-50" />
             <div className="relative z-10 bg-white p-4 rounded-[2.5rem] shadow-2xl border border-slate-100">
               <Image 
-                src="/hero.png" // Pastikan gambar ini tersedia di folder public
+                src="/hero.png"
                 alt="Product Showcase" 
                 width={600} 
                 height={600} 
                 className="rounded-[2rem] object-cover"
+                priority
               />
             </div>
           </div>
         </div>
       </section>
 
-      {/* SECTION 2: ABOUT TEFA (Value Proposition) */}
+      {/* About Section */}
       <section id="about" className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
@@ -154,135 +133,11 @@ export default async function Home() {
           </div>
         </div>
       </section>
-
-      {/* SECTION 3: JURUSAN & SHOWCASE (Product Portfolio) */}
-      <section id="majors" className="py-24 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
-            <div className="space-y-4">
-              <h2 className="text-red-600 font-bold text-sm uppercase tracking-[0.2em]">Divisi Produksi</h2>
-              <h3 className="text-3xl md:text-4xl font-black text-slate-900">Ekosistem Digital Kami</h3>
-            </div>
-            <p className="text-slate-500 max-w-md">
-              Tiga pilar keahlian utama yang menjadi motor penggerak inovasi di TEFA SMK Telkom Malang.
-            </p>
-          </div>
-
-          <div className="space-y-20">
-            {/* RPL - Software */}
-            <div className="bg-white rounded-[3rem] p-8 lg:p-12 shadow-sm border border-slate-100 overflow-hidden relative">
-              <div className="grid lg:grid-cols-2 gap-12 items-center">
-                <div className="space-y-6">
-                  <span className="text-red-600 font-bold uppercase text-xs tracking-widest bg-red-50 px-3 py-1 rounded-full">Web & App Development</span>
-                  <h4 className="text-3xl font-black">Rekayasa Perangkat Lunak</h4>
-                  <p className="text-slate-600 leading-relaxed">
-                    Divisi RPL fokus pada pengembangan solusi perangkat lunak yang *user-centric*. Siswa kami terlatih menggunakan *tech-stack* modern seperti Next.js, NestJS, dan Flutter.
-                  </p>
-                  <div className="space-y-4">
-                    <p className="font-bold text-slate-900">Yang Telah Dibuat:</p>
-                    <div className="flex flex-wrap gap-2">
-                      {["Sistem Absensi Real-time", "App PDAM", "Parking System", "E-Commerce Mockup"].map((tag) => (
-                        <span key={tag} className="px-4 py-2 bg-slate-100 rounded-full text-xs font-semibold text-slate-600">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <Link href="/catalog?major=rpl" className="inline-flex items-center gap-2 text-red-600 font-bold hover:gap-4 transition-all">
-                    Lihat Produk RPL <ArrowRight size={20} />
-                  </Link>
-                </div>
-                <div className="relative group">
-                  <div className="absolute inset-0 bg-red-600 rounded-2xl rotate-3 group-hover:rotate-0 transition-transform duration-500" />
-                  <Image src="/rpl.png" alt="RPL Showcase" width={600} height={400} className="relative z-10 rounded-2xl shadow-lg object-cover" />
-                </div>
-              </div>
-            </div>
-
-            {/* TKJ - Infrastructure */}
-            <div className="bg-white rounded-[3rem] p-8 lg:p-12 shadow-sm border border-slate-100 overflow-hidden relative">
-              <div className="grid lg:grid-cols-2 gap-12 items-center">
-                <div className="order-2 lg:order-1 relative group">
-                  <div className="absolute inset-0 bg-blue-600 rounded-2xl -rotate-3 group-hover:rotate-0 transition-transform duration-500" />
-                  <Image src="/tkj.png" alt="TKJ Showcase" width={600} height={400} className="relative z-10 rounded-2xl shadow-lg object-cover" />
-                </div>
-                <div className="order-1 lg:order-2 space-y-6">
-                  <span className="text-blue-600 font-bold uppercase text-xs tracking-widest bg-blue-50 px-3 py-1 rounded-full">Networking & IoT</span>
-                  <h4 className="text-3xl font-black">Teknik Komputer Jaringan</h4>
-                  <p className="text-slate-600 leading-relaxed">
-                    Membangun tulang punggung infrastruktur digital. Mulai dari instalasi server hingga solusi otomasi rumah berbasis IoT.
-                  </p>
-                  <div className="space-y-4">
-                    <p className="font-bold text-slate-900">Yang Telah Dibuat:</p>
-                    <div className="flex flex-wrap gap-2">
-                      {["Smart Home Controller", "Custom Linux Router", "Server Monitoring Tool"].map((tag) => (
-                        <span key={tag} className="px-4 py-2 bg-slate-100 rounded-full text-xs font-semibold text-slate-600">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <Link href="/catalog?major=tkj" className="inline-flex items-center gap-2 text-blue-600 font-bold hover:gap-4 transition-all">
-                    Lihat Produk TKJ <ArrowRight size={20} />
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            {/* PG - Game Development */}
-            <div className="bg-white rounded-[3rem] p-8 lg:p-12 shadow-sm border border-slate-100 overflow-hidden relative">
-              <div className="grid lg:grid-cols-2 gap-12 items-center">
-                <div className="order-2 lg:order-1 relative group">
-                  <div className="absolute inset-0 bg-purple-600 rounded-2xl -rotate-3 group-hover:rotate-0 transition-transform duration-500" />
-                  <Image src="/pg.png" alt="Game Dev Showcase" width={600} height={400} className="relative z-10 rounded-2xl shadow-lg object-cover" />
-                </div>
-                <div className="order-1 lg:order-2 space-y-6">
-                  <span className="text-purple-600 font-bold uppercase text-xs tracking-widest bg-purple-50 px-3 py-1 rounded-full">Game Design & Development</span>
-                  <h4 className="text-3xl font-black">Pengembangan Game</h4>
-                  <p className="text-slate-600 leading-relaxed">
-                    Divisi PG menghadirkan pengalaman bermain yang imersif. Siswa kami merancang dan mengembangkan game dari konsep hingga rilis menggunakan engine industri seperti Unity dan Godot.
-                  </p>
-                  <div className="space-y-4">
-                    <p className="font-bold text-slate-900">Yang Telah Dibuat:</p>
-                    <div className="flex flex-wrap gap-2">
-                      {["2D Platformer Game", "VR Education App", "Mobile Puzzle Game", "Simulation Game"].map((tag) => (
-                        <span key={tag} className="px-4 py-2 bg-slate-100 rounded-full text-xs font-semibold text-slate-600">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <Link href="/catalog?major=pg" className="inline-flex items-center gap-2 text-purple-600 font-bold hover:gap-4 transition-all">
-                    Lihat Produk Game <ArrowRight size={20} />
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* FOOTER */}
-      <footer className="py-16 bg-white border-t border-slate-100">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center font-bold text-white text-xl">T</div>
-              <span className="font-black text-xl tracking-tighter text-slate-900">TEFA MOKLET</span>
-            </div>
-            <p className="text-slate-400 text-sm italic">"The Future is Ours"</p>
-          </div>
-          <div className="text-slate-500 text-sm">
-            © 2026 SMK Telkom Malang. Dibuat dengan dedikasi tinggi.
-          </div>
-          <div className="flex gap-6">
-            {["Instagram", "Website", "LinkedIn"].map((social) => (
-              <Link key={social} href="#" className="text-slate-400 hover:text-red-600 font-bold transition-colors">
-                {social}
-              </Link>
-            ))}
-          </div>
+      
+      {/* Footer */}
+      <footer className="py-12 bg-slate-50 border-t border-slate-100">
+        <div className="max-w-7xl mx-auto px-6 lg:px-12 text-center text-slate-500 text-sm">
+           © 2026 TEFA MOKLET - SMK Telkom Malang. All rights reserved.
         </div>
       </footer>
     </div>

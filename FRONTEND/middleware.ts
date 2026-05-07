@@ -5,16 +5,10 @@ export default function middleware(request: NextRequest) {
   const token = request.cookies.get("accessToken")?.value;
   const { pathname } = request.nextUrl;
 
-  // 1. Jika sudah login dan mencoba akses '/' atau '/user'
-  if (token) {
-    if (pathname === "/") {
-      // Rewrite '/' ke '/user' (URL tetap '/', konten dari /user)
-      return NextResponse.rewrite(new URL("/user", request.url));
-    }
-    if (pathname === "/user") {
-      // Redirect '/user' ke '/' biar URL-nya bersih (karena sudah di-rewrite ke root)
-      return NextResponse.redirect(new URL("/", request.url));
-    }
+  // Jika user sudah login dan mencoba akses /user, redirect ke root (/)
+  // Karena root sudah menghandle tampilan user secara otomatis
+  if (token && pathname === "/user") {
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   return NextResponse.next();
@@ -22,17 +16,6 @@ export default function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - sign-in, sign-up (auth pages)
-     */
     "/((?!api|_next/static|_next/image|favicon.ico|sign-in|sign-up).*)",
   ],
 };
-
-
-
