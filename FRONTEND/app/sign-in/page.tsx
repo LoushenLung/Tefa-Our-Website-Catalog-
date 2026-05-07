@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+// Pastikan sudah instal: npm install lucide-react
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Store, ChevronLeft } from "lucide-react";
 import { storeCookie } from "@/lib/client-cookies";
 
