@@ -1,14 +1,35 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ShieldCheck, Rocket, ShoppingCart, Globe, ArrowRight } from "lucide-react";
+import { ArrowRight, ShoppingCart, Rocket, ShieldCheck, Globe } from "lucide-react";
 
-export default async function Home() {
-
-
-  // ── VIEW UNTUK GUEST (LANDING PAGE) ────────────────────────────────────
+export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-white text-slate-900 font-sans overflow-x-hidden selection:bg-red-500 selection:text-white">
-      {/* Hero Section */}
+      
+      {/* ── HEADER IDENTIK DENGAN CATALOG ───────────────────────────────────── */}
+      <nav className="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-slate-100 shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 lg:px-12 h-16 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center font-bold text-white text-xl">T</div>
+            <span className="font-black text-xl tracking-tighter text-slate-900">TEFA <span className="text-red-600">MOKLET</span></span>
+          </Link>
+
+          <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-500">
+            <Link href="/#about" className="hover:text-slate-900 transition-colors">About</Link>
+            <Link href="/#majors" className="hover:text-slate-900 transition-colors">Majors</Link>
+            <Link href="/catalog" className="text-red-600">Catalog</Link>
+          </div>
+
+          <Link
+            href="/sign-in"
+            className="px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-full text-sm font-bold transition-all active:scale-95 shadow-md shadow-red-100"
+          >
+            Sign In
+          </Link>
+        </div>
+      </nav>
+
+      {/* SECTION 1: HERO (Modern & Clean) */}
       <section className="relative min-h-[90vh] flex items-center pt-20 bg-slate-50">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 grid lg:grid-cols-2 gap-12 items-center relative z-10">
           <div className="space-y-8 animate-in fade-in slide-in-from-left duration-1000">
@@ -23,38 +44,38 @@ export default async function Home() {
               Jelajahi berbagai produk digital dan fisik hasil karya terbaik siswa SMK Telkom Malang yang dikembangkan dengan standar industri profesional.
             </p>
             <div className="flex flex-wrap gap-4">
-              <Link
+              <Link 
                 href="/catalog"
                 className="group flex items-center gap-2 px-8 py-4 bg-red-600 text-white rounded-full font-bold text-lg hover:bg-red-700 transition-all shadow-xl shadow-red-200 active:scale-95"
               >
                 <ShoppingCart size={20} />
                 Mulai Belanja
               </Link>
-              <Link
+              <Link 
                 href="/sign-in"
                 className="px-8 py-4 bg-white border-2 border-slate-200 text-slate-700 rounded-full font-bold text-lg hover:bg-slate-50 transition-all active:scale-95"
               >
-                Sign In
+                About TEFA
               </Link>
             </div>
           </div>
 
           <div className="relative hidden lg:block animate-in fade-in zoom-in duration-1000">
+            <div className="absolute -top-12 -right-12 w-64 h-64 bg-red-100 rounded-full blur-3xl opacity-50" />
             <div className="relative z-10 bg-white p-4 rounded-[2.5rem] shadow-2xl border border-slate-100">
-              <Image
+              <Image 
                 src="/hero.png"
-                alt="Product Showcase"
-                width={600}
-                height={600}
+                alt="Product Showcase" 
+                width={600} 
+                height={600} 
                 className="rounded-[2rem] object-cover"
-                priority
               />
             </div>
           </div>
         </div>
       </section>
 
-      {/* About Section */}
+      {/* SECTION 2: ABOUT TEFA (Value Proposition) */}
       <section id="about" className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
@@ -96,11 +117,11 @@ export default async function Home() {
           </div>
         </div>
       </section>
-
+      
       {/* Footer */}
       <footer className="py-12 bg-slate-50 border-t border-slate-100">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 text-center text-slate-500 text-sm">
-          © 2026 TEFA MOKLET - SMK Telkom Malang. All rights reserved.
+           © 2026 TEFA MOKLET - SMK Telkom Malang. All rights reserved.
         </div>
       </footer>
     </div>

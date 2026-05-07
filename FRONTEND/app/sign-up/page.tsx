@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Eye, EyeOff, User, Mail, Lock, ArrowRight, Rocket, ChevronLeft } from "lucide-react";
-import { getApiUrl } from "@/lib/env";
 
 export default function SignUpPage() {
   const router = useRouter(); // Menggunakan useRouter Next.js
@@ -53,7 +52,7 @@ export default function SignUpPage() {
         role: "USER",
       });
 
-      const res = await fetch(getApiUrl('users'), {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json" 
@@ -64,11 +63,7 @@ export default function SignUpPage() {
       const data = await res.json();
 
       if (!res.ok) {
-<<<<<<< HEAD
-        // NestJS bisa return message sebagai string atau array
-=======
         // NestJS biasanya mengembalikan message string atau array
->>>>>>> 77201f9 (update catalog and landing page, fix sign-up backend)
         const message = Array.isArray(data?.message)
           ? data.message[0]
           : data?.message || "Registrasi gagal, coba lagi.";
@@ -76,18 +71,11 @@ export default function SignUpPage() {
         return;
       }
 
-<<<<<<< HEAD
-      // Registrasi berhasil → redirect ke sign-in
-      window.location.href = "/sign-in";
-    } catch {
-      setErrors({ api: "Tidak dapat terhubung ke server. Coba lagi nanti." });
-=======
       // Registrasi berhasil -> redirect ke halaman sign-in menggunakan router
       router.push("/sign-in");
       
     } catch (err) {
       setErrors({ api: "Tidak dapat terhubung ke server. Periksa koneksi backend." });
->>>>>>> 77201f9 (update catalog and landing page, fix sign-up backend)
     } finally {
       setLoading(false);
     }
