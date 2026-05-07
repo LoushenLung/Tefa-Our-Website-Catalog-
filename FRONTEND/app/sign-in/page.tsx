@@ -3,194 +3,225 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-// TODO: import { signIn } from "next-auth/react"; — aktifkan saat backend sudah terhubung
-import { Mail, Lock, EyeOff, ArrowRight, ArrowLeft, Store } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, ArrowRight, Store, ChevronLeft } from "lucide-react";
 
 export default function SignInPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const validate = () => {
+    const newErrors: Record<string, string> = {};
+    if (!form.email.trim()) newErrors.email = "Email wajib diisi.";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
+      newErrors.email = "Format email tidak valid.";
+    if (!form.password) newErrors.password = "Password wajib diisi.";
+    return newErrors;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: kirim POST ke /api/auth/login saat backend sudah terhubung
-    
-    // [DEV MODE] Simulasi role-based login
-    const role = email.toLowerCase().includes("admin") ? "admin" : "user";
-    const userSession = {
-      email: email,
-      role: role,
-      isLoggedIn: true,
-      name: email.split("@")[0]
-    };
-    
-    // Simpan ke localStorage untuk persistensi sementara
-    localStorage.setItem("user_session", JSON.stringify(userSession));
-    
-    if (role === "admin") {
-      router.push("/admin");
-    } else {
-      router.push("/user");
+    const validation = validate();
+    if (Object.keys(validation).length > 0) {
+      setErrors(validation);
+      return;
+    }
+    setErrors({});
+    setLoading(true);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: form.email, password: form.password }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        setErrors({ api: data?.message || "Email atau password salah." });
+      } else {
+        const data = await res.json();
+        // TODO: simpan token ke cookie/localStorage sesuai auth strategy
+        if (data?.user?.role === "ADMIN") {
+          router.push("/admin");
+        } else {
+          router.push("/user");
+        }
+      }
+    } catch {
+      setErrors({ api: "Tidak dapat terhubung ke server." });
+    } finally {
+      setLoading(false);
     }
   };
 
-  // TODO: aktifkan handleGoogleSignIn saat backend & NextAuth sudah dikonfigurasi
+  // TODO: aktifkan saat NextAuth/OAuth sudah dikonfigurasi
   const handleGoogleSignIn = () => {
     alert("[DEV MODE] Google Sign-In belum terhubung ke backend.");
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 p-4 font-sans">
-      {/* Tombol Kembali ke Beranda */}
-      <Link 
-        href="/" 
-        className="fixed left-4 top-4 flex items-center gap-2 text-sm font-medium text-slate-600 transition-colors hover:text-red-600 md:left-8 md:top-8"
-      >
-        <ArrowLeft size={18} />
-        Kembali ke Beranda
-      </Link>
+    <div className="flex flex-col min-h-screen bg-slate-50 font-sans overflow-x-hidden selection:bg-red-500 selection:text-white">
 
-      <div className="w-full max-w-[400px] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl">
-        {/* Dekoratif Garis Merah Atas */}
-        <div className="h-1.5 w-full bg-red-600" />
-
-        <div className="p-8">
-          {/* Logo Icon */}
-          <div className="mb-6 flex justify-center">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-red-600 text-white shadow-lg shadow-red-200">
-              <Store size={28} />
-            </div>
-          </div>
-
-          {/* Header */}
-          <div className="mb-8 text-center">
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Welcome Back</h1>
-            <p className="mt-2 text-sm leading-relaxed text-slate-500">
-              Sign in to access the SMK Telkom <br /> Malang Student Project Marketplace.
-            </p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Email Address */}
-            <div className="space-y-1.5">
-              <label htmlFor="email" className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                Email Address
-              </label>
-              <div className="relative">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-                  <Mail size={16} />
-                </div>
-                <input
-                  id="email"
-                  type="email"
-                  placeholder="student@smktelkom-mlg.sch.id"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="block w-full rounded-md border border-slate-200 bg-slate-50/50 py-2.5 pl-10 pr-3 text-sm outline-none transition-all focus:border-red-500/50 focus:ring-4 focus:ring-red-500/10"
-                />
-              </div>
-            </div>
-
-            {/* Password */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label htmlFor="password" className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                  Password
-                </label>
-                <a href="#" className="text-[11px] font-bold text-red-600 hover:underline">
-                  Forgot password?
-                </a>
-              </div>
-              <div className="relative">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-                  <Lock size={16} />
-                </div>
-                <input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="block w-full rounded-md border border-slate-200 bg-slate-50/50 py-2.5 pl-10 pr-10 text-sm outline-none transition-all focus:border-red-500/50 focus:ring-4 focus:ring-red-500/10"
-                />
-                <button type="button" className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600">
-                  <EyeOff size={16} />
-                </button>
-              </div>
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              className="flex w-full items-center justify-center gap-2 rounded-md bg-red-600 py-3 text-sm font-semibold text-white shadow-lg shadow-red-200 transition-all hover:bg-red-700 active:scale-[0.98]"
-            >
-              Login to Account
-              <ArrowRight size={16} />
-            </button>
-          </form>
-
-          {/* Divider */}
-          <div className="relative my-8">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-100"></div>
-            </div>
-            <div className="relative flex justify-center text-[10px] font-bold uppercase tracking-widest">
-              <span className="bg-white px-4 text-slate-400">Or</span>
-            </div>
-          </div>
-
-          {/* Google Sign In (Optional, disesuaikan ke gaya gambar) */}
-          <button 
-            onClick={handleGoogleSignIn}
-            className="flex w-full items-center justify-center gap-3 rounded-md border border-slate-200 bg-white py-2.5 text-sm font-medium text-slate-600 transition-all hover:bg-slate-50"
+      {/* NAVBAR */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-100 px-6 lg:px-12 h-16 flex items-center justify-between shadow-sm">
+        <div className="flex items-center gap-4">
+          <Link
+            href="/"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-200 text-slate-600 text-sm font-semibold hover:bg-slate-50 hover:border-slate-300 transition-all"
           >
-            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.908 3.152-1.928 4.176-1.288 1.288-3.312 2.696-7.84 2.696-7.032 0-12.76-5.704-12.76-12.728s5.728-12.728 12.76-12.728c3.84 0 6.536 1.504 8.512 3.384l2.36-2.36c-2.336-2.224-5.4-3.912-10.872-3.912-9.696 0-17.76 8.064-17.76 17.76s8.064 17.76 17.76 17.76c5.224 0 9.176-1.728 12.264-4.936 3.192-3.192 4.192-7.64 4.192-11.232 0-1.072-.08-2.096-.24-3.072h-16.216z"/>
-            </svg>
-            Sign in with Google
-          </button>
+            <ChevronLeft size={15} />
+            Home
+          </Link>
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center font-bold text-white text-xl">T</div>
+            <span className="font-black text-xl tracking-tighter text-slate-900">TEFA</span>
+          </Link>
+        </div>
+        <span className="text-slate-500 text-sm">
+          Belum punya akun?{" "}
+          <Link href="/sign-up" className="text-red-600 font-bold hover:underline">
+            Daftar
+          </Link>
+        </span>
+      </nav>
+
+      {/* BACKGROUND DECORATION */}
+      <div className="fixed top-0 right-0 w-[600px] h-[600px] bg-red-100 rounded-full blur-[120px] opacity-30 pointer-events-none" />
+      <div className="fixed bottom-0 left-0 w-[400px] h-[400px] bg-slate-200 rounded-full blur-[100px] opacity-40 pointer-events-none" />
+
+      {/* MAIN CONTENT */}
+      <main className="flex-1 flex items-center justify-center pt-24 pb-12 px-4 relative z-10">
+        <div className="w-full max-w-md">
+
+          {/* CARD */}
+          <div className="bg-white rounded-[2rem] border border-slate-100 shadow-2xl shadow-slate-200/60 overflow-hidden">
+
+            {/* TOP ACCENT */}
+            <div className="h-1.5 bg-gradient-to-r from-red-600 via-red-500 to-red-400" />
+
+            <div className="p-8 space-y-6">
+
+              {/* HEADER */}
+              <div className="text-center space-y-2">
+                <div className="mx-auto w-14 h-14 bg-red-600 rounded-2xl flex items-center justify-center shadow-lg shadow-red-200 mb-4">
+                  <Store size={26} className="text-white" />
+                </div>
+                <h1 className="text-2xl font-black text-slate-900 tracking-tight">
+                  Welcome Back
+                </h1>
+                <p className="text-slate-500 text-sm leading-relaxed">
+                  Sign in to access the SMK Telkom<br />Malang Student Project Marketplace.
+                </p>
+              </div>
+
+              {/* API ERROR */}
+              {errors.api && (
+                <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 font-medium">
+                  {errors.api}
+                </div>
+              )}
+
+              {/* FORM */}
+              <form onSubmit={handleSubmit} className="space-y-4">
+
+                {/* EMAIL */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    Email Address
+                  </label>
+                  <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border bg-slate-50 focus-within:bg-white focus-within:border-red-400 focus-within:shadow-sm focus-within:shadow-red-100 transition-all ${errors.email ? "border-red-400 bg-red-50" : "border-slate-200"}`}>
+                    <Mail size={16} className="text-slate-400 shrink-0" />
+                    <input
+                      type="email"
+                      placeholder="student@smktelkom-mlg.sch.id"
+                      value={form.email}
+                      onChange={(e) => setForm({ ...form, email: e.target.value })}
+                      className="flex-1 bg-transparent text-slate-800 text-sm outline-none placeholder:text-slate-400"
+                    />
+                  </div>
+                  {errors.email && <p className="text-red-500 text-xs font-medium">{errors.email}</p>}
+                </div>
+
+                {/* PASSWORD */}
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                      Password
+                    </label>
+                    <Link href="/forgot-password" className="text-xs font-bold text-red-600 hover:underline">
+                      Forgot password?
+                    </Link>
+                  </div>
+                  <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border bg-slate-50 focus-within:bg-white focus-within:border-red-400 focus-within:shadow-sm focus-within:shadow-red-100 transition-all ${errors.password ? "border-red-400 bg-red-50" : "border-slate-200"}`}>
+                    <Lock size={16} className="text-slate-400 shrink-0" />
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="••••••••"
+                      value={form.password}
+                      onChange={(e) => setForm({ ...form, password: e.target.value })}
+                      className="flex-1 bg-transparent text-slate-800 text-sm outline-none placeholder:text-slate-400"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="text-slate-400 hover:text-slate-600 transition-colors shrink-0"
+                    >
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                  {errors.password && <p className="text-red-500 text-xs font-medium">{errors.password}</p>}
+                </div>
+
+                {/* SUBMIT */}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full flex items-center justify-center gap-2 py-3.5 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white font-bold text-base rounded-xl transition-all shadow-lg shadow-red-200 active:scale-[0.98]"
+                >
+                  {loading ? (
+                    <span className="flex items-center gap-2">
+                      <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Memproses...
+                    </span>
+                  ) : (
+                    <>
+                      Login to Account
+                      <ArrowRight size={18} />
+                    </>
+                  )}
+                </button>
+              </form>
+
+              {/* DIVIDER */}
+              <div className="flex items-center gap-4">
+                <div className="flex-1 h-px bg-slate-100" />
+                <span className="text-slate-400 text-xs font-medium">ATAU</span>
+                <div className="flex-1 h-px bg-slate-100" />
+              </div>
+
+              {/* GOOGLE SIGN IN */}
+              <button
+                type="button"
+                onClick={handleGoogleSignIn}
+                className="w-full flex items-center justify-center gap-3 py-3 border-2 border-slate-200 rounded-xl text-slate-700 font-bold text-sm hover:bg-slate-50 hover:border-slate-300 transition-all"
+              >
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                  <path d="M17.64 9.2045C17.64 8.5663 17.5827 7.9527 17.4764 7.3636H9V10.845H13.8436C13.635 11.97 13.0009 12.9231 12.0477 13.5613V15.8195H14.9564C16.6582 14.2527 17.64 11.9454 17.64 9.2045Z" fill="#4285F4"/>
+                  <path d="M9 18C11.43 18 13.4673 17.1941 14.9564 15.8195L12.0477 13.5613C11.2418 14.1013 10.2109 14.4204 9 14.4204C6.65591 14.4204 4.67182 12.8372 3.96409 10.71H0.957275V13.0418C2.43818 15.9831 5.48182 18 9 18Z" fill="#34A853"/>
+                  <path d="M3.96409 10.71C3.78409 10.17 3.68182 9.5931 3.68182 9C3.68182 8.4068 3.78409 7.8299 3.96409 7.29V4.9581H0.957273C0.347727 6.1731 0 7.5477 0 9C0 10.4522 0.347727 11.8268 0.957273 13.0418L3.96409 10.71Z" fill="#FBBC05"/>
+                  <path d="M9 3.5795C10.3214 3.5795 11.5077 4.0336 12.4405 4.9254L15.0218 2.344C13.4632 0.8917 11.4259 0 9 0C5.48182 0 2.43818 2.0168 0.957275 4.9581L3.96409 7.29C4.67182 5.1627 6.65591 3.5795 9 3.5795Z" fill="#EA4335"/>
+                </svg>
+                Sign in with Google
+              </button>
 
           {/* Footer Text */}
           <p className="mt-8 text-center text-sm text-slate-500">
-            New to the marketplace?{" "}
+            New to the TEFA?{" "}
             <Link href="/sign-up" className="font-bold text-red-600 hover:underline">
               Create a new account
             </Link>
           </p>
-
-          {/* [DEV ONLY] Quick Login Helpers */}
-          <div className="mt-8 rounded-lg border border-dashed border-slate-200 p-4">
-            <p className="mb-3 text-center text-[10px] font-bold uppercase tracking-widest text-slate-400">
-              Developer Quick Login
-            </p>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setEmail("admin@telkom.id");
-                  setPassword("admin123");
-                }}
-                className="flex-1 rounded border border-red-200 bg-red-50 py-1.5 text-xs font-semibold text-red-600 transition-colors hover:bg-red-100"
-              >
-                Login as Admin
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setEmail("student@telkom.id");
-                  setPassword("student123");
-                }}
-                className="flex-1 rounded border border-slate-200 bg-slate-50 py-1.5 text-xs font-semibold text-slate-600 transition-colors hover:bg-slate-100"
-              >
-                Login as User
-              </button>
-            </div>
-            <p className="mt-2 text-center text-[9px] text-slate-400 italic">
-              *Tips: Email contains "admin" will be redirected to Admin Dashboard.
-            </p>
-          </div>
         </div>
 
         {/* Bottom Secure Tag */}
@@ -198,7 +229,7 @@ export default function SignInPage() {
           <Lock size={12} />
           Secure Institutional Login Gateway
         </div>
-      </div>
+      </main>
     </div>
   );
 }
