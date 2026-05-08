@@ -142,7 +142,7 @@ const RAW_PRODUCTS = [
   },
   {
     id: "9",
-    name: "PixelCraft Studio – Jasa Animasi 2D",
+    title: "PixelCraft Studio – Jasa Animasi 2D",
     slug: "pixelcraft-studio-jasa-animasi-2d",
     description: "Layanan pembuatan animasi 2D profesional: motion graphic, explainer video, karakter animasi, dan konten media sosial branded untuk bisnis Anda.",
     price: 3500000,
@@ -151,13 +151,15 @@ const RAW_PRODUCTS = [
     status: "PUBLISHED" as const,
     specs: { Software: "Adobe Animate, After Effects", Durasi: "30–90 detik", Revisi: "3x Free" },
     category: { name: "Game & Animasi", slug: "game-animasi" },
-    image: "https://images.unsplash.com/photo-1626785774573-4b799315345d?w=600&q=80",
+    thumbnail: "https://images.unsplash.com/photo-1626785774573-4b799315345d?w=600&q=80",
   },
 ];
 
-const PRODUCTS: Product[] = RAW_PRODUCTS.map((p) => ({
+const PRODUCTS: Product[] = RAW_PRODUCTS.map((p: any) => ({
   ...p,
   ...seededRating(p.id),
+  averageRating: seededRating(p.id).rating,
+  totalReviews: seededRating(p.id).reviewCount,
 }));
 
 const CATEGORIES = [
@@ -504,8 +506,9 @@ export default function CatalogPage() {
               Lihat Semua Produk
             </button>
           </div>
-          </>
         )}
+      </>
+    )}
 
         {filtered.length > 0 && !isLoading && (
           <div className="mt-20 grid grid-cols-3 gap-6 py-10 border-t border-slate-100">
