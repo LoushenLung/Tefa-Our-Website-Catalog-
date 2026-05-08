@@ -173,14 +173,10 @@ export default function Home() {
               </div>
             </div>
 
-            {/* PG - Game Development */}
+            {/* PG - Game Development (Gambar sudah dipindah ke kanan) */}
             <div className="bg-white rounded-[3rem] p-8 lg:p-12 shadow-sm border border-slate-100 overflow-hidden relative">
               <div className="grid lg:grid-cols-2 gap-12 items-center">
-                <div className="order-2 lg:order-1 relative group">
-                  <div className="absolute inset-0 bg-purple-600 rounded-2xl -rotate-3 group-hover:rotate-0 transition-transform duration-500" />
-                  <Image src="/pg.png" alt="Game Dev Showcase" width={600} height={400} className="relative z-10 rounded-2xl shadow-lg object-cover" />
-                </div>
-                <div className="order-1 lg:order-2 space-y-6">
+                <div className="space-y-6">
                   <span className="text-purple-600 font-bold uppercase text-xs tracking-widest bg-purple-50 px-3 py-1 rounded-full">Game Design & Development</span>
                   <h4 className="text-3xl font-black">Pengembangan Game</h4>
                   <p className="text-slate-600 leading-relaxed">
@@ -199,6 +195,10 @@ export default function Home() {
                   <Link href="/catalog?major=pg" className="inline-flex items-center gap-2 text-purple-600 font-bold hover:gap-4 transition-all">
                     Lihat Produk Game <ArrowRight size={20} />
                   </Link>
+                </div>
+                <div className="relative group">
+                  <div className="absolute inset-0 bg-purple-600 rounded-2xl rotate-3 group-hover:rotate-0 transition-transform duration-500" />
+                  <Image src="/pg.png" alt="Game Dev Showcase" width={600} height={400} className="relative z-10 rounded-2xl shadow-lg object-cover" />
                 </div>
               </div>
             </div>

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Eye, EyeOff, User, Mail, Lock, ArrowRight, Rocket, ChevronLeft } from "lucide-react";
+import { Eye, EyeOff, User, Mail, Lock, ArrowRight, Rocket, ChevronLeft, Phone } from "lucide-react";
 
 export default function SignUpPage() {
   const router = useRouter(); // Menggunakan useRouter Next.js
@@ -14,6 +14,7 @@ export default function SignUpPage() {
   const [form, setForm] = useState({
     name: "",
     email: "",
+    phone: "",
     password: "",
     confirmPassword: "",
   });
@@ -25,6 +26,9 @@ export default function SignUpPage() {
     if (!form.email.trim()) newErrors.email = "Email wajib diisi.";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
       newErrors.email = "Format email tidak valid.";
+    if (!form.phone.trim()) newErrors.phone = "Nomor telepon wajib diisi.";
+    else if (!/^[0-9]{9,15}$/.test(form.phone))
+      newErrors.phone = "Nomor telepon tidak valid (hanya angka, 9-15 digit).";
     if (!form.password) newErrors.password = "Password wajib diisi.";
     else if (form.password.length < 6)
       newErrors.password = "Password minimal 6 karakter.";
@@ -49,6 +53,7 @@ export default function SignUpPage() {
         email: form.email,
         password: form.password,
         name: form.name,
+        phone: form.phone,
         role: "USER",
       });
 
@@ -85,7 +90,7 @@ export default function SignUpPage() {
     <div className="flex flex-col min-h-screen bg-slate-50 font-sans overflow-x-hidden selection:bg-red-500 selection:text-white">
 
       {/* NAVBAR */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-100 px-6 lg:px-12 h-16 flex items-center justify-between shadow-sm">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-100 px-6 lg:px-12 h-16 flex items-center shadow-sm">
         <div className="flex items-center gap-4">
           <Link
             href="/"
@@ -99,10 +104,6 @@ export default function SignUpPage() {
             <span className="font-black text-xl tracking-tighter text-slate-900">TEFA</span>
           </Link>
         </div>
-        <span className="text-slate-500 text-sm">
-          Sudah punya akun?{" "}
-          <Link href="/sign-in" className="text-red-600 font-bold hover:underline">Login</Link>
-        </span>
       </nav>
 
       {/* BACKGROUND DECORATION */}
@@ -162,6 +163,22 @@ export default function SignUpPage() {
                     />
                   </div>
                   {errors.email && <p className="text-red-500 text-xs font-medium">{errors.email}</p>}
+                </div>
+
+                {/* PHONE */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Nomor Telepon</label>
+                  <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border bg-slate-50 focus-within:bg-white focus-within:border-red-400 focus-within:shadow-sm focus-within:shadow-red-100 transition-all ${errors.phone ? "border-red-400 bg-red-50" : "border-slate-200"}`}>
+                    <Phone size={16} className="text-slate-400 shrink-0" />
+                    <input
+                      type="tel"
+                      placeholder="08xxxxxxxxxx"
+                      value={form.phone}
+                      onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                      className="flex-1 bg-transparent text-slate-800 text-sm outline-none placeholder:text-slate-400"
+                    />
+                  </div>
+                  {errors.phone && <p className="text-red-500 text-xs font-medium">{errors.phone}</p>}
                 </div>
 
                 {/* PASSWORD */}

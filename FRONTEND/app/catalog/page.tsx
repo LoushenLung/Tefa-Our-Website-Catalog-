@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ShoppingCart, Search, Star, ChevronDown } from "lucide-react";
+import { ShoppingCart, Search, Star, ChevronDown, Loader2 } from "lucide-react";
+import Header from "../../components/navbar-public"; // Sesuaikan jika lokasi komponen Header berbeda
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 interface Product {
@@ -22,144 +23,6 @@ interface Product {
   rating: number;
   reviewCount: number;
 }
-
-function seededRating(id: string): { rating: number; reviewCount: number } {
-  const seed = id.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
-  const rating = 3.5 + ((seed * 17) % 15) / 10; 
-  const reviewCount = 4 + ((seed * 31) % 97);    
-  return { rating: Math.round(rating * 10) / 10, reviewCount };
-}
-
-// ─── Dummy Data ───────────────────────────────────────────────────────────────
-const RAW_PRODUCTS = [
-  {
-    id: "1",
-    name: "SiAbsen – Sistem Absensi Digital",
-    slug: "siabsen-sistem-absensi-digital",
-    description: "Aplikasi absensi berbasis QR-code real-time untuk sekolah dan instansi. Dilengkapi dashboard analitik, notifikasi orang tua, dan laporan otomatis PDF.",
-    price: 4500000,
-    currency: "IDR" as const,
-    stock: 10,
-    status: "PUBLISHED" as const,
-    specs: { Platform: "Web + Android", Stack: "Next.js, NestJS, MySQL", Tim: "3 Siswa RPL" },
-    category: { name: "Software & Web", slug: "software-web" },
-    image: "https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=600&q=80",
-    badge: "Terlaris",
-  },
-  {
-    id: "2",
-    name: "SmartHome Controller – IoT Hub",
-    slug: "smarthome-controller-iot-hub",
-    description: "Perangkat IoT berbasis ESP32 yang menghubungkan lampu, kipas, dan kunci pintu ke aplikasi mobile. Kontrol rumah dari mana saja via internet.",
-    price: 1800000,
-    currency: "IDR" as const,
-    stock: 5,
-    status: "PUBLISHED" as const,
-    specs: { MCU: "ESP32", Koneksi: "WiFi + MQTT", "Catu Daya": "5V USB-C" },
-    category: { name: "IoT & Jaringan", slug: "iot-jaringan" },
-    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80",
-    badge: "Baru",
-  },
-  {
-    id: "3",
-    name: "NusantaraQuest – 2D RPG Game",
-    slug: "nusantaraquest-2d-rpg-game",
-    description: "Game RPG 2D berbasis budaya Nusantara dengan 5 chapter cerita, 20+ karakter unik, dan musik tradisional orisinal. Tersedia di PC dan Android.",
-    price: 350000,
-    currency: "IDR" as const,
-    stock: 999,
-    status: "PUBLISHED" as const,
-    specs: { Engine: "Unity 2022", Platform: "PC & Android", Rating: "E (Semua Umur)" },
-    category: { name: "Game & Animasi", slug: "game-animasi" },
-    image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600&q=80",
-    badge: "Pilihan Editor",
-  },
-  {
-    id: "4",
-    name: "CyberShield – Audit Keamanan Jaringan",
-    slug: "cybershield-audit-keamanan-jaringan",
-    description: "Layanan audit keamanan jaringan komprehensif: scanning vulnerabilitas, pentest, dan laporan remediasi lengkap untuk bisnis UMKM hingga enterprise.",
-    price: 7500000,
-    currency: "IDR" as const,
-    stock: 3,
-    status: "PUBLISHED" as const,
-    specs: { Durasi: "3–5 Hari Kerja", Output: "Laporan PDF 50+ hal", Sertifikasi: "CEH Compliant" },
-    category: { name: "IoT & Jaringan", slug: "iot-jaringan" },
-    image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=600&q=80",
-  },
-  {
-    id: "5",
-    name: "BatiKraft – E-Commerce UMKM",
-    slug: "batikraft-ecommerce-umkm",
-    description: "Platform e-commerce siap pakai untuk pelaku UMKM kerajinan. Fitur: manajemen produk, payment gateway, laporan penjualan, dan chatbot CS otomatis.",
-    price: 6000000,
-    currency: "IDR" as const,
-    stock: 7,
-    status: "PUBLISHED" as const,
-    specs: { CMS: "Custom Admin Panel", Payment: "Midtrans, QRIS", Hosting: "VPS Ready" },
-    category: { name: "Software & Web", slug: "software-web" },
-    image: "https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=600&q=80",
-  },
-  {
-    id: "6",
-    name: "LanGuru – Platform E-Learning Bahasa",
-    slug: "languru-platform-elearning-bahasa",
-    description: "Platform belajar bahasa Inggris interaktif dengan metode gamifikasi, live session bersama tutor, dan AI-powered pronunciation checker.",
-    price: 2800000,
-    currency: "IDR" as const,
-    stock: 15,
-    status: "PUBLISHED" as const,
-    specs: { Fitur: "AI + Gamification", Konten: "500+ Modul", Akses: "Seumur Hidup" },
-    category: { name: "Software & Web", slug: "software-web" },
-    image: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=600&q=80",
-    badge: "Hot",
-  },
-  {
-    id: "7",
-    name: "ShadowPath – 3D Puzzle Horror Game",
-    slug: "shadowpath-3d-puzzle-horror-game",
-    description: "Game horror puzzle 3D dengan atmosfer mencekam, mekanik cahaya unik, dan 4 ending berbeda berdasarkan pilihan pemain. Optimasi untuk Mid-end PC.",
-    price: 120000,
-    currency: "IDR" as const,
-    stock: 999,
-    status: "PUBLISHED" as const,
-    specs: { Engine: "Unreal Engine 5", Platform: "PC", Rating: "17+ (Horror)" },
-    category: { name: "Game & Animasi", slug: "game-animasi" },
-    image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&q=80",
-  },
-  {
-    id: "8",
-    name: "AgroSense – Sensor Pertanian Pintar",
-    slug: "agrosense-sensor-pertanian-pintar",
-    description: "Sistem monitoring lahan pertanian berbasis IoT dengan sensor kelembaban tanah, suhu, dan curah hujan. Data real-time dikirim ke dashboard mobile.",
-    price: 2200000,
-    currency: "IDR" as const,
-    stock: 8,
-    status: "PUBLISHED" as const,
-    specs: { Sensor: "Soil + DHT22 + Rain", Range: "500m RF", Baterai: "Solar + Li-ion" },
-    category: { name: "IoT & Jaringan", slug: "iot-jaringan" },
-    image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=600&q=80",
-    badge: "Inovasi",
-  },
-  {
-    id: "9",
-    name: "PixelCraft Studio – Jasa Animasi 2D",
-    slug: "pixelcraft-studio-jasa-animasi-2d",
-    description: "Layanan pembuatan animasi 2D profesional: motion graphic, explainer video, karakter animasi, dan konten media sosial branded untuk bisnis Anda.",
-    price: 3500000,
-    currency: "IDR" as const,
-    stock: 6,
-    status: "PUBLISHED" as const,
-    specs: { Software: "Adobe Animate, After Effects", Durasi: "30–90 detik", Revisi: "3x Free" },
-    category: { name: "Game & Animasi", slug: "game-animasi" },
-    image: "https://images.unsplash.com/photo-1626785774573-4b799315345d?w=600&q=80",
-  },
-];
-
-const PRODUCTS: Product[] = RAW_PRODUCTS.map((p) => ({
-  ...p,
-  ...seededRating(p.id),
-}));
 
 const CATEGORIES = [
   { label: "Semua", slug: "all" },
@@ -230,7 +93,7 @@ function ProductCard({ product }: { product: Product }) {
   return (
     <article className="group relative flex flex-col bg-white border border-slate-100 rounded-3xl overflow-hidden hover:shadow-xl hover:shadow-slate-200/60 hover:border-red-100 transition-all duration-300">
       <div className="relative h-52 overflow-hidden bg-slate-100">
-        {!imgError ? (
+        {!imgError && product.image ? (
           <Image
             src={product.image}
             alt={product.name}
@@ -306,12 +169,66 @@ function ProductCard({ product }: { product: Product }) {
 }
 
 export default function CatalogPage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
 
+  // ─── Fetch Data dari Backend ───────────────────────────────────────────────
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setIsLoading(true);
+      setError(null);
+      
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/projects`); 
+        
+        if (!response.ok) {
+          throw new Error("Gagal mengambil data katalog dari server.");
+        }
+        
+        const data = await response.json();
+        const productArray = Array.isArray(data) ? data : data.data || [];
+
+        // Mapping response dari backend ke state yang dibutuhkan UI
+        const formattedProducts: Product[] = productArray.map((item: any) => ({
+          id: String(item.id),
+          name: item.title || "Tanpa Judul",
+          slug: item.slug || String(item.id),
+          description: item.description || "Belum ada deskripsi untuk project ini.",
+          price: Number(item.price) || 0,
+          currency: "IDR",
+          stock: Number(item.stock) || 10,
+          status: item.status || "PUBLISHED",
+          specs: item.specs || { Kreator: "Siswa TEFA" },
+          image: item.thumbnail || "https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=600&q=80",
+          category: item.category ? { name: item.category.name, slug: item.category.slug } : { name: "Produk Karya", slug: "all" }, 
+          badge: item.badge || null,
+          
+          // Ambil rating dari backend, jika kosong/tidak ada maka fallback ke 0
+          rating: Number(item.rating) || 0,
+          
+          // Ambil total penjualan/review dari backend, jika kosong fallback ke 0
+          reviewCount: Number(item.sold) || Number(item.reviewCount) || 0, 
+        }));
+
+        setProducts(formattedProducts);
+      } catch (err: any) {
+        setError(err.message || "Terjadi kesalahan saat menghubungi server.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  // ─── Filter & Sort Logic ───────────────────────────────────────────────────
   const filtered = useMemo(() => {
-    let result = PRODUCTS.filter((p) => p.status === "PUBLISHED");
+    let result = products.filter((p) => p.status === "PUBLISHED");
 
     if (activeCategory !== "all") {
       result = result.filter((p) => p.category.slug === activeCategory);
@@ -345,33 +262,13 @@ export default function CatalogPage() {
     }
 
     return result;
-  }, [search, activeCategory, sortBy]);
+  }, [search, activeCategory, sortBy, products]);
 
   return (
     <div className="min-h-screen bg-white text-slate-900 font-sans overflow-x-hidden selection:bg-red-500 selection:text-white">
 
-      {/* ── HEADER IDENTIK ──────────────────────────────────────────────────── */}
-      <nav className="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-slate-100 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center font-bold text-white text-xl">T</div>
-            <span className="font-black text-xl tracking-tighter text-slate-900">TEFA <span className="text-red-600">MOKLET</span></span>
-          </Link>
-
-          <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-500">
-            <Link href="/#about" className="hover:text-slate-900 transition-colors">About</Link>
-            <Link href="/#majors" className="hover:text-slate-900 transition-colors">Majors</Link>
-            <Link href="/catalog" className="text-red-600">Catalog</Link>
-          </div>
-
-          <Link
-            href="/sign-in"
-            className="px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-full text-sm font-bold transition-all active:scale-95 shadow-md shadow-red-100"
-          >
-            Sign In
-          </Link>
-        </div>
-      </nav>
+      {/* ── HEADER ──────────────────────────────────────────────────── */}
+      <Header />
 
       {/* ── Hero / Header Catalog ──────────────────────────────────────────────────── */}
       <section className="pt-32 pb-16 px-6 lg:px-12 bg-slate-50 relative overflow-hidden">
@@ -383,7 +280,7 @@ export default function CatalogPage() {
             <span className="text-slate-700 font-semibold">Katalog Produk</span>
           </div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 border border-red-100 text-red-600 text-xs font-bold uppercase tracking-wider mb-4">
-            <Star size={12} className="fill-red-400 text-red-400" /> {PRODUCTS.length}+ Produk Tersedia
+            <Star size={12} className="fill-red-400 text-red-400" /> Hasil Karya Terbaik
           </div>
           <h1 className="text-4xl md:text-6xl font-black tracking-tight text-slate-900 mb-4">
             Katalog <span className="text-red-600 underline decoration-red-200 underline-offset-8">Produk</span>
@@ -394,7 +291,7 @@ export default function CatalogPage() {
         </div>
       </section>
 
-      {/* ── DESAIN FILTER & SEARCH BAR YANG DIPERBAGUS ────────────────────────────────────────────── */}
+      {/* ── DESAIN FILTER & SEARCH BAR ────────────────────────────────────────────── */}
       <section className="sticky top-16 z-40 bg-white/95 backdrop-blur-xl border-b border-slate-100 shadow-sm py-4 transition-all">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col lg:flex-row gap-4 items-center justify-between">
           
@@ -471,7 +368,31 @@ export default function CatalogPage() {
           )}
         </div>
 
-        {filtered.length > 0 ? (
+        {/* State Kondisional: Loading, Error, atau Tampilkan Data */}
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-32 text-slate-400 gap-4">
+            <Loader2 className="animate-spin text-red-500" size={48} />
+            <p className="font-semibold text-slate-600">Menyinkronkan dengan server...</p>
+          </div>
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center py-32 text-center gap-4">
+            <div className="w-20 h-20 rounded-full bg-red-50 border border-red-100 flex items-center justify-center">
+              <svg className="w-10 h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-xl font-black text-slate-900 mb-1">Gagal Memuat Data</h3>
+              <p className="text-slate-500 max-w-md">{error}</p>
+            </div>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-xl transition-all active:scale-95 shadow-md shadow-red-100 mt-2"
+            >
+              Coba Lagi
+            </button>
+          </div>
+        ) : filtered.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filtered.map((product) => (
               <ProductCard key={product.id} product={product} />
@@ -495,10 +416,10 @@ export default function CatalogPage() {
           </div>
         )}
 
-        {filtered.length > 0 && (
+        {filtered.length > 0 && !isLoading && !error && (
           <div className="mt-20 grid grid-cols-3 gap-6 py-10 border-t border-slate-100">
             {[
-              { value: `${PRODUCTS.length}+`, label: "Total Produk" },
+              { value: `${products.length}+`, label: "Total Produk" },
               { value: "3", label: "Kategori Unggulan" },
               { value: "100%", label: "Karya Siswa" },
             ].map((stat) => (

@@ -68,10 +68,12 @@ export default function SignInPage() {
         if (payload.role === "ADMIN") {
           router.push("/admin");
         } else {
-          router.push("/customer");
+          // Mengarahkan user biasa ke /customer/page
+          router.push("../customer");
         }
       } catch {
-        router.push("/customer");
+        // Fallback jika terjadi error saat parsing JWT
+        router.push("../customer");
       }
       
     } catch (err) {
@@ -88,7 +90,8 @@ export default function SignInPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 font-sans overflow-x-hidden selection:bg-red-500 selection:text-white">
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-100 px-6 lg:px-12 h-16 flex items-center justify-between shadow-sm">
+      {/* NAVBAR: Tombol daftar dihilangkan */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-100 px-6 lg:px-12 h-16 flex items-center shadow-sm">
         <div className="flex items-center gap-4">
           <Link href="/" className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-200 text-slate-600 text-sm font-semibold hover:bg-slate-50 hover:border-slate-300 transition-all">
             <ChevronLeft size={15} /> Home
@@ -98,9 +101,6 @@ export default function SignInPage() {
             <span className="font-black text-xl tracking-tighter text-slate-900">TEFA</span>
           </Link>
         </div>
-        <span className="text-slate-500 text-sm">
-          Belum punya akun? <Link href="/sign-up" className="text-red-600 font-bold hover:underline">Daftar</Link>
-        </span>
       </nav>
 
       <main className="flex-1 flex items-center justify-center pt-24 pb-12 px-4 relative z-10">
