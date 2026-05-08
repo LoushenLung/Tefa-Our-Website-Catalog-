@@ -5,9 +5,9 @@ import { useEffect, useState } from "react";
 import NavbarPublic from "./navbar-public";
 import CustomerHeader from "./appsidebar-customer";
 
-export default function NavbarRoot() {
+export default function NavbarRoot({ initialIsLoggedIn }: { initialIsLoggedIn: boolean }) {
   const pathname = usePathname();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(initialIsLoggedIn);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -20,17 +20,17 @@ export default function NavbarRoot() {
   // Cegah Hydration Error (SSR mismatch)
   if (!mounted) return <div className="h-16 w-full" />;
 
-  // Jika sedang di dashboard customer (URL /customer/...), 
-  // biasanya sidebar sudah dihandle layout dashboard sendiri, maka return null.
+  // Jika sedang di dashboard customer (URL /customer/...), return null.
   if (pathname.startsWith("/customer")) {
     return null;
   }
 
-  // Jika sudah login dan sedang di katalog atau landing page
-  if (isLoggedIn) {
-    return <CustomerHeader />;
+  // Khusus halaman Catalog: Jika sudah login pakai sidebar customer
+  if (pathname.startsWith("/catalog")) {
+    if (isLoggedIn) return <CustomerHeader />;
+    return <NavbarPublic />;
   }
 
-  // Jika belum login
-  return <NavbarPublic serverIsLoggedIn={false} />;
+  // Halaman public lainnya (seperti Home): Selalu pakai NavbarPublic (tanpa tombol Dashboard/Logout)
+  return <NavbarPublic />;
 }

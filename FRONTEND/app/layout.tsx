@@ -33,7 +33,7 @@ export default async function RootLayout({
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <Providers>
-          <NavbarRoot />
+          <NavbarRoot initialIsLoggedIn={isLoggedIn} />
           <main>{children}</main>
         </Providers>
       </body>
