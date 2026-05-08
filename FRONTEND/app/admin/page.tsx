@@ -12,48 +12,44 @@ import {
   Loader2
 } from "lucide-react";
 
-const stats = [
+import { getDashboardStats, getRecentOrders } from "@/lib/actions/admin";
+
+const defaultStats = [
   {
     name: "Total Catalogs",
-    value: "142",
-    change: "+12.5%",
+    value: "0",
+    change: "+0%",
     changeType: "positive",
     icon: ShoppingBag,
   },
   {
     name: "Total Orders",
-    value: "854",
-    change: "+24.1%",
+    value: "0",
+    change: "+0%",
     changeType: "positive",
     icon: ShoppingCart,
   },
   {
     name: "Active Users",
-    value: "1,240",
-    change: "+8.2%",
+    value: "0",
+    change: "+0%",
     changeType: "positive",
     icon: Users,
   },
   {
     name: "Revenue",
-    value: "Rp 12.5M",
-    change: "-3.1%",
-    changeType: "negative",
+    value: "Rp 0",
+    change: "+0%",
+    changeType: "positive",
     icon: TrendingUp,
   },
-];
-
-const recentOrders = [
-  { id: "ORD-001", customer: "Budi Santoso", product: "Website Profil Sekolah", date: "Today", status: "Completed" },
-  { id: "ORD-002", customer: "Siti Aminah", product: "Aplikasi Kasir", date: "Yesterday", status: "Processing" },
-  { id: "ORD-003", customer: "Ahmad Fauzi", product: "Desain Logo Perusahaan", date: "Yesterday", status: "Completed" },
-  { id: "ORD-004", customer: "Diana Putri", product: "Sistem Informasi Desa", date: "May 2, 2026", status: "Pending" },
-  { id: "ORD-005", customer: "Rudi Hartono", product: "Aplikasi Absensi", date: "May 1, 2026", status: "Completed" },
 ];
 
 export default function AdminDashboard() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState(defaultStats);
+  const [recentOrders, setRecentOrders] = useState<any[]>([]);
 
   useEffect(() => {
     const session = localStorage.getItem("user_session");
@@ -63,13 +59,39 @@ export default function AdminDashboard() {
     }
 
     const userData = JSON.parse(session);
-    if (userData.role !== "admin") {
+    if (userData.role !== "ADMIN") { // Backend uses "ADMIN"
       alert("Access Denied: Admin only.");
-      router.push("/landing");
+      router.push("/");
       return;
     }
 
-    setLoading(false);
+    const loadData = async () => {
+      try {
+        const [statsResult, ordersResult] = await Promise.all([
+          getDashboardStats(),
+          getRecentOrders()
+        ]);
+
+        if (statsResult) {
+          setStats([
+            { ...defaultStats[0], value: statsResult.totalProjects?.toString() || "0", change: statsResult.projectsChange || "+0%" },
+            { ...defaultStats[1], value: statsResult.totalOrders?.toString() || "0", change: statsResult.ordersChange || "+0%" },
+            { ...defaultStats[2], value: statsResult.totalUsers?.toString() || "0", change: statsResult.usersChange || "+0%" },
+            { ...defaultStats[3], value: `Rp ${statsResult.revenue?.toLocaleString() || "0"}`, change: statsResult.revenueChange || "+0%" },
+          ]);
+        }
+
+        if (ordersResult && Array.isArray(ordersResult)) {
+          setRecentOrders(ordersResult);
+        }
+      } catch (error) {
+        console.error("Failed to load dashboard data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
   }, [router]);
 
   if (loading) {

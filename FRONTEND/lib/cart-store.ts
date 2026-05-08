@@ -1,7 +1,7 @@
 "use client";
 
 export interface CartItem {
-  id: string;
+  id: string | number;
   name: string;
   price: number;
   image: string;
@@ -25,7 +25,7 @@ export const saveCart = (cart: CartItem[]) => {
 
 export const addToCart = (product: any) => {
   const cart = getCart();
-  const existing = cart.find((item) => item.id === product.id);
+  const existing = cart.find((item) => String(item.id) === String(product.id));
 
   if (existing) {
     existing.quantity += 1;
@@ -42,9 +42,9 @@ export const addToCart = (product: any) => {
   saveCart(cart);
 };
 
-export const removeFromCart = (id: string) => {
+export const removeFromCart = (id: string | number) => {
   const cart = getCart();
-  const updated = cart.filter((item) => item.id !== id);
+  const updated = cart.filter((item) => String(item.id) !== String(id));
   saveCart(updated);
 };
 

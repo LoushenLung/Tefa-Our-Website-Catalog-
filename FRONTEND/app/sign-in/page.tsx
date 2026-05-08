@@ -45,7 +45,8 @@ export default function SignInPage() {
       const responseData = result.data;
 
       if (responseData?.requires2FA) {
-        setError(responseData.message || "Kode OTP telah dikirim ke email Anda.");
+        // Redirect ke halaman verifikasi OTP
+        router.push(`/auth/verify-otp?email=${encodeURIComponent(email)}`);
         return;
       }
 

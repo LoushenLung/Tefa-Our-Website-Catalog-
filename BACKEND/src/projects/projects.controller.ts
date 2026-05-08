@@ -50,6 +50,11 @@ export class ProjectsController {
     return this.projectsService.findOne(Number(id));
   }
 
+  @Get('slug/:slug')
+  findBySlug(@Param('slug') slug: string) {
+    return this.projectsService.findBySlug(slug);
+  }
+
   @UseGuards(AuthGuard, RolesGuard)
   @Role('ADMIN')
   @Patch(':id')

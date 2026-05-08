@@ -43,7 +43,15 @@ export class ProjectsService {
       where: { id: Number(id) },
       include: {
         category: true,
+      },
+    });
+  }
 
+  async findBySlug(slug: string) {
+    return await this.prisma.project.findUnique({
+      where: { slug },
+      include: {
+        category: true,
       },
     });
   }
