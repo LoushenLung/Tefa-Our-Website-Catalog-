@@ -18,10 +18,23 @@ import {
 import { getProjectBySlug } from "@/lib/actions/public-catalog";
 import { addToCart } from "@/lib/cart-store";
 
+interface Product {
+  id: string;
+  title: string;
+  description: string;
+  price: number;
+  thumbnail: string | null;
+  averageRating: number;
+  totalReviews: number;
+  category: { name: string; slug: string };
+  status: string;
+  mediaUrls?: string[];
+}
+
 export default function ProjectDetailPage() {
   const { slug } = useParams();
   const router = useRouter();
-  const [project, setProject] = useState<any>(null);
+  const [project, setProject] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState(0);
 
