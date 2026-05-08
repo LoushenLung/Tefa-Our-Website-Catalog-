@@ -217,7 +217,7 @@ export default function Home() {
           </div>
           <div className="flex gap-6">
             {["Instagram", "Website", "LinkedIn"].map((social) => (
-              <Link key={social} href="#" className="text-slate-400 hover:text-red-600 font-bold transition-colors">
+              <Link key={social} href="#" className="text-slate-400 hover:text-blue-600 font-bold transition-colors">
                 {social}
               </Link>
             ))}
