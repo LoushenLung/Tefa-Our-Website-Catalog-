@@ -5,16 +5,15 @@ import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import {
     LayoutDashboard,
-    Heart,
     Settings,
     LogOut,
-    Package,
     ShoppingCart,
     User,
     Menu,
     X,
     BookOpen,
-    Search
+    Search,
+    Store // Icon tambahan untuk "Jual"
 } from "lucide-react";
 import { deleteCookie } from "@/lib/client-cookies";
 
@@ -34,7 +33,7 @@ export default function CustomerHeader() {
                 console.error("Session error");
             }
         }
-    }, [pathname]); // Re-check session when path changes
+    }, [pathname]);
 
     const handleLogout = async () => {
         await deleteCookie("accessToken");
@@ -69,43 +68,53 @@ export default function CustomerHeader() {
                             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-600 font-bold text-white shadow-md">
                                 T
                             </div>
-                            <span className="text-xl font-black tracking-tighter text-slate-900 hidden sm:block italic">
-                                TEFA
-                            </span>
+                            <span className="font-black text-xl tracking-tighter text-slate-900">TEFA <span className="text-red-600">MOKLET</span></span>
                         </Link>
                     </div>
 
-                    {/* KANAN: Search, Cart, & Profile Avatar */}
-                    <div className="flex items-center gap-4 md:gap-6">
+                    {/* KANAN: Search, Jual Produk, Cart, & Profile */}
+                    <div className="flex items-center gap-2 md:gap-4 lg:gap-6">
+                        
                         {/* Search Desktop */}
-                        <div className="relative hidden md:block">
+                        <div className="relative hidden lg:block">
                             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                             <input
                                 type="text"
                                 placeholder="Cari project..."
-                                className="w-48 lg:w-64 rounded-full border-none bg-slate-100 py-2 pl-10 pr-4 text-sm outline-none focus:ring-2 focus:ring-red-500/20 transition-all"
+                                className="w-40 lg:w-56 rounded-full border-none bg-slate-100 py-2 pl-10 pr-4 text-sm outline-none focus:ring-2 focus:ring-red-500/20 transition-all"
                             />
                         </div>
 
-                        {/* Cart */}
-                        <Link href="/customer/cart" className="relative p-2 text-slate-600 hover:bg-slate-100 rounded-full transition-colors group">
-                            <ShoppingCart size={22} className="group-hover:scale-110 transition-transform" />
-                            <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-[10px] font-bold text-white border-2 border-white">
-                                0
-                            </span>
+                        {/* TOMBOL MAU JUAL PRODUK? */}
+                        <Link 
+                            href="/customer/#footer-customer" 
+                            className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full border-2 border-red-100 text-red-600 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all duration-300 group"
+                        >
+                            <Store size={16} className="group-hover:scale-110 transition-transform" />
+                            <span className="text-xs font-black uppercase tracking-wider">Mau Jual Produk?</span>
                         </Link>
 
-                        {/* AVATAR ONLY */}
-                        <Link 
-                            href="/customer/profile"
-                            className="h-10 w-10 rounded-full bg-slate-100 border-2 border-white shadow-sm flex items-center justify-center text-slate-500 hover:border-red-500 transition-all overflow-hidden shrink-0"
-                        >
-                            {userImage ? (
-                                <img src={userImage} alt="Profile" className="h-full w-full object-cover" />
-                            ) : (
-                                <User size={20} />
-                            )}
-                        </Link>
+                        <div className="flex items-center gap-2">
+                            {/* Cart */}
+                            <Link href="/customer/cart" className="relative p-2 text-slate-600 hover:bg-slate-100 rounded-full transition-colors group">
+                                <ShoppingCart size={22} className="group-hover:scale-110 transition-transform" />
+                                <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-[10px] font-bold text-white border-2 border-white">
+                                    0
+                                </span>
+                            </Link>
+
+                            {/* AVATAR */}
+                            <Link 
+                                href="/customer/profile"
+                                className="h-10 w-10 rounded-full bg-slate-100 border-2 border-white shadow-sm flex items-center justify-center text-slate-500 hover:border-red-500 transition-all overflow-hidden shrink-0"
+                            >
+                                {userImage ? (
+                                    <img src={userImage} alt="Profile" className="h-full w-full object-cover" />
+                                ) : (
+                                    <User size={20} />
+                                )}
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </nav>
@@ -126,7 +135,7 @@ export default function CustomerHeader() {
                 <div className="flex items-center justify-between p-6 border-b border-slate-50">
                     <div className="flex items-center gap-2 text-red-600">
                         <div className="h-8 w-8 bg-red-600 rounded-lg flex items-center justify-center text-white font-bold shadow-sm">T</div>
-                        <span className="font-black tracking-tighter text-slate-900 text-lg italic">TEFA MENU</span>
+                        <span className="font-black text-xl tracking-tighter text-slate-900">TEFA <span className="text-red-600">MENU</span></span>
                     </div>
                     <button onClick={() => setIsSidebarOpen(false)} className="p-2 text-slate-400 hover:bg-slate-100 rounded-full transition-colors">
                         <X size={20} />

@@ -24,7 +24,7 @@ export default function LandingPage() {
             </p>
             <div className="flex flex-wrap gap-4">
               <Link 
-                href="#products"
+                href="/catalog"
                 className="group flex items-center gap-2 px-8 py-4 bg-red-600 text-white rounded-full font-bold text-lg hover:bg-red-700 transition-all shadow-xl shadow-red-200 active:scale-95"
               >
                 <ShoppingCart size={20} />
@@ -205,8 +205,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* FOOTER (DIUBAH: Teks ke Bawah & Pesan Jual Projek) */}
-      <footer className="bg-white border-t border-slate-100 pt-20 pb-12">
+      {/* FOOTER - Menambahkan id="footer-customer" */}
+      <footer id="footer-customer" className="bg-white border-t border-slate-100 pt-20 pb-12">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
             

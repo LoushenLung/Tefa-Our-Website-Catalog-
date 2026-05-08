@@ -1,15 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ShoppingCart, Rocket, ShieldCheck, Globe } from "lucide-react";
-import Header from "../components/navbar-public"; // Sesuaikan path ini dengan lokasi file Header.tsx kamu
-
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-white text-slate-900 font-sans overflow-x-hidden selection:bg-red-500 selection:text-white">
       
-      {/* Panggil Komponen Header di sini */}
-      <Header />
-
       {/* SECTION 1: HERO (Modern & Clean) */}
       <section className="relative min-h-[90vh] flex items-center pt-20 bg-slate-50">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 grid lg:grid-cols-2 gap-12 items-center relative z-10">
