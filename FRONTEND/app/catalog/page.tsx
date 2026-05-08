@@ -20,7 +20,144 @@ interface Product {
   status: string;
 }
 
-// ─── Helpers & Config ────────────────────────────────────────────────────────
+function seededRating(id: string): { rating: number; reviewCount: number } {
+  const seed = id.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
+  const rating = 3.5 + ((seed * 17) % 15) / 10; 
+  const reviewCount = 4 + ((seed * 31) % 97);    
+  return { rating: Math.round(rating * 10) / 10, reviewCount };
+}
+
+// ─── Dummy Data ───────────────────────────────────────────────────────────────
+const RAW_PRODUCTS = [
+  {
+    id: "1",
+    name: "SiAbsen – Sistem Absensi Digital",
+    slug: "siabsen-sistem-absensi-digital",
+    description: "Aplikasi absensi berbasis QR-code real-time untuk sekolah dan instansi. Dilengkapi dashboard analitik, notifikasi orang tua, dan laporan otomatis PDF.",
+    price: 4500000,
+    currency: "IDR" as const,
+    stock: 10,
+    status: "PUBLISHED" as const,
+    specs: { Platform: "Web + Android", Stack: "Next.js, NestJS, MySQL", Tim: "3 Siswa RPL" },
+    category: { name: "Software & Web", slug: "software-web" },
+    image: "https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=600&q=80",
+    badge: "Terlaris",
+  },
+  {
+    id: "2",
+    name: "SmartHome Controller – IoT Hub",
+    slug: "smarthome-controller-iot-hub",
+    description: "Perangkat IoT berbasis ESP32 yang menghubungkan lampu, kipas, dan kunci pintu ke aplikasi mobile. Kontrol rumah dari mana saja via internet.",
+    price: 1800000,
+    currency: "IDR" as const,
+    stock: 5,
+    status: "PUBLISHED" as const,
+    specs: { MCU: "ESP32", Koneksi: "WiFi + MQTT", "Catu Daya": "5V USB-C" },
+    category: { name: "IoT & Jaringan", slug: "iot-jaringan" },
+    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80",
+    badge: "Baru",
+  },
+  {
+    id: "3",
+    name: "NusantaraQuest – 2D RPG Game",
+    slug: "nusantaraquest-2d-rpg-game",
+    description: "Game RPG 2D berbasis budaya Nusantara dengan 5 chapter cerita, 20+ karakter unik, dan musik tradisional orisinal. Tersedia di PC dan Android.",
+    price: 350000,
+    currency: "IDR" as const,
+    stock: 999,
+    status: "PUBLISHED" as const,
+    specs: { Engine: "Unity 2022", Platform: "PC & Android", Rating: "E (Semua Umur)" },
+    category: { name: "Game & Animasi", slug: "game-animasi" },
+    image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600&q=80",
+    badge: "Pilihan Editor",
+  },
+  {
+    id: "4",
+    name: "CyberShield – Audit Keamanan Jaringan",
+    slug: "cybershield-audit-keamanan-jaringan",
+    description: "Layanan audit keamanan jaringan komprehensif: scanning vulnerabilitas, pentest, dan laporan remediasi lengkap untuk bisnis UMKM hingga enterprise.",
+    price: 7500000,
+    currency: "IDR" as const,
+    stock: 3,
+    status: "PUBLISHED" as const,
+    specs: { Durasi: "3–5 Hari Kerja", Output: "Laporan PDF 50+ hal", Sertifikasi: "CEH Compliant" },
+    category: { name: "IoT & Jaringan", slug: "iot-jaringan" },
+    image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=600&q=80",
+  },
+  {
+    id: "5",
+    name: "BatiKraft – E-Commerce UMKM",
+    slug: "batikraft-ecommerce-umkm",
+    description: "Platform e-commerce siap pakai untuk pelaku UMKM kerajinan. Fitur: manajemen produk, payment gateway, laporan penjualan, dan chatbot CS otomatis.",
+    price: 6000000,
+    currency: "IDR" as const,
+    stock: 7,
+    status: "PUBLISHED" as const,
+    specs: { CMS: "Custom Admin Panel", Payment: "Midtrans, QRIS", Hosting: "VPS Ready" },
+    category: { name: "Software & Web", slug: "software-web" },
+    image: "https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=600&q=80",
+  },
+  {
+    id: "6",
+    name: "LanGuru – Platform E-Learning Bahasa",
+    slug: "languru-platform-elearning-bahasa",
+    description: "Platform belajar bahasa Inggris interaktif dengan metode gamifikasi, live session bersama tutor, dan AI-powered pronunciation checker.",
+    price: 2800000,
+    currency: "IDR" as const,
+    stock: 15,
+    status: "PUBLISHED" as const,
+    specs: { Fitur: "AI + Gamification", Konten: "500+ Modul", Akses: "Seumur Hidup" },
+    category: { name: "Software & Web", slug: "software-web" },
+    image: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=600&q=80",
+    badge: "Hot",
+  },
+  {
+    id: "7",
+    name: "ShadowPath – 3D Puzzle Horror Game",
+    slug: "shadowpath-3d-puzzle-horror-game",
+    description: "Game horror puzzle 3D dengan atmosfer mencekam, mekanik cahaya unik, dan 4 ending berbeda berdasarkan pilihan pemain. Optimasi untuk Mid-end PC.",
+    price: 120000,
+    currency: "IDR" as const,
+    stock: 999,
+    status: "PUBLISHED" as const,
+    specs: { Engine: "Unreal Engine 5", Platform: "PC", Rating: "17+ (Horror)" },
+    category: { name: "Game & Animasi", slug: "game-animasi" },
+    image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&q=80",
+  },
+  {
+    id: "8",
+    name: "AgroSense – Sensor Pertanian Pintar",
+    slug: "agrosense-sensor-pertanian-pintar",
+    description: "Sistem monitoring lahan pertanian berbasis IoT dengan sensor kelembaban tanah, suhu, dan curah hujan. Data real-time dikirim ke dashboard mobile.",
+    price: 2200000,
+    currency: "IDR" as const,
+    stock: 8,
+    status: "PUBLISHED" as const,
+    specs: { Sensor: "Soil + DHT22 + Rain", Range: "500m RF", Baterai: "Solar + Li-ion" },
+    category: { name: "IoT & Jaringan", slug: "iot-jaringan" },
+    image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=600&q=80",
+    badge: "Inovasi",
+  },
+  {
+    id: "9",
+    name: "PixelCraft Studio – Jasa Animasi 2D",
+    slug: "pixelcraft-studio-jasa-animasi-2d",
+    description: "Layanan pembuatan animasi 2D profesional: motion graphic, explainer video, karakter animasi, dan konten media sosial branded untuk bisnis Anda.",
+    price: 3500000,
+    currency: "IDR" as const,
+    stock: 6,
+    status: "PUBLISHED" as const,
+    specs: { Software: "Adobe Animate, After Effects", Durasi: "30–90 detik", Revisi: "3x Free" },
+    category: { name: "Game & Animasi", slug: "game-animasi" },
+    image: "https://images.unsplash.com/photo-1626785774573-4b799315345d?w=600&q=80",
+  },
+];
+
+const PRODUCTS: Product[] = RAW_PRODUCTS.map((p) => ({
+  ...p,
+  ...seededRating(p.id),
+}));
+
 const CATEGORIES = [
   { label: "Semua", slug: "all" },
   { label: "Software & Web", slug: "software-web" },
@@ -266,10 +403,36 @@ export default function CatalogPage() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-24 bg-slate-50 rounded-3xl border border-dashed border-slate-200">
-            <Search className="mx-auto text-slate-200 mb-4" size={64} />
-            <h3 className="text-lg font-black text-slate-900">Produk Tidak Ditemukan</h3>
-            <p className="text-slate-400 text-sm">Coba gunakan kata kunci atau kategori yang berbeda.</p>
+          <div className="flex flex-col items-center justify-center py-32 gap-6 text-center">
+            <div className="w-20 h-20 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center">
+              <Search size={32} className="text-slate-300" />
+            </div>
+            <div>
+              <h3 className="text-lg font-black text-slate-900 mb-1">Produk tidak ditemukan</h3>
+              <p className="text-slate-500 text-sm">Coba kata kunci atau kategori yang berbeda.</p>
+            </div>
+            <button
+              onClick={() => { setSearch(""); setActiveCategory("all"); }}
+              className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-xl transition-all active:scale-95 shadow-md shadow-red-100"
+            >
+              Lihat Semua Produk
+            </button>
+          </div>
+          </>
+        )}
+
+        {filtered.length > 0 && !isLoading && (
+          <div className="mt-20 grid grid-cols-3 gap-6 py-10 border-t border-slate-100">
+            {[
+              { value: `${products.length}+`, label: "Total Produk" },
+              { value: "3", label: "Kategori Unggulan" },
+              { value: "100%", label: "Karya Siswa" },
+            ].map((stat) => (
+              <div key={stat.label} className="text-center">
+                <div className="text-3xl font-black text-red-600 mb-1">{stat.value}</div>
+                <div className="text-sm text-slate-400 uppercase tracking-widest font-semibold">{stat.label}</div>
+              </div>
+            ))}
           </div>
         )}
       </main>

@@ -10,7 +10,7 @@ import {
   Star, 
   CheckCircle2, 
   Globe, 
-  Github, 
+  Code, 
   Share2,
   Loader2,
   ChevronRight
@@ -205,7 +205,7 @@ export default function ProjectDetailPage() {
                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {[
                     { icon: <Globe size={18} />, label: "Live Preview", value: "Available" },
-                    { icon: <Github size={18} />, label: "Source Code", value: "Included" },
+                    { icon: <Code size={18} />, label: "Source Code", value: "Included" },
                   ].map((item, idx) => (
                     <div key={idx} className="flex items-center gap-4 p-4 rounded-2xl border border-slate-100 hover:border-red-100 transition-colors">
                        <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400">
