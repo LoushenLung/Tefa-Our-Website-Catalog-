@@ -93,7 +93,7 @@ function VerifyOTPContent() {
       if (payload.role === "ADMIN") {
         router.push("/admin");
       } else {
-        router.push("/customer");
+        router.push("/");
       }
     } catch (err) {
       setError("Connection error. Please try again.");

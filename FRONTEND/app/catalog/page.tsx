@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ShoppingCart, Search, Star, ChevronDown, Loader2 } from "lucide-react";
-import Header from "../../components/navbar-public"; // Sesuaikan jika lokasi komponen Header berbeda
+import { useSearchParams } from "next/navigation";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 interface Product {
@@ -177,6 +177,16 @@ export default function CatalogPage() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
 
+  const searchParams = useSearchParams();
+
+  // Initialize search from URL query parameter if present
+  useEffect(() => {
+    const query = searchParams.get("search");
+    if (query) {
+      setSearch(decodeURIComponent(query));
+    }
+  }, [searchParams]);
+
   // ─── Fetch Data dari Backend ───────────────────────────────────────────────
   useEffect(() => {
     const fetchProducts = async () => {
@@ -267,9 +277,6 @@ export default function CatalogPage() {
   return (
     <div className="min-h-screen bg-white text-slate-900 font-sans overflow-x-hidden selection:bg-red-500 selection:text-white">
 
-      {/* ── HEADER ──────────────────────────────────────────────────── */}
-      <Header />
-
       {/* ── Hero / Header Catalog ──────────────────────────────────────────────────── */}
       <section className="pt-32 pb-16 px-6 lg:px-12 bg-slate-50 relative overflow-hidden">
         <div className="absolute -top-20 -right-20 w-96 h-96 bg-red-100 rounded-full blur-3xl opacity-50 pointer-events-none" />
@@ -292,7 +299,7 @@ export default function CatalogPage() {
       </section>
 
       {/* ── DESAIN FILTER & SEARCH BAR ────────────────────────────────────────────── */}
-      <section className="sticky top-16 z-40 bg-white/95 backdrop-blur-xl border-b border-slate-100 shadow-sm py-4 transition-all">
+      <section className="sticky top-16 z-30 bg-white/95 backdrop-blur-xl border-b border-slate-100 shadow-sm py-4 transition-all">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col lg:flex-row gap-4 items-center justify-between">
           
           <div className="relative w-full lg:max-w-md group">

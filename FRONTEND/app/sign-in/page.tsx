@@ -69,12 +69,12 @@ export default function SignInPage() {
         if (payload.role === "ADMIN") {
           router.push("/admin");
         } else {
-          // Mengarahkan user biasa ke /customer/page
-          router.push("../customer");
+          // Mengarahkan user biasa ke landing page
+          router.push("/");
         }
       } catch {
         // Fallback jika terjadi error saat parsing JWT
-        router.push("../customer");
+        router.push("/");
       }
       
     } catch (err) {
