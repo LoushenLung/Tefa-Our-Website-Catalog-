@@ -1,11 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { User, Mail, Phone, MapPin, Camera, Save, X, Edit2, ShieldCheck } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { User, Mail, Phone, MapPin, Camera, Save, X, Edit2, ShieldCheck, LogOut } from "lucide-react";
 import Image from "next/image";
+import { deleteCookie } from "@/lib/client-cookies";
 
 export default function ProfilePage() {
+  const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [user, setUser] = useState({
     name: "",
     email: "",
@@ -33,6 +37,30 @@ export default function ProfilePage() {
     setIsEditing(false);
     // Di sini nanti bisa ditambah fetch ke API PATCH /users/:id
     alert("Profil berhasil diperbarui!");
+  };
+
+
+    const handleLogout = async () => {
+    if (!confirm("Apakah Anda yakin ingin logout?")) {
+      return;
+    }
+
+    try {
+      setIsLoggingOut(true);
+      // Delete cookies
+      await deleteCookie("accessToken");
+      await deleteCookie("refreshToken");
+      
+      // Clear localStorage
+      localStorage.removeItem("user_session");
+      
+      // Redirect to home
+      router.push("/");
+    } catch (error) {
+      console.error("Logout error:", error);
+      alert("Gagal logout. Silakan coba lagi.");
+      setIsLoggingOut(false);
+    }
   };
 
   return (
@@ -65,6 +93,14 @@ export default function ProfilePage() {
             <div className="mt-2 px-3 py-1 bg-green-50 text-green-600 text-[10px] font-bold uppercase tracking-widest rounded-full border border-green-100 flex items-center gap-1.5">
               <ShieldCheck size={12} /> {user.role}
             </div>
+                        <button
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+              className="mt-6 w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-50 text-red-600 font-bold rounded-xl border border-red-200 hover:bg-red-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <LogOut size={18} />
+              {isLoggingOut ? "Logging out..." : "Logout"}
+            </button>
           </div>
         </div>
 
