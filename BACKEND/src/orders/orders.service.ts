@@ -75,6 +75,14 @@ export class OrdersService {
     });
   }
 
+  async findByUser(userId: number) {
+    return await this.prisma.order.findMany({
+      where: { userId: Number(userId) },
+      include: { items: true, paymentProofs: true },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
   async findOne(id: number) {
     const order = await this.prisma.order.findUnique({
       where: { id: Number(id) },

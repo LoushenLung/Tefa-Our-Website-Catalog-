@@ -32,6 +32,23 @@ export class OrdersController {
     }
   }
 
+  @Get('me')
+  async findMyOrders(@Request() req) {
+    try {
+      const data = await this.ordersService.findByUser(req.user.sub);
+      return {
+        success: true,
+        message: 'My orders retrieved successfully',
+        data,
+      };
+    } catch (error: any) {
+      throw new HttpException({
+        success: false,
+        message: error.message || 'Internal server error',
+      }, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   @Get()
   async findAll() {
     try {

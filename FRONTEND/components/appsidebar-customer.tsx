@@ -13,7 +13,8 @@ import {
     X,
     BookOpen,
     Search,
-    Store // Icon tambahan untuk "Jual"
+    Store, // Icon tambahan untuk "Jual"
+    Package // Added Package icon
 } from "lucide-react";
 import { deleteCookie } from "@/lib/client-cookies";
 import ContactModal from "./ContactModal";
@@ -46,6 +47,7 @@ export default function CustomerHeader() {
     const menuItems = [
         { label: "Home", href: "/", icon: LayoutDashboard },
         { label: "My Profile", href: "/profile", icon: User },
+        { label: "My Orders", href: "/orders", icon: Package }, // Changed to Package icon
         { label: "Keranjang", href: "/cart", icon: ShoppingCart },
         { label: "Catalog", href: "/catalog", icon: BookOpen },
         { label: "Settings", href: "/settings", icon: Settings },
@@ -152,9 +154,6 @@ export default function CustomerHeader() {
                             {/* Cart */}
                             <Link href="/cart" className="relative p-2 text-slate-600 hover:bg-slate-100 rounded-full transition-colors group">
                                 <ShoppingCart size={22} className="group-hover:scale-110 transition-transform" />
-                                <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-[10px] font-bold text-white border-2 border-white">
-                                    0
-                                </span>
                             </Link>
 
                             {/* AVATAR */}
