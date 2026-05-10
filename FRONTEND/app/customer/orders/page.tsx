@@ -3,12 +3,12 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { 
-  Package, 
-  ChevronRight, 
-  Clock, 
-  CheckCircle2, 
-  XCircle, 
+import {
+  Package,
+  ChevronRight,
+  Clock,
+  CheckCircle2,
+  XCircle,
   AlertCircle,
   CreditCard,
   ExternalLink,
@@ -16,7 +16,7 @@ import {
   Filter,
   Loader2
 } from "lucide-react";
-import { getCookie } from "@/lib/client-cookies";
+import { fetchUserOrders } from "@/app/customer/actions/orders";
 
 interface OrderItem {
   id: number;
@@ -44,69 +44,59 @@ export default function OrdersPage() {
   const [filterStatus, setFilterStatus] = useState<string>("ALL");
 
   useEffect(() => {
-    const fetchOrders = async () => {
+    const loadOrders = async () => {
       setIsLoading(true);
       setError(null);
       try {
-        const token = getCookie("accessToken");
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/orders/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Gagal mengambil data pesanan.");
-        }
-
-        const result = await response.json();
-        setOrders(result.data || []);
+        const data = await fetchUserOrders();
+        setOrders(data);
       } catch (err: any) {
+        console.error("Order fetch error:", err);
         setError(err.message || "Terjadi kesalahan saat menghubungi server.");
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchOrders();
+    loadOrders();
   }, []);
 
   const getStatusConfig = (status: Order["status"]) => {
     switch (status) {
       case "PENDING":
       case "PENDING_PAYMENT":
-        return { 
-          label: "Menunggu Pembayaran", 
-          icon: Clock, 
+        return {
+          label: "Menunggu Pembayaran",
+          icon: Clock,
           color: "text-orange-600 bg-orange-50 border-orange-100",
           iconColor: "text-orange-400"
         };
       case "WAITING_VERIFICATION":
-        return { 
-          label: "Menunggu Verifikasi", 
-          icon: AlertCircle, 
+        return {
+          label: "Menunggu Verifikasi",
+          icon: AlertCircle,
           color: "text-blue-600 bg-blue-50 border-blue-100",
           iconColor: "text-blue-400"
         };
       case "PAID":
-        return { 
-          label: "Selesai", 
-          icon: CheckCircle2, 
+        return {
+          label: "Selesai",
+          icon: CheckCircle2,
           color: "text-green-600 bg-green-50 border-green-100",
           iconColor: "text-green-400"
         };
       case "REJECTED":
       case "CANCELLED":
-        return { 
-          label: "Dibatalkan", 
-          icon: XCircle, 
+        return {
+          label: "Dibatalkan",
+          icon: XCircle,
           color: "text-red-600 bg-red-50 border-red-100",
           iconColor: "text-red-400"
         };
       default:
-        return { 
-          label: status, 
-          icon: AlertCircle, 
+        return {
+          label: status,
+          icon: AlertCircle,
           color: "text-slate-600 bg-slate-50 border-slate-100",
           iconColor: "text-slate-400"
         };
@@ -144,11 +134,10 @@ export default function OrdersPage() {
             <button
               key={tab.id}
               onClick={() => setFilterStatus(tab.id)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                filterStatus === tab.id
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${filterStatus === tab.id
                   ? "bg-white text-red-600 shadow-sm"
                   : "text-slate-500 hover:text-slate-900"
-              }`}
+                }`}
             >
               {tab.label}
             </button>
@@ -173,7 +162,7 @@ export default function OrdersPage() {
             <h3 className="text-2xl font-black text-slate-900">Ups! Terjadi Kesalahan</h3>
             <p className="text-slate-500 max-w-sm">{error}</p>
           </div>
-          <button 
+          <button
             onClick={() => window.location.reload()}
             className="px-10 py-4 bg-red-600 text-white font-black rounded-2xl shadow-lg shadow-red-100 hover:bg-red-700 transition-all active:scale-95"
           >
@@ -191,8 +180,8 @@ export default function OrdersPage() {
             });
 
             return (
-              <div 
-                key={order.id} 
+              <div
+                key={order.id}
                 className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 hover:border-red-100 transition-all overflow-hidden group"
               >
                 {/* Order Top Bar */}
@@ -208,7 +197,7 @@ export default function OrdersPage() {
                       <p className="font-bold text-slate-600">{date}</p>
                     </div>
                   </div>
-                  
+
                   <div className={`flex items-center gap-2 px-4 py-1.5 rounded-full border ${config.color} text-xs font-black`}>
                     <config.icon size={14} className={config.iconColor} />
                     {config.label}
@@ -221,10 +210,10 @@ export default function OrdersPage() {
                     {order.items.map((item) => (
                       <div key={item.id} className="flex gap-6 items-center">
                         <div className="relative w-20 h-20 rounded-2xl overflow-hidden bg-slate-50 border border-slate-100 shrink-0">
-                          <Image 
-                            src={item.thumbnail || "/placeholder.png"} 
-                            alt={item.projectName} 
-                            fill 
+                          <Image
+                            src={item.thumbnail || "/placeholder.png"}
+                            alt={item.projectName}
+                            fill
                             className="object-cover"
                           />
                         </div>
@@ -253,8 +242,8 @@ export default function OrdersPage() {
                           Bayar Sekarang
                         </button>
                       )}
-                      
-                      <Link 
+
+                      <Link
                         href={`/orders/${order.id}`}
                         className="w-full flex items-center justify-center gap-2 py-3 bg-white border-2 border-slate-100 text-slate-700 font-black rounded-xl hover:border-red-200 hover:text-red-600 transition-all"
                       >
@@ -277,8 +266,8 @@ export default function OrdersPage() {
             <h3 className="text-2xl font-black text-slate-900">Belum Ada Pesanan</h3>
             <p className="text-slate-500">Sepertinya kamu belum pernah melakukan transaksi.</p>
           </div>
-          <Link 
-            href="/catalog" 
+          <Link
+            href="/catalog"
             className="px-10 py-4 bg-red-600 text-white font-black rounded-2xl shadow-lg shadow-red-100 hover:bg-red-700 transition-all active:scale-95"
           >
             Mulai Belanja

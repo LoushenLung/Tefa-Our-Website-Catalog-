@@ -21,7 +21,7 @@ export default function Home() {
             </p>
             <div className="flex flex-wrap gap-4">
               <Link 
-                href="#products"
+                href="/catalog"
                 className="group flex items-center gap-2 px-8 py-4 bg-red-600 text-white rounded-full font-bold text-lg hover:bg-red-700 transition-all shadow-xl shadow-red-200 active:scale-95"
               >
                 <ShoppingCart size={20} />
