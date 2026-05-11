@@ -10,7 +10,7 @@ import { Roles } from '../helper/roles.decorator';
 export class BankAccountsController {
   constructor(private readonly bankAccountsService: BankAccountsService) {}
 
-  @Roles('ADMIN')
+  @Roles(['ADMIN'])
   @UseGuards(AuthGuard, RolesGuard)
   @Post()
   create(@Body() createBankAccountDto: CreateBankAccountDto) {
@@ -23,7 +23,7 @@ export class BankAccountsController {
     return this.bankAccountsService.findActive();
   }
 
-  @Roles('ADMIN')
+  @Roles(['ADMIN'])
   @UseGuards(AuthGuard, RolesGuard)
   @Get()
   findAll() {
@@ -35,14 +35,14 @@ export class BankAccountsController {
     return this.bankAccountsService.findOne(+id);
   }
 
-  @Roles('ADMIN')
+  @Roles(['ADMIN'])
   @UseGuards(AuthGuard, RolesGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateBankAccountDto: UpdateBankAccountDto) {
     return this.bankAccountsService.update(+id, updateBankAccountDto);
   }
 
-  @Roles('ADMIN')
+  @Roles(['ADMIN'])
   @UseGuards(AuthGuard, RolesGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
