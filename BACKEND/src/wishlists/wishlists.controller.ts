@@ -8,21 +8,21 @@ import { AuthGuard } from '../auth/auth.guard';
 export class WishlistsController {
   constructor(private readonly wishlistsService: WishlistsService) {}
 
-  @Post('toggle')
-  toggle(@Request() req, @Body() createWishlistDto: CreateWishlistDto) {
-    const userId = req.user.id;
-    return this.wishlistsService.toggleWishlist(userId, createWishlistDto);
+  @Post(':projectId')
+  toggle(@Request() req, @Param('projectId') projectId: string) {
+    const userId = req.user.sub;
+    return this.wishlistsService.toggleWishlist(userId, { projectId: +projectId });
   }
 
   @Get()
   findMyWishlist(@Request() req) {
-    const userId = req.user.id;
+    const userId = req.user.sub;
     return this.wishlistsService.findByUser(userId);
   }
 
   @Get('check/:projectId')
   checkStatus(@Request() req, @Param('projectId') projectId: string) {
-    const userId = req.user.id;
+    const userId = req.user.sub;
     return this.wishlistsService.checkStatus(userId, +projectId);
   }
 }
