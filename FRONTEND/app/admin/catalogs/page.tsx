@@ -50,18 +50,18 @@ export default function AdminCatalogsPage() {
     const data = Object.fromEntries(formData.entries());
     
     try {
-      const file = formData.get("image") as File;
-      let imageUrl = currentProject?.image;
+      const file = formData.get("thumbnail") as File;
+      let thumbnail = currentProject?.thumbnail;
 
       if (file && file.size > 0) {
         const uploadFormData = new FormData();
         uploadFormData.append("file", file);
-        imageUrl = await uploadImage(uploadFormData);
+        thumbnail = await uploadImage(uploadFormData);
       }
 
       const projectData = {
         ...data,
-        image: imageUrl,
+        thumbnail: thumbnail,
         price: Number(data.price),
       };
 
@@ -157,8 +157,8 @@ export default function AdminCatalogsPage() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-4">
                         <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-slate-100">
-                          {project.image ? (
-                            <img src={project.image} alt={project.title} className="h-full w-full object-cover" />
+                          {project.thumbnail ? (
+                            <img src={project.thumbnail} alt={project.title} className="h-full w-full object-cover" />
                           ) : (
                             <div className="flex h-full w-full items-center justify-center text-slate-400">
                               <ImageIcon size={20} />
@@ -264,7 +264,7 @@ export default function AdminCatalogsPage() {
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-slate-700">Gambar Produk</label>
                   <input 
-                    name="image"
+                    name="thumbnail"
                     type="file"
                     accept="image/*"
                     className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm outline-none focus:border-red-500 focus:bg-white transition-all"

@@ -44,7 +44,8 @@ export async function createProject(data: any) {
 
 export async function updateProject(id: string, data: any) {
   try {
-    return await apiClient.put(`/projects/${id}`, data);
+    // Backend uses PATCH for update
+    return await apiClient.patch(`/projects/${id}`, data);
   } catch (error) {
     console.error("Error updating project:", error);
     throw error;
@@ -63,8 +64,9 @@ export async function deleteProject(id: string) {
 // Orders Management
 export async function getOrders() {
   try {
-    const response = await apiClient.get<any>("/admin/orders");
-    return response.data || [];
+    // Backend endpoint is /orders (protected by RolesGuard or AuthGuard)
+    const response = await apiClient.get<any>("/orders");
+    return response.data?.data || response.data || [];
   } catch (error) {
     console.error("Error fetching orders:", error);
     return [];
@@ -73,9 +75,25 @@ export async function getOrders() {
 
 export async function updateOrderStatus(id: string, status: string) {
   try {
-    return await apiClient.patch(`/admin/orders/${id}/status`, { status });
+    // Backend endpoint is PATCH /orders/:id
+    return await apiClient.patch(`/orders/${id}`, { status });
   } catch (error) {
     console.error("Error updating order status:", error);
+    throw error;
+  }
+}
+
+// Payment Verification
+export async function verifyPayment(proofId: number, status: string, adminNote: string) {
+  try {
+    // Backend endpoint is PATCH /payment/verify/:id
+    const response = await apiClient.patch(`/payment/verify/${proofId}`, {
+      status,
+      adminNote
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error verifying payment:", error);
     throw error;
   }
 }
