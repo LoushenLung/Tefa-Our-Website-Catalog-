@@ -33,6 +33,7 @@ model User {
   cart               Cart?
   orders             Order[]
   ratings            Rating[]
+  wishlists          Wishlist[]
 }
 
 model OtpCode {
@@ -88,6 +89,7 @@ model Project {
   status        ProjectStatus @default(DRAFT)
   averageRating Decimal       @default(0.00) @db.Decimal(3, 2)
   totalReviews  Int           @default(0)
+  wishlistCount Int           @default(0)
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   categoryId    Int
@@ -97,6 +99,7 @@ model Project {
   student       Student?      @relation(fields: [studentId], references: [id])
   tags          ProjectTag[]
   ratings       Rating[]
+  wishlists     Wishlist[]
 }
 
 model Tag {
@@ -134,18 +137,29 @@ model CartItem {
   @@unique([cartId, projectId])
 }
 
+model BankAccount {
+  id            Int      @id @default(autoincrement())
+  bankName      String
+  accountNumber String
+  accountOwner  String
+  isActive      Boolean  @default(true)
+  orders        Order[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
 model Order {
   id            Int            @id @default(autoincrement())
   orderCode     String         @unique
   userId        Int
   totalPrice    Decimal        @db.Decimal(10, 2)
   status        OrderStatus    @default(PENDING)
-  customerName  String
-  customerEmail String
-  customerPhone String?
+  message       String?
+  bankAccountId Int?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   user          User           @relation(fields: [userId], references: [id])
+  bankAccount   BankAccount?   @relation(fields: [bankAccountId], references: [id])
   items         OrderItem[]
   paymentProofs PaymentProof[]
 }
@@ -180,6 +194,17 @@ model Rating {
   createdAt DateTime @default(now())
   project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, projectId])
+}
+
+model Wishlist {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  projectId Int
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@unique([userId, projectId])
 }

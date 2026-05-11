@@ -8,18 +8,24 @@ export class OrdersService {
   constructor(private prisma: PrismaService) {}
 
   async checkout(userId: number, data: any) {
-    if (!data.customerName) throw new BadRequestException('customerName is required');
-    if (!data.customerEmail) throw new BadRequestException('customerEmail is required');
-    if (!data.customerPhone) throw new BadRequestException('customerPhone is required');
+    if (!data.bankAccountId) throw new BadRequestException('bankAccountId is required');
 
-    // 1. Ambil cart user
+    // 1. Ambil cart dan user data
     const cart = await this.prisma.cart.findUnique({
       where: { userId: Number(userId) },
-      include: { items: { include: { project: true } } }
+      include: { items: { include: { project: true } }, user: true }
     });
 
     if (!cart || cart.items.length === 0) {
       throw new BadRequestException('Cart is empty. Cannot checkout.');
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: Number(userId) }
+    });
+
+    if (!user) {
+      throw new BadRequestException('User not found.');
     }
 
     // 2. Hitung harga dan persiapkan OrderItem
@@ -48,14 +54,13 @@ export class OrdersService {
           userId: Number(userId),
           totalPrice,
           status: 'PENDING_PAYMENT',
-          customerName: data.customerName,
-          customerEmail: data.customerEmail,
-          customerPhone: data.customerPhone,
+          message: data.message || null,
+          bankAccountId: Number(data.bankAccountId),
           items: {
             create: orderItemsPayload
           }
         },
-        include: { items: true }
+        include: { items: true, bankAccount: true }
       });
 
       // Kosongkan keranjang setelah checkout

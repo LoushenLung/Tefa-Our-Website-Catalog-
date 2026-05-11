@@ -34,7 +34,7 @@ Karena kita sudah mengimplementasikan otomatisasi Cart dan validasi sistem Payme
    - Buka **SHOW MY CART** untuk mengecek total barang sebelum checkout.
 3. **Checkout Pesanan**:
    - Buka folder **ORDERS** > **CHECKOUT (FROM CART)**.
-   - Pada JSON Body, cukup isi `customerName`, `customerEmail`, dan `customerPhone`.
+   - Pada JSON Body, cukup isi `message` (catatan pesanan) dan `bankAccountId` (rekening tujuan). Nama, email, dan no HP otomatis diambil dari Auth Token.
    - **(Otomatis)** Sistem akan mengkalkulasi harga dari keranjangmu, membuat ID Order, dan langsung menghapus/mengosongkan isi cart User kamu!
 4. **Membayar & Tagihan**:
    - Simpan ID Order dari hasil respons Checkout. 
@@ -58,6 +58,14 @@ Karena kita sudah mengimplementasikan otomatisasi Cart dan validasi sistem Payme
    - Modifikasi JSON Body untuk mengirimkan status `APPROVED` atau `REJECTED` beserta nota dari Admin.
    - Status Order secara otomatis bergeser menjadi `PAID` apabila Approved! Selesai.
 
+### 💖 POV 3: Wishlist & Bank Accounts
+1. **Mengelola Wishlist (User)**:
+   - Gunakan folder **WISHLISTS** > **TOGGLE WISHLIST** untuk menambah/menghapus project dari wishlist kamu (menyertakan `projectId` pada URL).
+   - Gunakan **MY WISHLIST** untuk melihat semua project yang disukai.
+2. **Melihat Rekening Pembayaran (User/Admin)**:
+   - Gunakan folder **BANK ACCOUNTS** > **SHOW ALL** untuk melihat daftar rekening aktif milik pengelola (Admin) yang bisa menjadi referensi `bankAccountId` saat checkout.
+   - Admin dapat menambahkan rekening melalui **CREATE (Admin)**.
+
 ---
 
 ## 🔐 Role-Based Access Control (RBAC) Matrix
@@ -69,6 +77,9 @@ Berikut adalah daftar hak akses CRUD berdasarkan Role di sistem:
 | **AUTH** | Login & Verify OTP | ✅ | ✅ | Semua user bisa login & pakai 2FA |
 | **USERS** | Toggle 2FA (Self) | ✅ | ✅ | User hanya bisa toggle akun sendiri |
 | **USERS** | Toggle 2FA (Others)| ❌ | ✅ | Admin bisa bantu reset 2FA user lain |
+| **WISHLISTS** | Toggle & View | ✅ | ✅ | User melihat & mengelola list impian |
+| **BANK ACCOUNTS** | View All | ✅ | ✅ | User melihat daftar rekenening admin |
+| **BANK ACCOUNTS** | Create | ❌ | ✅ | Admin mengelola data bank |
 | **USERS** | CRUD Users | ❌ | ✅ | Hanya Admin yang bisa kelola data user |
 | **PROJECTS** | View Projects | ✅ | ✅ | Publik/User bisa lihat katalog |
 | **PROJECTS** | Create/Update/Delete| ❌ | ✅ | Hanya Admin yang bisa ubah katalog |

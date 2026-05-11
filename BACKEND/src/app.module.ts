@@ -16,6 +16,8 @@ import { StudentsModule } from './app/students/students.module';
 import { PaymentModule } from './payment/payment.module';
 import { ContactsModule } from './contacts/contacts.module';
 import { MailModule } from './mail/mail.module';
+import { BankAccountsModule } from './bank-accounts/bank-accounts.module';
+import { WishlistsModule } from './wishlists/wishlists.module';
 
 @Module({
   imports: [
@@ -38,6 +40,8 @@ import { MailModule } from './mail/mail.module';
     PaymentModule,
     ContactsModule,
     MailModule,
+    BankAccountsModule,
+    WishlistsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

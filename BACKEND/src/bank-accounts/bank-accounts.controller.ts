@@ -1,0 +1,51 @@
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { BankAccountsService } from './bank-accounts.service';
+import { CreateBankAccountDto } from './dto/create-bank-account.dto';
+import { UpdateBankAccountDto } from './dto/update-bank-account.dto';
+import { AuthGuard } from '../auth/auth.guard';
+import { RolesGuard } from '../helper/roles-guard';
+import { Roles } from '../helper/roles.decorator';
+
+@Controller('bank-accounts')
+export class BankAccountsController {
+  constructor(private readonly bankAccountsService: BankAccountsService) {}
+
+  @Roles('ADMIN')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Post()
+  create(@Body() createBankAccountDto: CreateBankAccountDto) {
+    return this.bankAccountsService.create(createBankAccountDto);
+  }
+
+  // Active banks only for public/users
+  @Get('active')
+  findActive() {
+    return this.bankAccountsService.findActive();
+  }
+
+  @Roles('ADMIN')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Get()
+  findAll() {
+    return this.bankAccountsService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.bankAccountsService.findOne(+id);
+  }
+
+  @Roles('ADMIN')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateBankAccountDto: UpdateBankAccountDto) {
+    return this.bankAccountsService.update(+id, updateBankAccountDto);
+  }
+
+  @Roles('ADMIN')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.bankAccountsService.remove(+id);
+  }
+}
