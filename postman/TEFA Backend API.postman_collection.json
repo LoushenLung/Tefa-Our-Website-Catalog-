@@ -26,13 +26,12 @@
               "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/auth/login",
+              "raw": "{{baseUrl}}/auth",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "auth",
-                "login"
+                "auth"
               ]
             }
           },
@@ -70,6 +69,96 @@
     {
       "name": "USERS",
       "item": [
+        {
+          "name": "WISHLISTS",
+          "item": [
+            {
+              "name": "TOGGLE WISHLIST",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/wishlists/:projectId",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "wishlists",
+                    ":projectId"
+                  ],
+                  "variable": [
+                    {
+                      "key": "projectId",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "MY WISHLIST",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/wishlists",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "wishlists"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoibWF0YW11Z2VkZXJla0BnbWFpbC5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc3ODQ2ODgzNCwiZXhwIjoxNzc4NTU1MjM0fQ.5cD1kyD_lgoOmNG8g87g6ShwdK-vGOYjx7UoL9vhu4Y",
+                "type": "string"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  ""
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  ""
+                ]
+              }
+            }
+          ]
+        },
         {
           "name": "CREATE",
           "request": {
@@ -229,13 +318,19 @@
               "raw": "{\n  \"enable\": true\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/users/toggle-2fa",
+              "raw": "{{baseUrl}}/users/toggle-2fa/:id",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "users",
-                "toggle-2fa"
+                "toggle-2fa",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id"
+                }
               ]
             }
           },
@@ -377,7 +472,7 @@
         "bearer": [
           {
             "key": "token",
-            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjgsImVtYWlsIjoibXJhYmJhbmlhcnlhbnRhQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc3Nzg2Njk3OSwiZXhwIjoxNzc3OTUzMzc5fQ.BxZsBEf3RE17uCxoeWGf8OOHjeAoWLldw0x67ynDunk",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsIjoibXJhYmJhbmlhcnlhbnRhQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc3ODQ2ODMyNCwiZXhwIjoxNzc4NTU0NzI0fQ.TMLkaB1wLuuKNiNNJcRE3TxZ_j9lMTFrSRoUXuNfpgw",
             "type": "string"
           }
         ]
@@ -604,7 +699,7 @@
         "bearer": [
           {
             "key": "token",
-            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjgsImVtYWlsIjoibXJhYmJhbmlhcnlhbnRhQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc3Nzg2Njk3OSwiZXhwIjoxNzc3OTUzMzc5fQ.BxZsBEf3RE17uCxoeWGf8OOHjeAoWLldw0x67ynDunk",
+            "value": "",
             "type": "string"
           }
         ]
@@ -747,7 +842,7 @@
         "bearer": [
           {
             "key": "token",
-            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEwLCJlbWFpbCI6ImR1bW15MUBnbWFpbC5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc3Nzg2ODY2OCwiZXhwIjoxNzc3OTU1MDY4fQ.jJttrF46Tm_k126Z9AeknSSWnhmf0lFDfQ3QzfcK_iA",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoibWF0YW11Z2VkZXJla0BnbWFpbC5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc3ODQ2ODgzNCwiZXhwIjoxNzc4NTU1MjM0fQ.5cD1kyD_lgoOmNG8g87g6ShwdK-vGOYjx7UoL9vhu4Y",
             "type": "string"
           }
         ]
@@ -931,7 +1026,7 @@
         "bearer": [
           {
             "key": "token",
-            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEwLCJlbWFpbCI6ImR1bW15MUBnbWFpbC5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc3Nzg2ODY2OCwiZXhwIjoxNzc3OTU1MDY4fQ.jJttrF46Tm_k126Z9AeknSSWnhmf0lFDfQ3QzfcK_iA",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoibWF0YW11Z2VkZXJla0BnbWFpbC5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc3ODQ2ODgzNCwiZXhwIjoxNzc4NTU1MjM0fQ.5cD1kyD_lgoOmNG8g87g6ShwdK-vGOYjx7UoL9vhu4Y",
             "type": "string"
           }
         ]
@@ -1163,7 +1258,7 @@
         "bearer": [
           {
             "key": "token",
-            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjgsImVtYWlsIjoibXJhYmJhbmlhcnlhbnRhQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc3Nzg2NTk5MiwiZXhwIjoxNzc3OTUyMzkyfQ.Ux0tX4-bKK6ymbw0frMF2DDaEgsjqnoyZZjnzwEISdM",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsIjoibXJhYmJhbmlhcnlhbnRhQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc3ODQ2ODMyNCwiZXhwIjoxNzc4NTU0NzI0fQ.TMLkaB1wLuuKNiNNJcRE3TxZ_j9lMTFrSRoUXuNfpgw",
             "type": "string"
           }
         ]
@@ -1336,7 +1431,7 @@
         "bearer": [
           {
             "key": "token",
-            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjgsImVtYWlsIjoibXJhYmJhbmlhcnlhbnRhQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc3Nzg2NTk5MiwiZXhwIjoxNzc3OTUyMzkyfQ.Ux0tX4-bKK6ymbw0frMF2DDaEgsjqnoyZZjnzwEISdM",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsIjoibXJhYmJhbmlhcnlhbnRhQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc3ODQ2ODMyNCwiZXhwIjoxNzc4NTU0NzI0fQ.TMLkaB1wLuuKNiNNJcRE3TxZ_j9lMTFrSRoUXuNfpgw",
             "type": "string"
           }
         ]
@@ -1509,7 +1604,7 @@
         "bearer": [
           {
             "key": "token",
-            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjgsImVtYWlsIjoibXJhYmJhbmlhcnlhbnRhQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc3Nzg2NTk5MiwiZXhwIjoxNzc3OTUyMzkyfQ.Ux0tX4-bKK6ymbw0frMF2DDaEgsjqnoyZZjnzwEISdM",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsIjoibXJhYmJhbmlhcnlhbnRhQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc3ODQ2ODMyNCwiZXhwIjoxNzc4NTU0NzI0fQ.TMLkaB1wLuuKNiNNJcRE3TxZ_j9lMTFrSRoUXuNfpgw",
             "type": "string"
           }
         ]
@@ -1819,6 +1914,58 @@
                   "key": "id",
                   "value": "1"
                 }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "BANK ACCOUNTS",
+      "item": [
+        {
+          "name": "SHOW ALL",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bank-accounts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bank-accounts"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CREATE (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bankName\": \"BCA\",\n  \"accountNumber\": \"1234567890\",\n  \"accountHolder\": \"Tefa Official\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bank-accounts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bank-accounts"
               ]
             }
           },
