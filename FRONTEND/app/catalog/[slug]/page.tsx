@@ -37,6 +37,15 @@ export default function ProjectDetailPage() {
   const [project, setProject] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState(0);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const checkSession = () => {
+      const s = localStorage.getItem("user_session");
+      setIsLoggedIn(!!s);
+    };
+    checkSession();
+  }, []);
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -106,9 +115,15 @@ export default function ProjectDetailPage() {
             <button className="p-2 text-slate-400 hover:text-slate-900 transition-colors">
               <Share2 size={20} />
             </button>
-            <Link href="/customer/cart" className="p-2 text-slate-400 hover:text-red-600 transition-colors relative">
-              <ShoppingCart size={20} />
-            </Link>
+            {isLoggedIn ? (
+              <Link href="/cart" className="p-2 text-slate-400 hover:text-red-600 transition-colors relative">
+                <ShoppingCart size={20} />
+              </Link>
+            ) : (
+              <Link href="/sign-in" className="p-2 text-slate-400 hover:text-red-600 transition-colors relative">
+                <ShoppingCart size={20} />
+              </Link>
+            )}
           </div>
         </div>
       </nav>

@@ -1,15 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ShoppingCart, Rocket, ShieldCheck, Globe } from "lucide-react";
-import Header from "../components/navbar-public"; // Sesuaikan path ini dengan lokasi file Header.tsx kamu
-
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-white text-slate-900 font-sans overflow-x-hidden selection:bg-red-500 selection:text-white">
       
-      {/* Panggil Komponen Header di sini */}
-      <Header />
-
       {/* SECTION 1: HERO (Modern & Clean) */}
       <section className="relative min-h-[90vh] flex items-center pt-20 bg-slate-50">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 grid lg:grid-cols-2 gap-12 items-center relative z-10">
@@ -26,7 +21,7 @@ export default function Home() {
             </p>
             <div className="flex flex-wrap gap-4">
               <Link 
-                href="#products"
+                href="/catalog"
                 className="group flex items-center gap-2 px-8 py-4 bg-red-600 text-white rounded-full font-bold text-lg hover:bg-red-700 transition-all shadow-xl shadow-red-200 active:scale-95"
               >
                 <ShoppingCart size={20} />
@@ -222,7 +217,7 @@ export default function Home() {
           </div>
           <div className="flex gap-6">
             {["Instagram", "Website", "LinkedIn"].map((social) => (
-              <Link key={social} href="#" className="text-slate-400 hover:text-red-600 font-bold transition-colors">
+              <Link key={social} href="#" className="text-slate-400 hover:text-blue-600 font-bold transition-colors">
                 {social}
               </Link>
             ))}

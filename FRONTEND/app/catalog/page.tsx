@@ -1,21 +1,27 @@
+"use client";
+
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ShoppingCart, Search, Star, ChevronDown, Loader2 } from "lucide-react";
-import { getPublicProjects } from "@/lib/actions/public-catalog";
+import { useSearchParams } from "next/navigation";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 interface Product {
-  id: number;
-  title: string;
+  id: string;
+  name: string;
   slug: string;
   description: string;
   price: number;
-  thumbnail: string | null;
-  averageRating: number;
-  totalReviews: number;
+  currency: "IDR" | "USD";
+  stock: number;
+  status: "PUBLISHED" | "DRAFT" | "ARCHIVED";
+  specs: Record<string, string>;
   category: { name: string; slug: string };
-  badge?: string; // Optional field, might be added later or calculated
+  image: string;
+  badge?: string;
+  rating: number;
+  reviewCount: number;
 }
 
 const CATEGORIES = [
@@ -87,10 +93,10 @@ function ProductCard({ product }: { product: Product }) {
   return (
     <article className="group relative flex flex-col bg-white border border-slate-100 rounded-3xl overflow-hidden hover:shadow-xl hover:shadow-slate-200/60 hover:border-red-100 transition-all duration-300">
       <div className="relative h-52 overflow-hidden bg-slate-100">
-        {!imgError && product.thumbnail ? (
+        {!imgError && product.image ? (
           <Image
-            src={product.thumbnail}
-            alt={product.title}
+            src={product.image}
+            alt={product.name}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-500"
             onError={() => setImgError(true)}
@@ -109,6 +115,16 @@ function ProductCard({ product }: { product: Product }) {
             {product.badge}
           </span>
         )}
+
+        <span className={`absolute top-3 right-3 px-2.5 py-1 text-xs font-semibold rounded-full bg-white/90 backdrop-blur-sm border ${
+          product.stock === 0
+            ? "text-red-600 border-red-200"
+            : product.stock < 5
+            ? "text-orange-600 border-orange-200"
+            : "text-green-600 border-green-200"
+        }`}>
+          {product.stock === 0 ? "Habis" : product.stock < 5 ? `Sisa ${product.stock}` : "Tersedia"}
+        </span>
       </div>
 
       <div className="flex flex-col flex-1 p-5 gap-3">
@@ -117,12 +133,22 @@ function ProductCard({ product }: { product: Product }) {
         </span>
 
         <h3 className="font-black text-slate-900 text-base leading-snug group-hover:text-red-600 transition-colors line-clamp-2">
-          {product.title}
+          {product.name}
         </h3>
 
-        <StarRating rating={Number(product.averageRating)} reviewCount={product.totalReviews} />
+        <StarRating rating={product.rating} reviewCount={product.reviewCount} />
 
         <p className="text-slate-500 text-sm leading-relaxed line-clamp-2">{product.description}</p>
+
+        <div className="flex flex-wrap gap-1.5">
+          {Object.entries(product.specs)
+            .slice(0, 2)
+            .map(([k, v]) => (
+              <span key={k} className="px-2.5 py-1 bg-slate-50 border border-slate-100 rounded-lg text-xs text-slate-500">
+                <span className="text-slate-400">{k}:</span> {v}
+              </span>
+            ))}
+        </div>
 
         <div className="flex items-end justify-between mt-auto pt-4 border-t border-slate-100">
           <div>
@@ -144,23 +170,75 @@ function ProductCard({ product }: { product: Product }) {
 
 export default function CatalogPage() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
 
+  const searchParams = useSearchParams();
+
+  // Initialize search from URL query parameter if present
+  useEffect(() => {
+    const query = searchParams.get("search");
+    if (query) {
+      setSearch(decodeURIComponent(query));
+    }
+  }, [searchParams]);
+
+  // ─── Fetch Data dari Backend ───────────────────────────────────────────────
   useEffect(() => {
     const fetchProducts = async () => {
-      setLoading(true);
-      const data = await getPublicProjects();
-      setProducts(data);
-      setLoading(false);
+      setIsLoading(true);
+      setError(null);
+      
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/projects`); 
+        
+        if (!response.ok) {
+          throw new Error("Gagal mengambil data katalog dari server.");
+        }
+        
+        const data = await response.json();
+        const productArray = Array.isArray(data) ? data : data.data || [];
+
+        // Mapping response dari backend ke state yang dibutuhkan UI
+        const formattedProducts: Product[] = productArray.map((item: any) => ({
+          id: String(item.id),
+          name: item.title || "Tanpa Judul",
+          slug: item.slug || String(item.id),
+          description: item.description || "Belum ada deskripsi untuk project ini.",
+          price: Number(item.price) || 0,
+          currency: "IDR",
+          stock: Number(item.stock) || 10,
+          status: item.status || "PUBLISHED",
+          specs: item.specs || { Kreator: "Siswa TEFA" },
+          image: item.thumbnail || "https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=600&q=80",
+          category: item.category ? { name: item.category.name, slug: item.category.slug } : { name: "Produk Karya", slug: "all" }, 
+          badge: item.badge || null,
+          
+          // Ambil rating dari backend, jika kosong/tidak ada maka fallback ke 0
+          rating: Number(item.rating) || 0,
+          
+          // Ambil total penjualan/review dari backend, jika kosong fallback ke 0
+          reviewCount: Number(item.sold) || Number(item.reviewCount) || 0, 
+        }));
+
+        setProducts(formattedProducts);
+      } catch (err: any) {
+        setError(err.message || "Terjadi kesalahan saat menghubungi server.");
+      } finally {
+        setIsLoading(false);
+      }
     };
+
     fetchProducts();
   }, []);
 
+  // ─── Filter & Sort Logic ───────────────────────────────────────────────────
   const filtered = useMemo(() => {
-    let result = products;
+    let result = products.filter((p) => p.status === "PUBLISHED");
 
     if (activeCategory !== "all") {
       result = result.filter((p) => p.category.slug === activeCategory);
@@ -170,7 +248,7 @@ export default function CatalogPage() {
       const q = search.toLowerCase();
       result = result.filter(
         (p) =>
-          p.title.toLowerCase().includes(q) ||
+          p.name.toLowerCase().includes(q) ||
           p.description.toLowerCase().includes(q) ||
           p.category.name.toLowerCase().includes(q)
       );
@@ -178,7 +256,7 @@ export default function CatalogPage() {
 
     switch (sortBy) {
       case "rating-desc":
-        result = [...result].sort((a, b) => b.averageRating - a.averageRating);
+        result = [...result].sort((a, b) => b.rating - a.rating);
         break;
       case "price-asc":
         result = [...result].sort((a, b) => a.price - b.price);
@@ -187,40 +265,17 @@ export default function CatalogPage() {
         result = [...result].sort((a, b) => b.price - a.price);
         break;
       case "name-asc":
-        result = [...result].sort((a, b) => a.title.localeCompare(b.title));
+        result = [...result].sort((a, b) => a.name.localeCompare(b.name));
         break;
       default:
         break;
     }
 
     return result;
-  }, [products, search, activeCategory, sortBy]);
+  }, [search, activeCategory, sortBy, products]);
 
   return (
     <div className="min-h-screen bg-white text-slate-900 font-sans overflow-x-hidden selection:bg-red-500 selection:text-white">
-
-      {/* ── HEADER IDENTIK ──────────────────────────────────────────────────── */}
-      <nav className="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-slate-100 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center font-bold text-white text-xl">T</div>
-            <span className="font-black text-xl tracking-tighter text-slate-900">TEFA <span className="text-red-600">MOKLET</span></span>
-          </Link>
-
-          <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-500">
-            <Link href="/#about" className="hover:text-slate-900 transition-colors">About</Link>
-            <Link href="/#majors" className="hover:text-slate-900 transition-colors">Majors</Link>
-            <Link href="/catalog" className="text-red-600">Catalog</Link>
-          </div>
-
-          <Link
-            href="/sign-in"
-            className="px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-full text-sm font-bold transition-all active:scale-95 shadow-md shadow-red-100"
-          >
-            Sign In
-          </Link>
-        </div>
-      </nav>
 
       {/* ── Hero / Header Catalog ──────────────────────────────────────────────────── */}
       <section className="pt-32 pb-16 px-6 lg:px-12 bg-slate-50 relative overflow-hidden">
@@ -232,7 +287,7 @@ export default function CatalogPage() {
             <span className="text-slate-700 font-semibold">Katalog Produk</span>
           </div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 border border-red-100 text-red-600 text-xs font-bold uppercase tracking-wider mb-4">
-            <Star size={12} className="fill-red-400 text-red-400" /> {products.length}+ Produk Tersedia
+            <Star size={12} className="fill-red-400 text-red-400" /> Hasil Karya Terbaik
           </div>
           <h1 className="text-4xl md:text-6xl font-black tracking-tight text-slate-900 mb-4">
             Katalog <span className="text-red-600 underline decoration-red-200 underline-offset-8">Produk</span>
@@ -244,7 +299,7 @@ export default function CatalogPage() {
       </section>
 
       {/* ── DESAIN FILTER & SEARCH BAR ────────────────────────────────────────────── */}
-      <section className="sticky top-16 z-40 bg-white/95 backdrop-blur-xl border-b border-slate-100 shadow-sm py-4 transition-all">
+      <section className="sticky top-16 z-30 bg-white/95 backdrop-blur-xl border-b border-slate-100 shadow-sm py-4 transition-all">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col lg:flex-row gap-4 items-center justify-between">
           
           <div className="relative w-full lg:max-w-md group">
@@ -320,10 +375,29 @@ export default function CatalogPage() {
           )}
         </div>
 
-        {loading ? (
-          <div className="flex flex-col items-center justify-center py-32 gap-4">
-             <Loader2 size={48} className="text-red-600 animate-spin" />
-             <p className="text-slate-500 font-medium animate-pulse">Memuat katalog inovasi...</p>
+        {/* State Kondisional: Loading, Error, atau Tampilkan Data */}
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-32 text-slate-400 gap-4">
+            <Loader2 className="animate-spin text-red-500" size={48} />
+            <p className="font-semibold text-slate-600">Menyinkronkan dengan server...</p>
+          </div>
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center py-32 text-center gap-4">
+            <div className="w-20 h-20 rounded-full bg-red-50 border border-red-100 flex items-center justify-center">
+              <svg className="w-10 h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-xl font-black text-slate-900 mb-1">Gagal Memuat Data</h3>
+              <p className="text-slate-500 max-w-md">{error}</p>
+            </div>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-xl transition-all active:scale-95 shadow-md shadow-red-100 mt-2"
+            >
+              Coba Lagi
+            </button>
           </div>
         ) : filtered.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -346,6 +420,21 @@ export default function CatalogPage() {
             >
               Lihat Semua Produk
             </button>
+          </div>
+        )}
+
+        {filtered.length > 0 && !isLoading && !error && (
+          <div className="mt-20 grid grid-cols-3 gap-6 py-10 border-t border-slate-100">
+            {[
+              { value: `${products.length}+`, label: "Total Produk" },
+              { value: "3", label: "Kategori Unggulan" },
+              { value: "100%", label: "Karya Siswa" },
+            ].map((stat) => (
+              <div key={stat.label} className="text-center">
+                <div className="text-3xl font-black text-red-600 mb-1">{stat.value}</div>
+                <div className="text-sm text-slate-400 uppercase tracking-widest font-semibold">{stat.label}</div>
+              </div>
+            ))}
           </div>
         )}
       </main>

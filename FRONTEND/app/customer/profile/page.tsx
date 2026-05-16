@@ -1,11 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { User, Mail, Phone, MapPin, Camera, Save, X, Edit2, ShieldCheck } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { User, Mail, Phone, MapPin, Camera, Save, X, Edit2, ShieldCheck, LogOut } from "lucide-react";
 import Image from "next/image";
+import { deleteCookie } from "@/lib/client-cookies";
 
 export default function ProfilePage() {
+  const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [user, setUser] = useState({
     name: "",
     email: "",
@@ -33,6 +37,30 @@ export default function ProfilePage() {
     setIsEditing(false);
     // Di sini nanti bisa ditambah fetch ke API PATCH /users/:id
     alert("Profil berhasil diperbarui!");
+  };
+
+
+    const handleLogout = async () => {
+    if (!confirm("Apakah Anda yakin ingin logout?")) {
+      return;
+    }
+
+    try {
+      setIsLoggingOut(true);
+      // Delete cookies
+      await deleteCookie("accessToken");
+      await deleteCookie("refreshToken");
+      
+      // Clear localStorage
+      localStorage.removeItem("user_session");
+      
+      // Redirect to home
+      router.push("/");
+    } catch (error) {
+      console.error("Logout error:", error);
+      alert("Gagal logout. Silakan coba lagi.");
+      setIsLoggingOut(false);
+    }
   };
 
   return (
@@ -65,6 +93,14 @@ export default function ProfilePage() {
             <div className="mt-2 px-3 py-1 bg-green-50 text-green-600 text-[10px] font-bold uppercase tracking-widest rounded-full border border-green-100 flex items-center gap-1.5">
               <ShieldCheck size={12} /> {user.role}
             </div>
+                        <button
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+              className="mt-6 w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-50 text-red-600 font-bold rounded-xl border border-red-200 hover:bg-red-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <LogOut size={18} />
+              {isLoggingOut ? "Logging out..." : "Logout"}
+            </button>
           </div>
         </div>
 
@@ -74,7 +110,7 @@ export default function ProfilePage() {
             <div className="flex items-center justify-between mb-8">
               <h3 className="text-xl font-bold text-slate-900">Personal Information</h3>
               {!isEditing ? (
-                <button 
+                <button
                   onClick={() => setIsEditing(true)}
                   className="flex items-center gap-2 px-4 py-2 text-red-600 font-bold hover:bg-red-50 rounded-xl transition-all"
                 >
@@ -82,13 +118,13 @@ export default function ProfilePage() {
                 </button>
               ) : (
                 <div className="flex gap-2">
-                   <button 
+                  <button
                     onClick={() => setIsEditing(false)}
                     className="flex items-center gap-2 px-4 py-2 text-slate-400 font-bold hover:bg-slate-50 rounded-xl transition-all"
                   >
                     <X size={18} /> Cancel
                   </button>
-                  <button 
+                  <button
                     onClick={handleSave}
                     className="flex items-center gap-2 px-6 py-2 bg-red-600 text-white font-bold rounded-xl shadow-lg shadow-red-100 hover:bg-red-700 transition-all"
                   >
@@ -104,11 +140,11 @@ export default function ProfilePage() {
                   <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Full Name</label>
                   <div className={`flex items-center gap-3 px-4 py-3 rounded-2xl border transition-all ${isEditing ? 'bg-white border-red-200' : 'bg-slate-50 border-transparent text-slate-500'}`}>
                     <User size={18} />
-                    <input 
+                    <input
                       disabled={!isEditing}
-                      type="text" 
+                      type="text"
                       value={user.name}
-                      onChange={(e) => setUser({...user, name: e.target.value})}
+                      onChange={(e) => setUser({ ...user, name: e.target.value })}
                       className="bg-transparent outline-none w-full text-sm font-medium"
                     />
                   </div>
@@ -117,9 +153,9 @@ export default function ProfilePage() {
                   <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Email Address</label>
                   <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-slate-50 border-transparent text-slate-500">
                     <Mail size={18} />
-                    <input 
+                    <input
                       disabled={true} // Email typically not editable
-                      type="email" 
+                      type="email"
                       value={user.email}
                       className="bg-transparent outline-none w-full text-sm font-medium"
                     />
@@ -132,12 +168,12 @@ export default function ProfilePage() {
                   <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Phone Number</label>
                   <div className={`flex items-center gap-3 px-4 py-3 rounded-2xl border transition-all ${isEditing ? 'bg-white border-red-200' : 'bg-slate-50 border-transparent text-slate-500'}`}>
                     <Phone size={18} />
-                    <input 
+                    <input
                       disabled={!isEditing}
-                      type="text" 
+                      type="text"
                       placeholder="+62 8xx xxxx xxxx"
                       value={user.phone}
-                      onChange={(e) => setUser({...user, phone: e.target.value})}
+                      onChange={(e) => setUser({ ...user, phone: e.target.value })}
                       className="bg-transparent outline-none w-full text-sm font-medium"
                     />
                   </div>
@@ -146,12 +182,12 @@ export default function ProfilePage() {
                   <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Location</label>
                   <div className={`flex items-center gap-3 px-4 py-3 rounded-2xl border transition-all ${isEditing ? 'bg-white border-red-200' : 'bg-slate-50 border-transparent text-slate-500'}`}>
                     <MapPin size={18} />
-                    <input 
+                    <input
                       disabled={!isEditing}
-                      type="text" 
+                      type="text"
                       placeholder="City, Province"
                       value={user.address}
-                      onChange={(e) => setUser({...user, address: e.target.value})}
+                      onChange={(e) => setUser({ ...user, address: e.target.value })}
                       className="bg-transparent outline-none w-full text-sm font-medium"
                     />
                   </div>

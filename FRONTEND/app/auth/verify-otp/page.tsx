@@ -64,12 +64,14 @@ function VerifyOTPContent() {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp: otpCode }),
+        // PERBAIKAN: mengirimkan key 'code' sesuai permintaan backend
+        body: JSON.stringify({ email, code: otpCode }),
       });
 
       const result = await response.json();
 
       if (!response.ok) {
+        // Menampilkan pesan error dari backend jika ada
         setError(result.message || "Invalid or expired OTP.");
         return;
       }
@@ -93,7 +95,7 @@ function VerifyOTPContent() {
       if (payload.role === "ADMIN") {
         router.push("/admin");
       } else {
-        router.push("/customer");
+        router.push("/");
       }
     } catch (err) {
       setError("Connection error. Please try again.");

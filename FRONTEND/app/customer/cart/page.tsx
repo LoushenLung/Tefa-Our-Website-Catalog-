@@ -34,7 +34,13 @@ export default function CartPage() {
     saveCart(updated);
   };
 
-  const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const handleRemove = (id: string) => {
+    removeFromCart(id);
+    // State akan terupdate otomatis melalui event listener 'cart-updated'
+  };
+
+  // Proteksi pada perhitungan total agar tidak menghasilkan NaN jika price undefined
+  const totalPrice = cart.reduce((sum, item) => sum + (item.price || 0) * item.quantity, 0);
 
   if (!mounted) return null;
 
@@ -57,7 +63,10 @@ export default function CartPage() {
                 </div>
                 <div className="flex-1 space-y-1">
                   <h3 className="font-bold text-slate-900 group-hover:text-red-600 transition-colors">{item.name}</h3>
-                  <p className="text-red-600 font-black">Rp {item.price.toLocaleString("id-ID")}</p>
+                  {/* Perbaikan: Menggunakan optional chaining ?. agar tidak error jika price undefined */}
+                  <p className="text-red-600 font-black">
+                    Rp {item.price?.toLocaleString("id-ID") || "0"}
+                  </p>
                 </div>
                 <div className="flex items-center gap-3 bg-slate-50 p-1 rounded-xl border border-slate-100">
                   <button onClick={() => updateQuantity(item.id, -1)} className="p-2 hover:bg-white hover:text-red-600 rounded-lg transition-all text-slate-400">
@@ -69,7 +78,7 @@ export default function CartPage() {
                   </button>
                 </div>
                 <button 
-                  onClick={() => removeFromCart(item.id)}
+                  onClick={() => handleRemove(item.id)}
                   className="p-3 text-slate-300 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
                 >
                   <Trash2 size={20} />
